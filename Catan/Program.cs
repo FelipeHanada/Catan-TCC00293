@@ -1,2 +1,2 @@
-﻿using var game = new Catan.Game1();
+﻿using var game = Catan.Game1.Instance();
 game.Run();
