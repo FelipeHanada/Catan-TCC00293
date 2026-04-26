@@ -13,6 +13,11 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin DefaultFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/build:DefaultFont.spritefont
+
 #begin catan-atlas.png
 /importer:TextureImporter
 /processor:TextureProcessor
