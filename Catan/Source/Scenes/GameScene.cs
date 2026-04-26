@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Catan.Source.Content;
+using Catan.Source.Game.Board;
 
 
 namespace Catan.Source.Scenes
@@ -9,6 +10,8 @@ namespace Catan.Source.Scenes
     {
         private SpriteBatch _spriteBatch;
         private Atlas _atlas;
+
+        private Board _board;
 
         public GameScene()
         {
@@ -23,6 +26,7 @@ namespace Catan.Source.Scenes
         {
             _spriteBatch = new SpriteBatch(Game1.GraphicsDeviceInstance);
             _atlas = new Atlas(Game1.ContentManager);
+            _board = new(0, 0, _atlas);
 
             base.LoadContent();
         }
@@ -43,7 +47,9 @@ namespace Catan.Source.Scenes
         public override void Draw(GameTime gameTime)
         {
             _spriteBatch.Begin();
-            _spriteBatch.Draw(_atlas.Texture, Vector2.Zero, Atlas.GetRectangle(AtlasSpriteId.TileForest), Color.White);
+
+            _board.Draw(gameTime, _spriteBatch);
+
             _spriteBatch.End();
 
             base.Draw(gameTime);
