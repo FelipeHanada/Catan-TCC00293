@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Catan.Source.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using Catan.Source.Content;
 
 
 namespace Catan.Source.Scenes

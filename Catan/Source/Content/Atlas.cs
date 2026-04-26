@@ -8,7 +8,7 @@ namespace Catan.Source.Content
 {
     public enum AtlasSpriteId
     {
-        TileForest, TileSheeps, TileBricks, TileMountains, TileDesert, TileFarms,
+        TileForest, TileSheep, TileBrick, TileMountain, TileDesert, TileFarm,
 
         SettlementPlayer1, CityPlayer1, Road1Player1, Road2Player1, Road3Player1,
         SettlementPlayer2, CityPlayer2, Road1Player2, Road2Player2, Road3Player2,
@@ -26,14 +26,14 @@ namespace Catan.Source.Content
     public class Atlas
     {
         private Texture2D _texture;
-        private static readonly Dictionary<AtlasSpriteId, Rectangle> _spriteRectangles = new Dictionary<AtlasSpriteId, Rectangle>
+        private static readonly Dictionary<AtlasSpriteId, Rectangle> _spriteRectangles = new()
         {
             [AtlasSpriteId.TileForest] = new Rectangle(0, 0, 128, 128),
-            [AtlasSpriteId.TileSheeps] = new Rectangle(64, 0, 64, 64),
-            [AtlasSpriteId.TileBricks] = new Rectangle(128, 0, 64, 64),
-            [AtlasSpriteId.TileMountains] = new Rectangle(192, 0, 64, 64),
-            [AtlasSpriteId.TileDesert] = new Rectangle(256, 0, 64, 64),
-            [AtlasSpriteId.TileFarms] = new Rectangle(320, 0, 64, 64),
+            [AtlasSpriteId.TileSheep] = new Rectangle(128, 0, 128, 128),
+            [AtlasSpriteId.TileBrick] = new Rectangle(256, 0, 128, 128),
+            [AtlasSpriteId.TileMountain] = new Rectangle(384, 0, 128, 128),
+            [AtlasSpriteId.TileDesert] = new Rectangle(512, 0, 128, 128),
+            [AtlasSpriteId.TileFarm] = new Rectangle(640, 0, 128, 128),
             [AtlasSpriteId.SettlementPlayer1] = new Rectangle(0, 64, 32, 32),
             [AtlasSpriteId.CityPlayer1] = new Rectangle(32, 64, 32, 32),
             [AtlasSpriteId.Road1Player1] = new Rectangle(64, 64, 48, 16),
