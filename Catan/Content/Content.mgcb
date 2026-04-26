@@ -25,3 +25,9 @@
 /processorParam:TextureFormat=Color
 /build:catan-atlas.png
 
+# fonte default só de teste
+#begin defaultFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/build:defaultFont.spritefont
+

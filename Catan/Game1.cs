@@ -28,7 +28,7 @@ namespace Catan
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
-            _currentScene = new GameScene();
+            _currentScene = new ConfigScene(); //mudei aqui para testar a cena de configuração
             _nextScene = null;
         }
 
@@ -58,6 +58,7 @@ namespace Catan
                 Exit();
 
             _currentScene.Update(gameTime);
+            TransitionScene();
 
             base.Update(gameTime);
         }
