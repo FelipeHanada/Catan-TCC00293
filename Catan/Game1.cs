@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Catan.Source.Scenes;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -6,28 +8,48 @@ namespace Catan
 {
     public class Game1 : Game
     {
+        private static Game1 _instance;
+
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        public Game1()
+        public static GraphicsDevice GraphicsDeviceInstance => Instance().GraphicsDevice;
+        public static ContentManager ContentManager => Instance().Content;
+
+        private Scene _currentScene;
+        private Scene? _nextScene;
+
+        private Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
+            _graphics.PreferredBackBufferWidth = 1280;
+            _graphics.PreferredBackBufferHeight = 720;
+            _graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            _currentScene = new GameScene();
+            _nextScene = null;
+        }
+
+        public static Game1 Instance()
+        {
+            if (_instance == null)
+            {
+                _instance = new Game1();
+            }
+            return _instance;
         }
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
+            _currentScene.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
         }
 
         protected override void Update(GameTime gameTime)
@@ -35,7 +57,7 @@ namespace Catan
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            _currentScene.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -44,9 +66,27 @@ namespace Catan
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            _currentScene.Draw(gameTime);
 
             base.Draw(gameTime);
+        }
+
+        public static void ChangeScene(Scene newScene)
+        {
+            var instance = Instance();
+            instance._nextScene = newScene;
+        }
+
+        public static void TransitionScene()
+        {
+            var instance = Instance();
+            if (instance._nextScene != null)
+            {
+                instance._currentScene.Dispose();
+                instance._currentScene = instance._nextScene;
+                instance._nextScene = null;
+                instance._currentScene.Initialize();
+            }
         }
     }
 }

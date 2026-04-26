@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Catan (MonoGame)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "dotnet build Catan",
+      "program": "${workspaceFolder}/Catan/bin/Debug/net8.0/Catan.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}/Catan",
+      "stopAtEntry": false,
+      "console": "internalConsole",
+      "justMyCode": true
+    }
+  ]
+}
