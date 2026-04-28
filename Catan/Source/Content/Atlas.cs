@@ -16,6 +16,9 @@ namespace Catan.Source.Content
         SettlementPlayer4, CityPlayer4, Road1Player4, Road2Player4, Road3Player4,
 
         DevCardInvention, DevCardRoad, DevCardMonopoly, DevCardKnight, DevCardVP,
+
+        ButtonUpLeft, ButtonUpRight, ButtonBotLeft, ButtonBotRight, ButtonEdgeLeft,
+        ButtonEdgeRight, ButtonEdgeTop, ButtonEdgeBot, ButtonFill
     }
 
     public enum AtlasPlayerSprite
@@ -59,6 +62,15 @@ namespace Catan.Source.Content
             [AtlasSpriteId.DevCardMonopoly] = new Rectangle(96, 320, 48, 64),
             [AtlasSpriteId.DevCardKnight] = new Rectangle(144, 320, 48, 64),
             [AtlasSpriteId.DevCardVP] = new Rectangle(192, 320, 48, 64),
+            [AtlasSpriteId.ButtonUpLeft] = new Rectangle(0, 528, 3, 3),
+            [AtlasSpriteId.ButtonUpRight] = new Rectangle(3, 528, 3, 3),
+            [AtlasSpriteId.ButtonBotLeft] = new Rectangle(0, 531, 3, 3),
+            [AtlasSpriteId.ButtonBotRight] = new Rectangle(3, 531, 3, 3),
+            [AtlasSpriteId.ButtonEdgeLeft] = new Rectangle(6, 528, 3, 1),
+            [AtlasSpriteId.ButtonEdgeRight] = new Rectangle(6, 530, 3, 1),
+            [AtlasSpriteId.ButtonEdgeTop] = new Rectangle(10, 528, 1, 3),
+            [AtlasSpriteId.ButtonEdgeBot] = new Rectangle(12, 528, 1, 3),
+            [AtlasSpriteId.ButtonFill] = new Rectangle(14, 529, 1, 1),
         };
         private static readonly Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>> _playerSpriteMappings = new Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>>
         {
