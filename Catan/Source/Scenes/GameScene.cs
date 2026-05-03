@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Catan.Source.Content;
 using Catan.Source.Game.Board;
@@ -41,6 +42,12 @@ namespace Catan.Source.Scenes
 
         public override void Update(GameTime gameTime)
         {
+            if (Keyboard.GetState().IsKeyDown(Keys.F1))//atalho temporario para tela de fim
+            {
+                Game1.ChangeScene(new EndGameScene());
+                return;
+            }
+
             base.Update(gameTime);
         }
 
