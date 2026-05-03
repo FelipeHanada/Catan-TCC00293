@@ -28,7 +28,7 @@ namespace Catan
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
-            _currentScene = new ConfigScene(); //mudei aqui para testar a cena de configuração
+            _currentScene = new MainMenuScene();
             _nextScene = null;
         }
 
