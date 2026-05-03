@@ -180,7 +180,7 @@ namespace Catan.Source.Scenes
             switch (_selectedOptionIndex)
             {
                 case 0:
-                    Game1.ChangeScene(new GameScene());
+                    Game1.ChangeScene(new ConfigScene());
                     break;
                 case 1:
                     Game1.Instance().Exit();

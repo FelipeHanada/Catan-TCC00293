@@ -13,10 +13,7 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin DefaultFont.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/build:DefaultFont.spritefont
+
 
 #begin catan-atlas.png
 /importer:TextureImporter
@@ -29,4 +26,10 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:catan-atlas.png
+
+# fonte default só de teste
+#begin defaultFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/build:defaultFont.spritefont
 
