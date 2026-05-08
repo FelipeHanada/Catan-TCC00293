@@ -27,7 +27,9 @@ namespace Catan.Source.Scenes
         {
             _spriteBatch = new SpriteBatch(Game1.GraphicsDeviceInstance);
             _atlas = new Atlas(Game1.ContentManager);
-            _board = new(0, 0, _atlas);
+
+            StandardRandomBoardFactory factory = new(_atlas, 0, 0);
+            _board = factory.CreateBoard();
 
             base.LoadContent();
         }
