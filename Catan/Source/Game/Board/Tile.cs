@@ -23,6 +23,16 @@ namespace Catan.Source.Game.Board
             [TileType.Farm] = AtlasSpriteId.TileFarm,
         };
 
+        public static readonly Dictionary<TileType, Vector2> _tileDiceNumberOffset = new()
+        {
+            [TileType.Forest] = new(48, 73),
+            [TileType.Sheep] = new(48, 48),
+            [TileType.Brick] = new(48, 48),
+            [TileType.Mountain] = new(48, 73),
+            [TileType.Desert] = new(48, 48),
+            [TileType.Farm] = new(48, 48),
+        };
+
         private readonly Atlas atlas;
         private readonly TileType tileType;
         private readonly int diceNumber;
@@ -41,6 +51,14 @@ namespace Catan.Source.Game.Board
                 atlas.Texture,
                 new Vector2(this.X, this.Y),
                 Atlas.GetRectangle(_tileSpriteId[this.tileType]),
+                Color.White);
+
+            _tileDiceNumberOffset.TryGetValue(this.tileType, out Vector2 offset);
+
+            spriteBatch.Draw(
+                atlas.Texture,
+                new Vector2(this.X, this.Y) + offset,
+                Atlas.GetRectangle(Atlas.GetTileDiceNumberSprite(this.diceNumber)),
                 Color.White);
         }
         public override void Update(GameTime gameTime) { }
