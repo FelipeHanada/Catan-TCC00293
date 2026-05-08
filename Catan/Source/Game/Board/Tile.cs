@@ -36,13 +36,15 @@ namespace Catan.Source.Game.Board
         private readonly Atlas atlas;
         private readonly TileType tileType;
         private readonly int diceNumber;
+        private readonly TileVertex[] vertices;
 
-        public Tile(float x, float y, Atlas atlas, TileType tileType, int diceNumber)
+        public Tile(float x, float y, Atlas atlas, TileType tileType, int diceNumber, TileVertex[] vertices)
             : base(x, y)
         {
             this.atlas = atlas;
             this.tileType = tileType;
             this.diceNumber = diceNumber;
+            this.vertices = vertices;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
