@@ -66,10 +66,13 @@ namespace Catan.Source.Game.Board
             List<int> diceNumbers = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12];
             Random.Shared.Shuffle(CollectionsMarshal.AsSpan(diceNumbers));
 
-            List<TileType> resources = [ TileType.Forest, TileType.Sheep, TileType.Brick, TileType.Mountain, TileType.Farm ];
-            Random.Shared.Shuffle(CollectionsMarshal.AsSpan(resources));
-            for (int i=0; i<3; i++) for(int j=0; j<3; j++) resources.Add(resources[i]);
-            for (int i=3; i<5; i++) for(int j=0; j<2; j++) resources.Add(resources[i]);
+            List<TileType> resources = [
+                TileType.Forest, TileType.Forest, TileType.Forest, TileType.Forest,
+                TileType.Sheep, TileType.Sheep, TileType.Sheep, TileType.Sheep,
+                TileType.Farm, TileType.Farm, TileType.Farm, TileType.Farm,
+                TileType.Brick, TileType.Brick, TileType.Brick,
+                TileType.Mountain, TileType.Mountain, TileType.Mountain,
+            ];
             Random.Shared.Shuffle(CollectionsMarshal.AsSpan(resources));
 
             List<KeyValuePair<TileType, int>> tilesConfig = [ new(TileType.Desert, 7) ];
