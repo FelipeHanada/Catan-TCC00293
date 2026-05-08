@@ -46,6 +46,8 @@ namespace Catan.Source.Game.Board
             this.diceNumber = diceNumber;
             this.vertices = vertices;
         }
+        public Tile(float x, float y, Atlas atlas, TileType tileType, int diceNumber)
+            : this(x, y, atlas, tileType, diceNumber, []) {}
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {

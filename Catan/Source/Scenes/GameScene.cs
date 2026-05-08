@@ -64,6 +64,7 @@ namespace Catan.Source.Scenes
 
         public GameScene()
         {
+            _stateStack = new();
         }
 
         public override void Initialize()

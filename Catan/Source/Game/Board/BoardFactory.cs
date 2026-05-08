@@ -86,7 +86,10 @@ namespace Catan.Source.Game.Board
             StandardTilePositionIterator positionIterator = new(startX, startY);
             foreach (Vector2 position in positionIterator)
             {
-                tiles.Add(new Tile(position.X, position.Y, atlas, tilesConfig[tile_idx].Key, tilesConfig[tile_idx].Value));
+                tiles.Add(new(
+                    position.X, position.Y, atlas,
+                    tilesConfig[tile_idx].Key, tilesConfig[tile_idx].Value
+                ));
                 tile_idx++;
             }
 
