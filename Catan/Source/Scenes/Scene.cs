@@ -16,6 +16,23 @@ namespace Catan.Source.Scenes
         {
         }
 
+        public void Subscribe(GameObject obj)
+        {
+            if (!GameObjects.Contains(obj))
+            {
+                GameObjects.Add(obj);
+                obj.OnSubscribe(this);
+            }
+        }
+
+        public void Unsubscribe(GameObject obj)
+        {
+            if (GameObjects.Remove(obj))
+            {
+                obj.OnUnsubscribe();
+            }
+        }
+
         ~Scene() => Dispose(false);
 
         public virtual void Initialize()
@@ -58,6 +75,11 @@ namespace Catan.Source.Scenes
 
             if (disposing)
             {
+                foreach (var obj in GameObjects)
+                {
+                    obj.OnUnsubscribe();
+                }
+                GameObjects.Clear();
                 UnloadContent();
             }
 
