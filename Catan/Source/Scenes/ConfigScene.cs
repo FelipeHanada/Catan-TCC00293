@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Catan.Source.Content;
+
 
 namespace Catan.Source.Scenes
 {
@@ -154,11 +156,12 @@ namespace Catan.Source.Scenes
 
             if (_confirmButton.Contains(mousePosition))
             {
-                _createdSettings ??= BuildMatchSettings();
+                SoundManager.Instance.Play(SfxId.ConstrucaoCasa);
 
-                // Placeholder transition until match scene logic is ready.
+                _createdSettings ??= BuildMatchSettings();
                 Game1.ChangeScene(new GameScene());
             }
+
         }
 
         private void DrawSelecting()
