@@ -84,7 +84,7 @@ namespace Catan.Source.Game.Board
 
             List<Tile> tiles = [];
             int tile_idx = 0;
-            StandardTilePositionIterator positionIterator = new(startX, startY);
+            StandardTilePositionIterator positionIterator = new(startX, startY, atlas);
             foreach (Tuple<Vector2, TileVertex[]> info in positionIterator)
             {
                 Vector2 position = info.Item1;
@@ -120,7 +120,7 @@ namespace Catan.Source.Game.Board
         private List<List<TileVertex>> vertexTableA;
         private List<List<TileVertex>> vertexTableB;
 
-        public StandardTilePositionIterator(float startX, float startY, float width = 128, float height = 128, float h = 32)
+        public StandardTilePositionIterator(float startX, float startY, Atlas atlas, float width = 128, float height = 128, float h = 32)
         {
             this.startX = startX;
             this.startY = startY;
@@ -140,7 +140,8 @@ namespace Catan.Source.Game.Board
                 {
                     row.Add(new(
                         Math.Abs(3 - i) * width/2 + width * j,
-                        (height - h) * i
+                        (height - h) * i,
+                        atlas
                     ));
                 }
                 vertexTableA.Add(row);
@@ -154,7 +155,8 @@ namespace Catan.Source.Game.Board
                 {
                     row.Add(new(
                         Math.Abs(2 - i) * width/2 + width * j,
-                        (height - h) * i + h
+                        (height - h) * i + h,
+                        atlas
                     ));
                 }
                 vertexTableB.Add(row);

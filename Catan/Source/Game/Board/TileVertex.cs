@@ -1,49 +1,96 @@
+using Catan.Source.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace Catan.Source.Game.Board
 {
     public class TileVertex : GameObject
     {
-        private static Texture2D? _circleTexture;
-        private const int CircleDiameter = 10;
+        private const int CircleDiameter = 8;
+        private const float Radius = CircleDiameter / 2f;
 
-        public TileVertex(float x, float y)
+        private static Texture2D? _circleTexture;
+        private MouseState _previousMouseState;
+
+        private readonly Atlas atlas;
+        private int settlementLevel = 0;
+
+        public TileVertex(float x, float y, Atlas atlas) 
             : base(x, y)
         {
+            this.atlas = atlas;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            if (_circleTexture == null)
+            EnsureTextureGenerated();
+
+            var position = new Vector2(X, Y);
+            var origin = new Vector2(Radius);
+            
+            spriteBatch.Draw(_circleTexture, position, null, Color.White, 0f, origin, 1f, SpriteEffects.None, 0f);
+
+            if (settlementLevel == 1)
             {
-                _circleTexture = new Texture2D(Game1.GraphicsDeviceInstance, CircleDiameter, CircleDiameter);
-                var pixels = new Color[CircleDiameter * CircleDiameter];
-                var radius = CircleDiameter / 2f;
-                var radiusSq = radius * radius;
-                var center = new Vector2(radius, radius);
-
-                for (int y = 0; y < CircleDiameter; y++)
-                {
-                    for (int x = 0; x < CircleDiameter; x++)
-                    {
-                        var offset = new Vector2(x, y) - center;
-                        var distanceSq = offset.LengthSquared();
-                        pixels[y * CircleDiameter + x] = distanceSq <= radiusSq
-                            ? Color.Red
-                            : Color.Transparent;
-                    }
-                }
-
-                _circleTexture.SetData(pixels);
+                Rectangle rectangle = Atlas.GetRectangle(AtlasSpriteId.SettlementPlayer1);
+                spriteBatch.Draw(
+                    atlas.Texture,
+                    position - new Vector2(rectangle.Width / 2, rectangle.Height / 2),
+                    rectangle,
+                    Color.White
+                );
             }
-
-            var origin = new Vector2(CircleDiameter / 2f);
-            spriteBatch.Draw(_circleTexture, new Vector2(X, Y), null, Color.White, 0f, origin, 1f, SpriteEffects.None, 0f);
         }
 
         public override void Update(GameTime gameTime)
         {
+            MouseState currentMouseState = Mouse.GetState();
+
+            if (currentMouseState.LeftButton == ButtonState.Pressed && 
+                _previousMouseState.LeftButton == ButtonState.Released)
+            {
+                if (IsHovering(currentMouseState))
+                {
+                    settlementLevel = 1;
+                }
+            }
+
+            _previousMouseState = currentMouseState;
+        }
+
+        private bool IsHovering(MouseState mouseState)
+        {
+            float deltaX = mouseState.X - X;
+            float deltaY = mouseState.Y - Y;
+            float distanceSquared = (deltaX * deltaX) + (deltaY * deltaY);
+            return distanceSquared <= (Radius * Radius * 16);
+        }
+
+        private static void EnsureTextureGenerated()
+        {
+            if (_circleTexture != null) return;
+
+            _circleTexture = new Texture2D(Game1.GraphicsDeviceInstance, CircleDiameter, CircleDiameter);
+            
+            var pixels = new Color[CircleDiameter * CircleDiameter];
+            var radiusSq = Radius * Radius;
+            var center = new Vector2(Radius, Radius);
+
+            for (int y = 0; y < CircleDiameter; y++)
+            {
+                for (int x = 0; x < CircleDiameter; x++)
+                {
+                    var offset = new Vector2(x, y) - center;
+                    
+                    pixels[y * CircleDiameter + x] = offset.LengthSquared() <= radiusSq
+                        ? Color.Red
+                        : Color.Transparent;
+                }
+            }
+
+            _circleTexture.SetData(pixels);
         }
     }
 }
