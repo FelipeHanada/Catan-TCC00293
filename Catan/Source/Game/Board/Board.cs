@@ -16,12 +16,15 @@ namespace Catan.Source.Game.Board
         {
             this.atlas = atlas;
 
+            Random rand = new Random();
             _tiles = [];
             for (int i=0; i<5; i++) {
                 for (int j=0; j < 3 + 2 - Math.Abs(i - 2); j++) {
                     float tileX = X + 64*Math.Abs(i - 2) + 128*j;
                     float tileY = Y + 96*i;
-                    _tiles.Add(new Tile(tileX, tileY, atlas, TileType.Forest, 1));
+                    TileType randomType = (TileType)rand.Next(0, 6);
+                    int diceNum = randomType == TileType.Desert ? 7 : rand.Next(2, 13);
+                    _tiles.Add(new Tile(tileX, tileY, atlas, randomType, diceNum));
                 }
             }
         }
