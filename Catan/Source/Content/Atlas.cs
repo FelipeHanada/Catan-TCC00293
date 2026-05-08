@@ -16,6 +16,9 @@ namespace Catan.Source.Content
         SettlementPlayer4, CityPlayer4, Road1Player4, Road2Player4, Road3Player4,
 
         DevCardInvention, DevCardRoad, DevCardMonopoly, DevCardKnight, DevCardVP,
+
+        TileDiceNumberEmpty, TileDiceNumber2, TileDiceNumber3, TileDiceNumber4, TileDiceNumber5, TileDiceNumber6,
+        TileDiceNumber7, TileDiceNumber8, TileDiceNumber9, TileDiceNumber10, TileDiceNumber11, TileDiceNumber12,
     }
 
     public enum AtlasPlayerSprite
@@ -59,6 +62,18 @@ namespace Catan.Source.Content
             [AtlasSpriteId.DevCardMonopoly] = new Rectangle(96, 320, 48, 64),
             [AtlasSpriteId.DevCardKnight] = new Rectangle(144, 320, 48, 64),
             [AtlasSpriteId.DevCardVP] = new Rectangle(192, 320, 48, 64),
+            [AtlasSpriteId.TileDiceNumberEmpty] = new Rectangle(800, 0, 32, 32),
+            [AtlasSpriteId.TileDiceNumber2] = new Rectangle(832, 0, 32, 32),
+            [AtlasSpriteId.TileDiceNumber3] = new Rectangle(864, 0, 32, 32),
+            [AtlasSpriteId.TileDiceNumber4] = new Rectangle(896, 0, 32, 32),
+            [AtlasSpriteId.TileDiceNumber5] = new Rectangle(928, 0, 32, 32),
+            [AtlasSpriteId.TileDiceNumber6] = new Rectangle(960, 0, 32, 32),
+            [AtlasSpriteId.TileDiceNumber7] = new Rectangle(800, 32, 32, 32),
+            [AtlasSpriteId.TileDiceNumber8] = new Rectangle(832, 32, 32, 32),
+            [AtlasSpriteId.TileDiceNumber9] = new Rectangle(864, 32, 32, 32),
+            [AtlasSpriteId.TileDiceNumber10] = new Rectangle(896, 32, 32, 32),
+            [AtlasSpriteId.TileDiceNumber11] = new Rectangle(928, 32, 32, 32),
+            [AtlasSpriteId.TileDiceNumber12] = new Rectangle(960, 32, 32, 32),
         };
         private static readonly Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>> _playerSpriteMappings = new Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>>
         {
@@ -94,6 +109,21 @@ namespace Catan.Source.Content
                 [AtlasPlayerSprite.Road2] = AtlasSpriteId.Road2Player4,
                 [AtlasPlayerSprite.Road3] = AtlasSpriteId.Road3Player4,
             },
+        };
+
+        private static readonly Dictionary<int, AtlasSpriteId> _tileDiceNumberMappings = new()
+        {
+            [2] = AtlasSpriteId.TileDiceNumber2,
+            [3] = AtlasSpriteId.TileDiceNumber3,
+            [4] = AtlasSpriteId.TileDiceNumber4,
+            [5] = AtlasSpriteId.TileDiceNumber5,
+            [6] = AtlasSpriteId.TileDiceNumber6,
+            [7] = AtlasSpriteId.TileDiceNumber7,
+            [8] = AtlasSpriteId.TileDiceNumber8,
+            [9] = AtlasSpriteId.TileDiceNumber9,
+            [10] = AtlasSpriteId.TileDiceNumber10,
+            [11] = AtlasSpriteId.TileDiceNumber11,
+            [12] = AtlasSpriteId.TileDiceNumber12,
         };
 
         public Texture2D Texture
@@ -136,6 +166,15 @@ namespace Catan.Source.Content
             }
 
             return GetRectangle(spriteId);
+        }
+
+        public static AtlasSpriteId GetTileDiceNumberSprite(int number)
+        {
+            if (_tileDiceNumberMappings.TryGetValue(number, out var spriteId))
+            {
+                return spriteId;
+            }
+            throw new ArgumentOutOfRangeException(nameof(number), "Número do dado deve ser entre 2 e 12.");
         }
     }
 }

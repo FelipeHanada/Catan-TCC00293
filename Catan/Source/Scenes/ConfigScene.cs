@@ -156,8 +156,6 @@ namespace Catan.Source.Scenes
 
             if (_confirmButton.Contains(mousePosition))
             {
-                SoundManager.Instance.Play(SfxId.ConstrucaoCasa);
-
                 _createdSettings ??= BuildMatchSettings();
                 Game1.ChangeScene(new GameScene());
             }

@@ -1,8 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-#if DEBUG
 using Microsoft.Xna.Framework.Input;
-#endif
 using Catan.Source.Content;
 using Catan.Source.Game.Board;
 
@@ -55,7 +53,9 @@ namespace Catan.Source.Scenes
 #endif
 
             _atlas = new Atlas(Game1.ContentManager);
-            _board = new(0, 0, _atlas);
+
+            StandardRandomBoardFactory factory = new(_atlas, 0, 0);
+            _board = factory.CreateBoard();
 #if DEBUG
             _previousKeyboardState = Keyboard.GetState();
 #endif
@@ -79,6 +79,12 @@ namespace Catan.Source.Scenes
 
         public override void Update(GameTime gameTime)
         {
+            if (Keyboard.GetState().IsKeyDown(Keys.F1))//atalho temporario para tela de fim
+            {
+                Game1.ChangeScene(new EndGameScene());
+                return;
+            }
+
 #if DEBUG
             var keyboardState = Keyboard.GetState();
 
