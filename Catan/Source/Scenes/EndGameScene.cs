@@ -57,14 +57,10 @@ namespace Catan.Source.Scenes
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin();
-
             spriteBatch.DrawString(_font, "Fim de Jogo", new Vector2(40, 60), Color.White);
 
             DrawButton(_backToMenuButton, "Voltar ao Menu", spriteBatch);
             DrawButton(_exitButton, "Sair", spriteBatch);
-
-            spriteBatch.End();
 
             base.Draw(gameTime, spriteBatch);
         }

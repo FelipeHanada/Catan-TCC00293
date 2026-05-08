@@ -81,6 +81,7 @@ namespace Catan.Source.Scenes
 
             StandardRandomBoardFactory factory = new(_atlas, 0, 0);
             _board = factory.CreateBoard();
+            Subscribe(_board);
         }
 
         public override void UnloadContent()
@@ -104,14 +105,8 @@ namespace Catan.Source.Scenes
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin();
-
-            _board.Draw(gameTime, spriteBatch);
-
             GameState currentState = GetCurrentStateGame();
             currentState.Draw(gameTime);
-
-            spriteBatch.End();
 
             base.Draw(gameTime, spriteBatch);
         }

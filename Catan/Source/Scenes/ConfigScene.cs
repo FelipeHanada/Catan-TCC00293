@@ -95,8 +95,6 @@ namespace Catan.Source.Scenes
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin();
-
             if (_state == ConfigState.Selecting)
             {
                 DrawSelecting(spriteBatch);
@@ -105,8 +103,6 @@ namespace Catan.Source.Scenes
             {
                 DrawConfirming(spriteBatch);
             }
-
-            spriteBatch.End();
 
             base.Draw(gameTime, spriteBatch);
         }

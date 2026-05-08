@@ -104,8 +104,6 @@ namespace Catan.Source.Scenes
             var panelRect = GetPanelRect();
             var titleRect = GetTitleRect(panelRect);
 
-            spriteBatch.Begin();
-
             spriteBatch.Draw(
                 _pixel,
                 new Rectangle(0, 0, viewport.Width, viewport.Height),
@@ -127,10 +125,6 @@ namespace Catan.Source.Scenes
                 spriteBatch.Draw(_pixel, rect, color);
                 DrawCenteredText(_options[i], rect, Color.White, spriteBatch);
             }
-
-            spriteBatch.End();
-
-            base.Draw(gameTime, spriteBatch);
         }
 
         private bool IsJustPressed(KeyboardState currentState, Keys key)
