@@ -25,7 +25,6 @@ namespace Catan.Source.Scenes
 
     internal class ConfigScene : Scene
     {
-        private SpriteBatch _spriteBatch;
         private SpriteFont _font;
         private Texture2D _pixel;
 
@@ -47,7 +46,6 @@ namespace Catan.Source.Scenes
 
         public ConfigScene()
         {
-            _spriteBatch = null!;
             _font = null!;
             _pixel = null!;
             _state = ConfigState.Selecting;
@@ -57,7 +55,6 @@ namespace Catan.Source.Scenes
 
         public override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(Game1.GraphicsDeviceInstance);
             _font = Game1.ContentManager.Load<SpriteFont>("defaultFont");
 
             _pixel = new Texture2D(Game1.GraphicsDeviceInstance, 1, 1);
@@ -79,9 +76,6 @@ namespace Catan.Source.Scenes
             _pixel?.Dispose();
             _pixel = null!;
 
-            _spriteBatch?.Dispose();
-            _spriteBatch = null!;
-
             base.UnloadContent();
         }
 
@@ -99,22 +93,22 @@ namespace Catan.Source.Scenes
             base.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            _spriteBatch.Begin();
+            spriteBatch.Begin();
 
             if (_state == ConfigState.Selecting)
             {
-                DrawSelecting();
+                DrawSelecting(spriteBatch);
             }
             else
             {
-                DrawConfirming();
+                DrawConfirming(spriteBatch);
             }
 
-            _spriteBatch.End();
+            spriteBatch.End();
 
-            base.Draw(gameTime);
+            base.Draw(gameTime, spriteBatch);
         }
 
         private void HandleClick(Point mousePosition)
@@ -161,42 +155,42 @@ namespace Catan.Source.Scenes
             }
         }
 
-        private void DrawSelecting()
+        private void DrawSelecting(SpriteBatch spriteBatch)
         {
-            _spriteBatch.DrawString(_font, "Configuração de Partida", new Vector2(40, 40), Color.White);
+            spriteBatch.DrawString(_font, "Configuração de Partida", new Vector2(40, 40), Color.White);
 
-            _spriteBatch.DrawString(_font, "Jogadores reais (0 a 4):", new Vector2(40, 155), Color.White);
-            _spriteBatch.DrawString(_font, _humanPlayers.ToString(), new Vector2(530, 155), Color.White);
-            DrawButton(_humanMinusButton, "-");
-            DrawButton(_humanPlusButton, "+");
+            spriteBatch.DrawString(_font, "Jogadores reais (0 a 4):", new Vector2(40, 155), Color.White);
+            spriteBatch.DrawString(_font, _humanPlayers.ToString(), new Vector2(530, 155), Color.White);
+            DrawButton(_humanMinusButton, "-", spriteBatch);
+            DrawButton(_humanPlusButton, "+", spriteBatch);
 
-            _spriteBatch.DrawString(_font, "Pontuação alvo:", new Vector2(40, 235), Color.White);
-            _spriteBatch.DrawString(_font, _targetScore.ToString(), new Vector2(530, 235), Color.White);
-            DrawButton(_scoreMinusButton, "-");
-            DrawButton(_scorePlusButton, "+");
+            spriteBatch.DrawString(_font, "Pontuação alvo:", new Vector2(40, 235), Color.White);
+            spriteBatch.DrawString(_font, _targetScore.ToString(), new Vector2(530, 235), Color.White);
+            DrawButton(_scoreMinusButton, "-", spriteBatch);
+            DrawButton(_scorePlusButton, "+", spriteBatch);
 
-            DrawButton(_nextButton, "Next");
+            DrawButton(_nextButton, "Next", spriteBatch);
         }
 
-        private void DrawConfirming()
+        private void DrawConfirming(SpriteBatch spriteBatch)
         {
             _createdSettings ??= BuildMatchSettings();
 
-            _spriteBatch.DrawString(_font, "Confirmar Configuração", new Vector2(40, 40), Color.White);
-            _spriteBatch.DrawString(
+            spriteBatch.DrawString(_font, "Confirmar Configuração", new Vector2(40, 40), Color.White);
+            spriteBatch.DrawString(
                 _font,
                 $"Pontuação alvo: {_createdSettings.TargetScore}",
                 new Vector2(40, 110),
                 Color.White
             );
 
-            _spriteBatch.DrawString(_font, "Participantes:", new Vector2(40, 160), Color.White);
+            spriteBatch.DrawString(_font, "Participantes:", new Vector2(40, 160), Color.White);
 
             for (var i = 0; i < _createdSettings.Players.Count; i++)
             {
                 var player = _createdSettings.Players[i];
                 var kind = player.IsAi ? "IA" : "Humano";
-                _spriteBatch.DrawString(
+                spriteBatch.DrawString(
                     _font,
                     $"{i + 1}. {player.Name} ({kind})",
                     new Vector2(60, 200 + (i * 35)),
@@ -204,8 +198,8 @@ namespace Catan.Source.Scenes
                 );
             }
 
-            DrawButton(_backButton, "Voltar");
-            DrawButton(_confirmButton, "Confirmar");
+            DrawButton(_backButton, "Voltar", spriteBatch);
+            DrawButton(_confirmButton, "Confirmar", spriteBatch);
         }
 
         private MatchSettings BuildMatchSettings()
@@ -229,9 +223,9 @@ namespace Catan.Source.Scenes
             return settings;
         }
 
-        private void DrawButton(Rectangle rectangle, string text)
+        private void DrawButton(Rectangle rectangle, string text, SpriteBatch spriteBatch)
         {
-            _spriteBatch.Draw(_pixel, rectangle, Color.DimGray);
+            spriteBatch.Draw(_pixel, rectangle, Color.DimGray);
 
             var textSize = _font.MeasureString(text);
             var textPosition = new Vector2(
@@ -239,7 +233,7 @@ namespace Catan.Source.Scenes
                 rectangle.Y + (rectangle.Height - textSize.Y) / 2f
             );
 
-            _spriteBatch.DrawString(_font, text, textPosition, Color.White);
+            spriteBatch.DrawString(_font, text, textPosition, Color.White);
         }
 
         private static bool IsLeftMouseJustClicked(MouseState current, MouseState previous)

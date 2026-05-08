@@ -67,7 +67,7 @@ namespace Catan
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _currentScene.Draw(gameTime);
+            _currentScene.Draw(gameTime, _spriteBatch);
 
             base.Draw(gameTime);
         }

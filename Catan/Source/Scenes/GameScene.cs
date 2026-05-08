@@ -56,7 +56,6 @@ namespace Catan.Source.Scenes
 
     internal class GameScene : Scene
     {
-        private SpriteBatch _spriteBatch;
         private Atlas _atlas;
 
         private Stack<GameState> _stateStack;
@@ -78,7 +77,6 @@ namespace Catan.Source.Scenes
         {
             base.LoadContent();
 
-            _spriteBatch = new SpriteBatch(Game1.GraphicsDeviceInstance);
             _atlas = new Atlas(Game1.ContentManager);
 
             StandardRandomBoardFactory factory = new(_atlas, 0, 0);
@@ -87,9 +85,6 @@ namespace Catan.Source.Scenes
 
         public override void UnloadContent()
         {
-            _spriteBatch?.Dispose();
-            _spriteBatch = null;
-
             base.UnloadContent();
         }
 
@@ -107,18 +102,18 @@ namespace Catan.Source.Scenes
             base.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            _spriteBatch.Begin();
+            spriteBatch.Begin();
 
-            _board.Draw(gameTime, _spriteBatch);
+            _board.Draw(gameTime, spriteBatch);
 
             GameState currentState = GetCurrentStateGame();
             currentState.Draw(gameTime);
 
-            _spriteBatch.End();
+            spriteBatch.End();
 
-            base.Draw(gameTime);
+            base.Draw(gameTime, spriteBatch);
         }
 
         public GameState GetCurrentStateGame() => _stateStack.First();

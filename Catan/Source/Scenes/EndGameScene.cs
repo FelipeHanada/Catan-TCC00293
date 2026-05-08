@@ -6,7 +6,6 @@ namespace Catan.Source.Scenes
 {
     internal class EndGameScene : Scene
     {
-        private SpriteBatch _spriteBatch;
         private SpriteFont _font;
         private Texture2D _pixel;
 
@@ -17,14 +16,12 @@ namespace Catan.Source.Scenes
 
         public EndGameScene()
         {
-            _spriteBatch = null!;
             _font = null!;
             _pixel = null!;
         }
 
         public override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(Game1.GraphicsDeviceInstance);
             _font = Game1.ContentManager.Load<SpriteFont>("defaultFont");
 
             _pixel = new Texture2D(Game1.GraphicsDeviceInstance, 1, 1);
@@ -40,9 +37,6 @@ namespace Catan.Source.Scenes
         {
             _pixel?.Dispose();
             _pixel = null!;
-
-            _spriteBatch?.Dispose();
-            _spriteBatch = null!;
 
             base.UnloadContent();
         }
@@ -61,18 +55,18 @@ namespace Catan.Source.Scenes
             base.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            _spriteBatch.Begin();
+            spriteBatch.Begin();
 
-            _spriteBatch.DrawString(_font, "Fim de Jogo", new Vector2(40, 60), Color.White);
+            spriteBatch.DrawString(_font, "Fim de Jogo", new Vector2(40, 60), Color.White);
 
-            DrawButton(_backToMenuButton, "Voltar ao Menu");
-            DrawButton(_exitButton, "Sair");
+            DrawButton(_backToMenuButton, "Voltar ao Menu", spriteBatch);
+            DrawButton(_exitButton, "Sair", spriteBatch);
 
-            _spriteBatch.End();
+            spriteBatch.End();
 
-            base.Draw(gameTime);
+            base.Draw(gameTime, spriteBatch);
         }
 
         private void HandleClick(Point mousePosition)
@@ -89,9 +83,9 @@ namespace Catan.Source.Scenes
             }
         }
 
-        private void DrawButton(Rectangle rectangle, string text)
+        private void DrawButton(Rectangle rectangle, string text, SpriteBatch spriteBatch)
         {
-            _spriteBatch.Draw(_pixel, rectangle, Color.DimGray);
+            spriteBatch.Draw(_pixel, rectangle, Color.DimGray);
 
             var textSize = _font.MeasureString(text);
             var textPosition = new Vector2(
@@ -99,7 +93,7 @@ namespace Catan.Source.Scenes
                 rectangle.Y + (rectangle.Height - textSize.Y) / 2f
             );
 
-            _spriteBatch.DrawString(_font, text, textPosition, Color.White);
+            spriteBatch.DrawString(_font, text, textPosition, Color.White);
         }
 
         private static bool IsLeftMouseJustClicked(MouseState current, MouseState previous)
