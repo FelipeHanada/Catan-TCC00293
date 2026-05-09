@@ -158,10 +158,9 @@ namespace Catan.Source.Scenes
             if (_confirmButton.Contains(mousePosition))
             {
                 _createdSettings ??= BuildMatchSettings();
-
-                // Placeholder transition until match scene logic is ready.
                 Game1.ChangeScene(new GameScene());
             }
+
         }
 
         private void DrawSelecting()

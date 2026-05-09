@@ -52,9 +52,12 @@ namespace Catan
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            SoundManager.Instance.LoadContent(Content);
             MusicManager.Instance.LoadContent(Content);
             MusicManager.Instance.Play(_currentScene.Music);
         }
+
 
         protected override void Update(GameTime gameTime)
         {
