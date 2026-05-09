@@ -10,23 +10,31 @@ using System.Threading.Tasks;
 
 namespace Catan.Source.Game
 {
+    public interface ICommand // Interface para o comando do botão, seguindo o padrão Command
+    {
+        void Execute();
+    }
+
     public class Button : GameObject
     {
         private readonly Atlas atlas;
         private int width, height;
         private bool hovered;
+        private bool pressed = false;
+        private ICommand buttonCommand;
+        private MouseState previousMouseState;
 
         private int cornerHeight = Atlas.GetRectangle(AtlasSpriteId.ButtonBotLeft).Height,
                 cornerWidth = Atlas.GetRectangle(AtlasSpriteId.ButtonBotLeft).Width;
-        public Button(float x, float y, Atlas atlas, int width, int height) : base(x, y)
+        public Button(float x, float y, Atlas atlas, int width, int height, ICommand buttonCommand) : base(x, y)
         {
             this.atlas = atlas;
             this.width = width;
             this.height = height;
+            this.buttonCommand = buttonCommand;
         }
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-
             spriteBatch.Draw(
                 atlas.Texture,
                 new Vector2(this.X, this.Y),
@@ -82,12 +90,21 @@ namespace Catan.Source.Game
                 hovered ? Color.LightGray : Color.White);
         }
         public override void Update(GameTime gameTime) {
-            Point mousePos = Mouse.GetState().Position;
+            MouseState mouseState = Mouse.GetState();
+            Point mousePos = mouseState.Position;
             if (mousePos.X > this.X && mousePos.X < this.X + width + 2 * cornerWidth && mousePos.Y > this.Y && mousePos.Y < this.Y + height + 2 * cornerHeight)
             {
-                hovered = true;
+                if (hovered == false) hovered = true;
+                else
+                {
+                    if (previousMouseState.LeftButton == ButtonState.Released && mouseState.LeftButton == ButtonState.Pressed) buttonCommand.Execute();
+                }
             }
-            else hovered = false;
+            else {
+                hovered = false;
+            };
+
+            previousMouseState = mouseState;
         }
     }
 }
