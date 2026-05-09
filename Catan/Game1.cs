@@ -1,10 +1,9 @@
 ﻿using Catan.Source.Scenes;
+using Catan.Source.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Catan.Source.Content;
-
 
 namespace Catan
 {
@@ -47,6 +46,7 @@ namespace Catan
         {
             base.Initialize();
             _currentScene.Initialize();
+            MusicManager.Instance.Play(_currentScene.Music);
         }
 
         protected override void LoadContent()
@@ -54,6 +54,8 @@ namespace Catan
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             SoundManager.Instance.LoadContent(Content);
+            MusicManager.Instance.LoadContent(Content);
+            MusicManager.Instance.Play(_currentScene.Music);
         }
 
 
@@ -92,6 +94,7 @@ namespace Catan
                 instance._currentScene = instance._nextScene;
                 instance._nextScene = null;
                 instance._currentScene.Initialize();
+                MusicManager.Instance.Play(instance._currentScene.Music);
             }
         }
     }

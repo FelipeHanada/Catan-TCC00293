@@ -1,9 +1,8 @@
 using System.Collections.Generic;
+using Catan.Source.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Catan.Source.Content;
-
 
 namespace Catan.Source.Scenes
 {
@@ -27,6 +26,8 @@ namespace Catan.Source.Scenes
 
     internal class ConfigScene : Scene
     {
+        public override MusicId? Music => MusicId.MenuPrincipal;
+
         private SpriteBatch _spriteBatch;
         private SpriteFont _font;
         private Texture2D _pixel;

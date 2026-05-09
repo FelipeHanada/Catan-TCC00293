@@ -1,3 +1,4 @@
+using Catan.Source.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -6,6 +7,8 @@ namespace Catan.Source.Scenes
 {
     internal class EndGameScene : Scene
     {
+        public override MusicId? Music => MusicId.FimDeJogo;
+
         private SpriteBatch _spriteBatch;
         private SpriteFont _font;
         private Texture2D _pixel;

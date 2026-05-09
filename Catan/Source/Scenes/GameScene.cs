@@ -9,6 +9,8 @@ namespace Catan.Source.Scenes
 {
     internal class GameScene : Scene
     {
+        public override MusicId? Music => MusicId.Partida;
+
         private SpriteBatch _spriteBatch;
 #if DEBUG
         private SpriteFont _font;
