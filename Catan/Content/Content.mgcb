@@ -33,3 +33,12 @@
 /processor:FontDescriptionProcessor
 /build:defaultFont.spritefont
 
+#begin Musicas/Loop_The_Old_Tower_Inn.wav
+/importer:WavImporter
+/processor:SongProcessor
+/build:Musicas/Loop_The_Old_Tower_Inn.wav
+
+#begin Musicas/Woodland Fantasy.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/build:Musicas/Woodland Fantasy.mp3
