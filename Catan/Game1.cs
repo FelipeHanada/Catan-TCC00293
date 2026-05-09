@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Catan.Source.Content;
+
 
 namespace Catan
 {
@@ -50,7 +52,10 @@ namespace Catan
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            SoundManager.Instance.LoadContent(Content);
         }
+
 
         protected override void Update(GameTime gameTime)
         {
