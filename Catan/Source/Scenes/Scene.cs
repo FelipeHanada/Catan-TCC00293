@@ -1,4 +1,5 @@
 ﻿using System;
+using Catan.Source.Content;
 using Microsoft.Xna.Framework;
 
 namespace Catan.Source.Scenes
@@ -6,6 +7,7 @@ namespace Catan.Source.Scenes
     public abstract class Scene : IDisposable
     {
         public bool IsDisposed { get; private set; }
+        public virtual MusicId? Music => null;
 
         public Scene()
         {
