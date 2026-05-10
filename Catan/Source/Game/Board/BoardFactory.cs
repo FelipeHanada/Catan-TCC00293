@@ -163,10 +163,32 @@ namespace Catan.Source.Game.Board
                 Vertices.AddRange(row);
             }
 
-            /*
-            A: 3 4 5 6 5 4
-            B: 4 5 6 5 4 3
-            */
+            for (int i=0; i<vertexTableB.Count-1; i++)
+            {
+                for (int j=0; j<vertexTableB[i].Count; j++)
+                {
+                    Edges.Add(new(vertexTableA[i+1][j], vertexTableB[i][j]));
+                }
+            }
+
+            for (int i=0; i<vertexTableA.Count; i++)
+            {
+                if (vertexTableA[i].Count < vertexTableB[i].Count)
+                {
+                    for (int j=0; j<vertexTableA[i].Count; j++)
+                    {
+                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j]));
+                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j+1]));
+                    }
+                } else
+                {
+                    for (int j=0; j<vertexTableB[i].Count; j++)
+                    {
+                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j]));
+                        Edges.Add(new(vertexTableA[i][j+1], vertexTableB[i][j]));
+                    }
+                }
+            }
         }
 
         public IEnumerator<Tuple<Vector2, TileVertex[]>> GetEnumerator() => Enumerate().GetEnumerator();
