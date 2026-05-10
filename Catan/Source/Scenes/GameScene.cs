@@ -158,12 +158,13 @@ namespace Catan.Source.Scenes
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            base.Draw(gameTime, spriteBatch);
+
             GameState currentState = GetCurrentStateGame();
             currentState.Draw(gameTime);
 
-            base.Draw(gameTime, spriteBatch);
 #if DEBUG
-            DrawSoundHotkeys();
+            DrawSoundHotkeys(gameTime, spriteBatch);
 #endif
         }
 
@@ -182,7 +183,7 @@ namespace Catan.Source.Scenes
         }
 
 #if DEBUG
-        private void DrawSoundHotkeys()
+        private void DrawSoundHotkeys(GameTime gameTime, SpriteBatch spriteBatch)
         {
             const int x = 880;
             const int y = 24;
@@ -193,13 +194,13 @@ namespace Catan.Source.Scenes
             var height = padding * 2 + lineHeight * (_soundHotkeys.Length + 1);
             var panel = new Rectangle(x, y, width, height);
 
-            _spriteBatch.Draw(_pixel, panel, new Color(20, 26, 34, 210));
-            _spriteBatch.DrawString(_font, "Teste de som", new Vector2(x + padding, y + padding), Color.White);
+            spriteBatch.Draw(_pixel, panel, new Color(20, 26, 34, 210));
+            spriteBatch.DrawString(_font, "Teste de som", new Vector2(x + padding, y + padding), Color.White);
 
             for (var i = 0; i < _soundHotkeys.Length; i++)
             {
                 var position = new Vector2(x + padding, y + padding + lineHeight * (i + 1));
-                _spriteBatch.DrawString(_font, _soundHotkeys[i].Label, position, Color.LightGray);
+                spriteBatch.DrawString(_font, _soundHotkeys[i].Label, position, Color.LightGray);
             }
         }
 
