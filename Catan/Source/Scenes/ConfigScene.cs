@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Catan.Source.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -25,6 +26,8 @@ namespace Catan.Source.Scenes
 
     internal class ConfigScene : Scene
     {
+        public override MusicId? Music => MusicId.MenuPrincipal;
+
         private SpriteFont _font;
         private Texture2D _pixel;
 
@@ -145,10 +148,9 @@ namespace Catan.Source.Scenes
             if (_confirmButton.Contains(mousePosition))
             {
                 _createdSettings ??= BuildMatchSettings();
-
-                // Placeholder transition until match scene logic is ready.
                 Game1.ChangeScene(new GameScene());
             }
+
         }
 
         private void DrawSelecting(SpriteBatch spriteBatch)

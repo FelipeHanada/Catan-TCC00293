@@ -1,4 +1,5 @@
 ﻿using System;
+using Catan.Source.Content;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,6 +10,7 @@ namespace Catan.Source.Scenes
     public abstract class Scene : IDisposable
     {
         public bool IsDisposed { get; private set; }
+        public virtual MusicId? Music => null;
 
         protected List<GameObject> GameObjects { get; } = new List<GameObject>();
 

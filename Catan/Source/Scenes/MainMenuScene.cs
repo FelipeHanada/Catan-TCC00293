@@ -1,4 +1,5 @@
 using System;
+using Catan.Source.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -7,6 +8,8 @@ namespace Catan.Source.Scenes
 {
     internal class MainMenuScene : Scene
     {
+        public override MusicId? Music => MusicId.MenuPrincipal;
+
         // Valores temporários para o placeholder
         private const int MaxPanelWidth = 620;
         private const int PanelHeight = 380;

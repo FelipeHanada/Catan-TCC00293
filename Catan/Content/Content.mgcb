@@ -13,8 +13,6 @@
 
 #---------------------------------- Content ---------------------------------#
 
-
-
 #begin catan-atlas.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -27,9 +25,67 @@
 /processorParam:TextureFormat=Color
 /build:catan-atlas.png
 
-# fonte default só de teste
 #begin defaultFont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
 /build:defaultFont.spritefont
 
+#begin Sons/construcao_casa.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sons/construcao_casa.wav
+
+#begin Sons/construcao_estrada.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sons/construcao_estrada.wav
+
+#begin Sons/ladrao.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sons/ladrao.wav
+
+#begin Sons/ovelhaBee.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sons/ovelhaBee.wav
+
+#begin Sons/pedra.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sons/pedra.wav
+
+#begin Sons/planta.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sons/planta.wav
+
+#begin Sons/tijolo_caindo.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sons/tijolo_caindo.wav
+
+#begin Sons/tijolo.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sons/tijolo.wav
+
+#begin Musicas/Loop_The_Old_Tower_Inn.wav
+/importer:WavImporter
+/processor:SongProcessor
+/build:Musicas/Loop_The_Old_Tower_Inn.wav
+
+#begin Musicas/Woodland Fantasy.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/build:Musicas/Woodland Fantasy.mp3
