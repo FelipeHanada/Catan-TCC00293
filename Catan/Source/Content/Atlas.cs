@@ -20,6 +20,9 @@ namespace Catan.Source.Content
         TileDiceNumberEmpty, TileDiceNumber2, TileDiceNumber3, TileDiceNumber4, TileDiceNumber5, TileDiceNumber6,
         TileDiceNumber7, TileDiceNumber8, TileDiceNumber9, TileDiceNumber10, TileDiceNumber11, TileDiceNumber12,
 
+        ButtonUpLeft, ButtonUpRight, ButtonBotLeft, ButtonBotRight, ButtonEdgeLeft,
+        ButtonEdgeRight, ButtonEdgeTop, ButtonEdgeBot, ButtonFill,
+
         DiceFace1, DiceFace2, DiceFace3, DiceFace4, DiceFace5, DiceFace6,
     }
 
@@ -82,6 +85,15 @@ namespace Catan.Source.Content
             [AtlasSpriteId.DiceFace4] = new Rectangle(384, 400, 128, 128),
             [AtlasSpriteId.DiceFace5] = new Rectangle(512, 400, 128, 128),
             [AtlasSpriteId.DiceFace6] = new Rectangle(640, 400, 128, 128),
+            [AtlasSpriteId.ButtonUpLeft] = new Rectangle(0, 528, 3, 3),
+            [AtlasSpriteId.ButtonUpRight] = new Rectangle(3, 528, 3, 3),
+            [AtlasSpriteId.ButtonBotLeft] = new Rectangle(0, 531, 3, 3),
+            [AtlasSpriteId.ButtonBotRight] = new Rectangle(3, 531, 3, 3),
+            [AtlasSpriteId.ButtonEdgeLeft] = new Rectangle(6, 528, 3, 1),
+            [AtlasSpriteId.ButtonEdgeRight] = new Rectangle(6, 530, 3, 1),
+            [AtlasSpriteId.ButtonEdgeTop] = new Rectangle(10, 528, 1, 3),
+            [AtlasSpriteId.ButtonEdgeBot] = new Rectangle(12, 528, 1, 3),
+            [AtlasSpriteId.ButtonFill] = new Rectangle(14, 529, 1, 1),
         };
         private static readonly Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>> _playerSpriteMappings = new Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>>
         {
@@ -150,7 +162,7 @@ namespace Catan.Source.Content
             {
                 if (_texture == null)
                 {
-                    throw new InvalidOperationException("Atlas n„o foi carregado. Chame Atlas.Instance.Load(content) antes de acessar a textura.");
+                    throw new InvalidOperationException("Atlas n√£o foi carregado. Chame Atlas.Instance.Load(content) antes de acessar a textura.");
                 }
                 return _texture;
             }
@@ -168,7 +180,7 @@ namespace Catan.Source.Content
                 return rect;
             }
 
-            throw new ArgumentException($"Sprite {sprite} n„o encontrado no atlas.");
+            throw new ArgumentException($"Sprite {sprite} n√£o encontrado no atlas.");
         }
 
         public static Rectangle GetRectangle(AtlasPlayerSprite sprite, int player)
@@ -180,7 +192,7 @@ namespace Catan.Source.Content
 
             if (!playerSprites.TryGetValue(sprite, out var spriteId))
             {
-                throw new ArgumentException($"Sprite de jogador {sprite} n„o suportado.");
+                throw new ArgumentException($"Sprite de jogador {sprite} n√£o suportado.");
             }
 
             return GetRectangle(spriteId);
@@ -192,7 +204,7 @@ namespace Catan.Source.Content
             {
                 return spriteId;
             }
-            throw new ArgumentOutOfRangeException(nameof(number), "N˙mero do dado deve ser entre 2 e 12.");
+            throw new ArgumentOutOfRangeException(nameof(number), "N√∫mero do dado deve ser entre 2 e 12.");
         }
 
         public static AtlasSpriteId GetDiceFaceSprite(int face)
