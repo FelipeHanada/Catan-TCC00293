@@ -19,6 +19,8 @@ namespace Catan.Source.Content
 
         TileDiceNumberEmpty, TileDiceNumber2, TileDiceNumber3, TileDiceNumber4, TileDiceNumber5, TileDiceNumber6,
         TileDiceNumber7, TileDiceNumber8, TileDiceNumber9, TileDiceNumber10, TileDiceNumber11, TileDiceNumber12,
+
+        DiceFace1, DiceFace2, DiceFace3, DiceFace4, DiceFace5, DiceFace6,
     }
 
     public enum AtlasPlayerSprite
@@ -74,6 +76,12 @@ namespace Catan.Source.Content
             [AtlasSpriteId.TileDiceNumber10] = new Rectangle(896, 32, 32, 32),
             [AtlasSpriteId.TileDiceNumber11] = new Rectangle(928, 32, 32, 32),
             [AtlasSpriteId.TileDiceNumber12] = new Rectangle(960, 32, 32, 32),
+            [AtlasSpriteId.DiceFace1] = new Rectangle(0, 400, 128, 128),
+            [AtlasSpriteId.DiceFace2] = new Rectangle(128, 400, 128, 128),
+            [AtlasSpriteId.DiceFace3] = new Rectangle(256, 400, 128, 128),
+            [AtlasSpriteId.DiceFace4] = new Rectangle(384, 400, 128, 128),
+            [AtlasSpriteId.DiceFace5] = new Rectangle(512, 400, 128, 128),
+            [AtlasSpriteId.DiceFace6] = new Rectangle(640, 400, 128, 128),
         };
         private static readonly Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>> _playerSpriteMappings = new Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>>
         {
@@ -126,13 +134,23 @@ namespace Catan.Source.Content
             [12] = AtlasSpriteId.TileDiceNumber12,
         };
 
+        private static readonly Dictionary<int, AtlasSpriteId> _diceFaceMappings = new()
+        {
+            [1] = AtlasSpriteId.DiceFace1,
+            [2] = AtlasSpriteId.DiceFace2,
+            [3] = AtlasSpriteId.DiceFace3,
+            [4] = AtlasSpriteId.DiceFace4,
+            [5] = AtlasSpriteId.DiceFace5,
+            [6] = AtlasSpriteId.DiceFace6,
+        };
+
         public Texture2D Texture
         {
             get
             {
                 if (_texture == null)
                 {
-                    throw new InvalidOperationException("Atlas n√£o foi carregado. Chame Atlas.Instance.Load(content) antes de acessar a textura.");
+                    throw new InvalidOperationException("Atlas n„o foi carregado. Chame Atlas.Instance.Load(content) antes de acessar a textura.");
                 }
                 return _texture;
             }
@@ -150,7 +168,7 @@ namespace Catan.Source.Content
                 return rect;
             }
 
-            throw new ArgumentException($"Sprite {sprite} n√£o encontrado no atlas.");
+            throw new ArgumentException($"Sprite {sprite} n„o encontrado no atlas.");
         }
 
         public static Rectangle GetRectangle(AtlasPlayerSprite sprite, int player)
@@ -162,7 +180,7 @@ namespace Catan.Source.Content
 
             if (!playerSprites.TryGetValue(sprite, out var spriteId))
             {
-                throw new ArgumentException($"Sprite de jogador {sprite} n√£o suportado.");
+                throw new ArgumentException($"Sprite de jogador {sprite} n„o suportado.");
             }
 
             return GetRectangle(spriteId);
@@ -174,7 +192,16 @@ namespace Catan.Source.Content
             {
                 return spriteId;
             }
-            throw new ArgumentOutOfRangeException(nameof(number), "N√∫mero do dado deve ser entre 2 e 12.");
+            throw new ArgumentOutOfRangeException(nameof(number), "N˙mero do dado deve ser entre 2 e 12.");
+        }
+
+        public static AtlasSpriteId GetDiceFaceSprite(int face)
+        {
+            if (_diceFaceMappings.TryGetValue(face, out var spriteId))
+            {
+                return spriteId;
+            }
+            throw new ArgumentOutOfRangeException(nameof(face), "Face do dado deve ser entre 1 e 6.");
         }
     }
 }
