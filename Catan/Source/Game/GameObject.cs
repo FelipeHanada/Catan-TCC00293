@@ -15,6 +15,8 @@ namespace Catan.Source.Game
             this.Y = y;
         }
 
+        public GameObject() : this(0, 0) {}
+
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch) { }
         public virtual void Update(GameTime gameTime) { }
     }
