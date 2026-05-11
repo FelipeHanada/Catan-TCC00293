@@ -1,23 +1,70 @@
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Catan.Source.Content;
 using Catan.Source.Game.Board;
+using System.Linq;
 
 
 namespace Catan.Source.Scenes
 {
+    public abstract class GameState : IDisposable
+    {
+        public bool IsDisposed { get; private set; }
+        public GameState()
+        {
+        }
+        ~GameState() => Dispose(false);
+        public virtual void Initialize()
+        {
+            LoadContent();
+        }
+        public virtual void LoadContent() { }
+        public virtual void UnloadContent() { }
+        public virtual void Update(GameTime gameTime) { }
+        public virtual void Draw(GameTime gameTime) { }
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (IsDisposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                UnloadContent();
+            }
+
+            IsDisposed = true;
+        }
+    }
+
+    public class PositionSettlementGameState : GameState
+    {
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+        }
+    }
+
     internal class GameScene : Scene
     {
         public override MusicId? Music => MusicId.Partida;
 
-        private SpriteBatch _spriteBatch;
 #if DEBUG
         private SpriteFont _font;
         private Texture2D _pixel;
 #endif
         private Atlas _atlas;
 
+        private Stack<GameState> _stateStack;
         private Board _board;
 #if DEBUG
         private KeyboardState _previousKeyboardState;
@@ -37,22 +84,26 @@ namespace Catan.Source.Scenes
 
         public GameScene()
         {
+            _stateStack = new();
         }
 
         public override void Initialize()
         {
             base.Initialize();
+
+            _stateStack.Push(new PositionSettlementGameState());
         }
 
         public override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(Game1.GraphicsDeviceInstance);
+            base.LoadContent();
 #if DEBUG
             _font = Game1.ContentManager.Load<SpriteFont>("DefaultFont");
 
             _pixel = new Texture2D(Game1.GraphicsDeviceInstance, 1, 1);
             _pixel.SetData(new[] { Color.White });
 #endif
+
 
             _atlas = new Atlas(Game1.ContentManager);
 
@@ -61,8 +112,7 @@ namespace Catan.Source.Scenes
 #if DEBUG
             _previousKeyboardState = Keyboard.GetState();
 #endif
-
-            base.LoadContent();
+            Subscribe(_board);
         }
 
         public override void UnloadContent()
@@ -72,9 +122,6 @@ namespace Catan.Source.Scenes
             _pixel = null;
             _font = null;
 #endif
-
-            _spriteBatch?.Dispose();
-            _spriteBatch = null;
 
             base.UnloadContent();
         }
@@ -103,25 +150,40 @@ namespace Catan.Source.Scenes
             _previousKeyboardState = keyboardState;
 #endif
 
+            GameState currentState = GetCurrentStateGame();
+            currentState.Update(gameTime);
+
             base.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            _spriteBatch.Begin();
+            base.Draw(gameTime, spriteBatch);
 
-            _board.Draw(gameTime, _spriteBatch);
+            GameState currentState = GetCurrentStateGame();
+            currentState.Draw(gameTime);
+
 #if DEBUG
-            DrawSoundHotkeys();
+            DrawSoundHotkeys(gameTime, spriteBatch);
 #endif
+        }
 
-            _spriteBatch.End();
+        public GameState GetCurrentStateGame() => _stateStack.First();
+        public void ExitState()
+        {
+            GameState currentState = GetCurrentStateGame();
+            currentState.Dispose();
+            _stateStack.Pop();
+        }
 
-            base.Draw(gameTime);
+        public void AppendState(GameState gameState)
+        {
+            _stateStack.Append(gameState);
+            gameState.Initialize();
         }
 
 #if DEBUG
-        private void DrawSoundHotkeys()
+        private void DrawSoundHotkeys(GameTime gameTime, SpriteBatch spriteBatch)
         {
             const int x = 880;
             const int y = 24;
@@ -132,13 +194,13 @@ namespace Catan.Source.Scenes
             var height = padding * 2 + lineHeight * (_soundHotkeys.Length + 1);
             var panel = new Rectangle(x, y, width, height);
 
-            _spriteBatch.Draw(_pixel, panel, new Color(20, 26, 34, 210));
-            _spriteBatch.DrawString(_font, "Teste de som", new Vector2(x + padding, y + padding), Color.White);
+            spriteBatch.Draw(_pixel, panel, new Color(20, 26, 34, 210));
+            spriteBatch.DrawString(_font, "Teste de som", new Vector2(x + padding, y + padding), Color.White);
 
             for (var i = 0; i < _soundHotkeys.Length; i++)
             {
                 var position = new Vector2(x + padding, y + padding + lineHeight * (i + 1));
-                _spriteBatch.DrawString(_font, _soundHotkeys[i].Label, position, Color.LightGray);
+                spriteBatch.DrawString(_font, _soundHotkeys[i].Label, position, Color.LightGray);
             }
         }
 
