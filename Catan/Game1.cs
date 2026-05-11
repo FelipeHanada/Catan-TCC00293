@@ -72,11 +72,15 @@ namespace Catan
 
         protected override void Draw(GameTime gameTime)
         {
+            _spriteBatch.Begin();
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _currentScene.Draw(gameTime);
+            _currentScene.Draw(gameTime, _spriteBatch);
 
             base.Draw(gameTime);
+
+            _spriteBatch.End();
         }
 
         public static void ChangeScene(Scene newScene)

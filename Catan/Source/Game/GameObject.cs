@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Catan.Source.Scenes;
 
 namespace Catan.Source.Game
 {
@@ -19,5 +20,8 @@ namespace Catan.Source.Game
 
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch) { }
         public virtual void Update(GameTime gameTime) { }
+
+        public virtual void OnSubscribe(Scene scene) { }
+        public virtual void OnUnsubscribe() { }
     }
 }
