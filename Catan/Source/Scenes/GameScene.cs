@@ -213,14 +213,15 @@ namespace Catan.Source.Scenes
 #if DEBUG
             DrawSoundHotkeys(gameTime, spriteBatch);
 #endif
+
+            _diceRollControl.Draw(gameTime, spriteBatch);
         }
 
         public GameState GetCurrentStateGame() => _stateStack.First();
         public void ExitState()
         {
             GameState currentState = GetCurrentStateGame();
-            currentState.Dispose();            _diceRollControl.Draw(gameTime, _spriteBatch);
-
+            currentState.Dispose();
             _stateStack.Pop();
         }
 
