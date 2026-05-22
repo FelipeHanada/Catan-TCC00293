@@ -1,5 +1,7 @@
 using System;
 using Catan.Source.Content;
+using Catan.Source.Scenes;
+using Catan.Source.Scenes.Game;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -41,7 +43,9 @@ namespace Catan.Source.Game.Dice
             (FaceSize * 2) + FaceSpacing,
             FaceSize);
 
-        public DiceRollControl(float x, float y, Atlas atlas)
+        private GameScene _gameScene; 
+
+        public DiceRollControl(float x, float y, Atlas atlas, GameScene gameScene)
             : base(x, y)
         {
             this.atlas = atlas;
@@ -50,6 +54,7 @@ namespace Catan.Source.Game.Dice
             visibleFirst = result.First;
             visibleSecond = result.Second;
             IsEnabled = true;
+            _gameScene = gameScene;
         }
 
         public bool WasClicked(MouseState currentMouse, MouseState previousMouse)
@@ -83,6 +88,8 @@ namespace Catan.Source.Game.Dice
 
         public override void Update(GameTime gameTime)
         {
+            IsEnabled = _gameScene.GetCurrentStateGame() is WaitingForDiceRoll;
+
             if (state != DiceRollControlState.Rolling)
             {
                 return;
