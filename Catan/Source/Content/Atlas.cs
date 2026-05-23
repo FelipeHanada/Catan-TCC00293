@@ -21,7 +21,9 @@ namespace Catan.Source.Content
         TileDiceNumber7, TileDiceNumber8, TileDiceNumber9, TileDiceNumber10, TileDiceNumber11, TileDiceNumber12,
 
         ButtonUpLeft, ButtonUpRight, ButtonBotLeft, ButtonBotRight, ButtonEdgeLeft,
-        ButtonEdgeRight, ButtonEdgeTop, ButtonEdgeBot, ButtonFill
+        ButtonEdgeRight, ButtonEdgeTop, ButtonEdgeBot, ButtonFill,
+
+        DiceFace1, DiceFace2, DiceFace3, DiceFace4, DiceFace5, DiceFace6,
     }
 
     public enum AtlasPlayerSprite
@@ -77,6 +79,12 @@ namespace Catan.Source.Content
             [AtlasSpriteId.TileDiceNumber10] = new Rectangle(896, 32, 32, 32),
             [AtlasSpriteId.TileDiceNumber11] = new Rectangle(928, 32, 32, 32),
             [AtlasSpriteId.TileDiceNumber12] = new Rectangle(960, 32, 32, 32),
+            [AtlasSpriteId.DiceFace1] = new Rectangle(0, 400, 128, 128),
+            [AtlasSpriteId.DiceFace2] = new Rectangle(128, 400, 128, 128),
+            [AtlasSpriteId.DiceFace3] = new Rectangle(256, 400, 128, 128),
+            [AtlasSpriteId.DiceFace4] = new Rectangle(384, 400, 128, 128),
+            [AtlasSpriteId.DiceFace5] = new Rectangle(512, 400, 128, 128),
+            [AtlasSpriteId.DiceFace6] = new Rectangle(640, 400, 128, 128),
             [AtlasSpriteId.ButtonUpLeft] = new Rectangle(0, 528, 3, 3),
             [AtlasSpriteId.ButtonUpRight] = new Rectangle(3, 528, 3, 3),
             [AtlasSpriteId.ButtonBotLeft] = new Rectangle(0, 531, 3, 3),
@@ -138,6 +146,16 @@ namespace Catan.Source.Content
             [12] = AtlasSpriteId.TileDiceNumber12,
         };
 
+        private static readonly Dictionary<int, AtlasSpriteId> _diceFaceMappings = new()
+        {
+            [1] = AtlasSpriteId.DiceFace1,
+            [2] = AtlasSpriteId.DiceFace2,
+            [3] = AtlasSpriteId.DiceFace3,
+            [4] = AtlasSpriteId.DiceFace4,
+            [5] = AtlasSpriteId.DiceFace5,
+            [6] = AtlasSpriteId.DiceFace6,
+        };
+
         public Texture2D Texture
         {
             get
@@ -187,6 +205,15 @@ namespace Catan.Source.Content
                 return spriteId;
             }
             throw new ArgumentOutOfRangeException(nameof(number), "Número do dado deve ser entre 2 e 12.");
+        }
+
+        public static AtlasSpriteId GetDiceFaceSprite(int face)
+        {
+            if (_diceFaceMappings.TryGetValue(face, out var spriteId))
+            {
+                return spriteId;
+            }
+            throw new ArgumentOutOfRangeException(nameof(face), "Face do dado deve ser entre 1 e 6.");
         }
     }
 }
