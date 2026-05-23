@@ -43,7 +43,7 @@ namespace Catan.Source.Game.Dice
             (FaceSize * 2) + FaceSpacing,
             FaceSize);
 
-        private GameScene _gameScene; 
+        private GameScene _gameScene;
 
         public DiceRollControl(float x, float y, Atlas atlas, GameScene gameScene)
             : base(x, y)
@@ -56,6 +56,14 @@ namespace Catan.Source.Game.Dice
             IsEnabled = true;
             _gameScene = gameScene;
         }
+
+        public DiceRollControl(Atlas atlas, GameScene gameScene)
+            : this(
+                Game1.GraphicsDeviceInstance.Viewport.Width - ((DiceRollControl.FaceSize * 2) + DiceRollControl.FaceSpacing) - 32,
+                Game1.GraphicsDeviceInstance.Viewport.Height - DiceRollControl.FaceSize - 32,
+                atlas,
+                gameScene
+            ) {}
 
         public bool WasClicked(MouseState currentMouse, MouseState previousMouse)
         {

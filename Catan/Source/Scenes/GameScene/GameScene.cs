@@ -47,13 +47,7 @@ namespace Catan.Source.Scenes
             Board = factory.CreateBoard();
             Subscribe(Board);
 
-            var viewport = Game1.GraphicsDeviceInstance.Viewport;
-            int diceControlWidth = (DiceRollControl.FaceSize * 2) + DiceRollControl.FaceSpacing;
-            DiceRollControl diceRollControl = new DiceRollControl(
-                viewport.Width - diceControlWidth - 32,
-                viewport.Height - DiceRollControl.FaceSize - 32,
-                _atlas,
-                this);
+            DiceRollControl diceRollControl = new DiceRollControl(_atlas, this);
             Subscribe(diceRollControl);
 
             _stateStack.Push(new PositionSettlementGameState(this));
