@@ -1,3 +1,5 @@
+using Catan.Source.Game.Resources;
+
 namespace Catan.Source.Game.Inventory
 {
     public class PlayerInventory
@@ -11,6 +13,11 @@ namespace Catan.Source.Game.Inventory
         {
             Resources = new ResourceInventory();
             DevelopmentCards = new DevelopmentCardInventory();
+        }
+
+        public void AddResource(ResourceId resource, int amount)
+        {
+            Resources.Add(resource, amount);
         }
     }
 }

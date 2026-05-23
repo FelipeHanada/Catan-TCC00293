@@ -21,6 +21,7 @@ namespace Catan.Source.Scenes
         private Stack<GameState> _stateStack;
 
         public GameBank Bank { get; }
+        public Board Board { get; private set; }
         public DiceRoll LastDiceRoll { get; set; }
 
         public GameScene()
@@ -46,8 +47,8 @@ namespace Catan.Source.Scenes
             _atlas = new Atlas(Game1.ContentManager);
 
             StandardRandomBoardFactory factory = new(_atlas, 0, 0);
-            Board board = factory.CreateBoard();
-            Subscribe(board);
+            Board = factory.CreateBoard();
+            Subscribe(Board);
 
             var viewport = Game1.GraphicsDeviceInstance.Viewport;
             int diceControlWidth = (DiceRollControl.FaceSize * 2) + DiceRollControl.FaceSpacing;
