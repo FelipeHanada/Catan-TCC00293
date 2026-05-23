@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using GamePlayer = Catan.Source.Game.Player.Player;
 
 namespace Catan.Source.Game.Board
 {
@@ -12,10 +13,12 @@ namespace Catan.Source.Game.Board
         private const float Radius = CircleDiameter / 2f;
 
         private static Texture2D? _circleTexture;
+        private static readonly GamePlayer _placeholderPlayer = new(1);
         private MouseState _previousMouseState;
 
         private readonly Atlas atlas;
-        private int settlementLevel = 0;
+        public Building Building { get; private set; }
+        public bool HasBuilding => Building != null;
 
         public TileVertex(float x, float y, Atlas atlas) 
             : base(x, y)
@@ -32,9 +35,13 @@ namespace Catan.Source.Game.Board
             
             spriteBatch.Draw(_circleTexture, position, null, Color.White, 0f, origin, 1f, SpriteEffects.None, 0f);
 
-            if (settlementLevel == 1)
+            if (Building != null)
             {
-                Rectangle rectangle = Atlas.GetRectangle(AtlasSpriteId.SettlementPlayer1);
+                AtlasPlayerSprite sprite = Building.Type == BuildingType.City
+                    ? AtlasPlayerSprite.City
+                    : AtlasPlayerSprite.Settlement;
+
+                Rectangle rectangle = Atlas.GetRectangle(sprite, Building.Owner.PlayerNumber);
                 spriteBatch.Draw(
                     atlas.Texture,
                     position - new Vector2(rectangle.Width / 2, rectangle.Height / 2),
@@ -51,13 +58,18 @@ namespace Catan.Source.Game.Board
             if (currentMouseState.LeftButton == ButtonState.Pressed && 
                 _previousMouseState.LeftButton == ButtonState.Released)
             {
-                if (IsHovering(currentMouseState))
+                if (IsHovering(currentMouseState) && !HasBuilding)
                 {
-                    settlementLevel = 1;
+                    PlaceBuilding(new Building(_placeholderPlayer, BuildingType.Settlement));
                 }
             }
 
             _previousMouseState = currentMouseState;
+        }
+
+        public void PlaceBuilding(Building building)
+        {
+            Building = building;
         }
 
         private bool IsHovering(MouseState mouseState)

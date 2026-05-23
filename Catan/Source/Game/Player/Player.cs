@@ -17,7 +17,7 @@ namespace Catan.Source.Game.Player
             players = new();
             for (int i=0; i<numberOfPlayers; i++)
             {
-                players.Add(new Player());
+                players.Add(new Player(i + 1));
             }
         }
 
@@ -32,10 +32,13 @@ namespace Catan.Source.Game.Player
 
     public class Player : GameObject
     {
-        PlayerInventory inventory { get; private set; }
+        private readonly PlayerInventory inventory;
+        public int PlayerNumber { get; }
+        public PlayerInventory Inventory => inventory;
         
-        public Player() : base()
+        public Player(int playerNumber = 1) : base()
         {
+            PlayerNumber = playerNumber;
             inventory = new();
         }
 
@@ -58,6 +61,11 @@ namespace Catan.Source.Game.Player
                 [ResourceId.Ore] = 0,
                 [ResourceId.Wheat] = 0,
             };
+        }
+
+        public void AddResource(ResourceId resource, int amount)
+        {
+            resources[resource] += amount;
         }
     }
 }
