@@ -8,6 +8,7 @@ using Catan.Source.Game.Board;
 using Catan.Source.Game.Dice;
 using Catan.Source.Game.Debug;
 using Catan.Source.Scenes.Game;
+using GameBank = Catan.Source.Game.Bank.Bank;
 
 
 namespace Catan.Source.Scenes
@@ -19,11 +20,13 @@ namespace Catan.Source.Scenes
 
         private Stack<GameState> _stateStack;
 
+        public GameBank Bank { get; }
         public DiceRoll LastDiceRoll { get; set; }
 
         public GameScene()
         {
             _stateStack = new();
+            Bank = new GameBank();
         }
 
         public override void Initialize()
@@ -37,6 +40,7 @@ namespace Catan.Source.Scenes
 
             #if DEBUG
             Subscribe(new SoundBoardDebug());
+            Subscribe(new BankDebugPanel(Bank));
             #endif
 
             _atlas = new Atlas(Game1.ContentManager);
