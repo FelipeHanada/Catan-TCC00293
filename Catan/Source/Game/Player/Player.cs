@@ -1,9 +1,7 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using Catan.Source.Game;
+using Catan.Source.Game.Inventory;
 using Catan.Source.Scenes;
-using Catan.Source.Game.Resources;
 
 
 namespace Catan.Source.Game.Player
@@ -32,32 +30,11 @@ namespace Catan.Source.Game.Player
 
     public class Player : GameObject
     {
-        PlayerInventory inventory { get; private set; }
+        public PlayerInventory Inventory { get; }
         
         public Player() : base()
         {
-            inventory = new();
-        }
-
-        public override void OnSubscribe(Scene scene)
-        {
-            scene.Subscribe(inventory);
-        }
-    }
-
-    public class PlayerInventory : GameObject
-    {
-        public Dictionary<ResourceId, int> resources { get; private set; }
-
-        public PlayerInventory()
-        {
-            resources = new(){
-                [ResourceId.Wood] = 0,
-                [ResourceId.Wool] = 0,
-                [ResourceId.Brick] = 0,
-                [ResourceId.Ore] = 0,
-                [ResourceId.Wheat] = 0,
-            };
+            Inventory = new PlayerInventory();
         }
     }
 }
