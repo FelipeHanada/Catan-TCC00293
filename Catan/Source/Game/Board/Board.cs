@@ -49,6 +49,18 @@ namespace Catan.Source.Game.Board
                 tile.Draw(gameTime, spriteBatch);
             }
         }
+
+        public IEnumerable<Tile> GetProducingTiles(int diceNumber)
+        {
+            foreach (Tile tile in Tiles)
+            {
+                if (tile.DiceNumber == diceNumber && tile.ProducedResource != null)
+                {
+                    yield return tile;
+                }
+            }
+        }
+
         public override void Update(GameTime gameTime) { }
     }
 }
