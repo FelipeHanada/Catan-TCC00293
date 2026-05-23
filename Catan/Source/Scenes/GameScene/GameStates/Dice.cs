@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Catan.Source.Game.Dice;
+using Catan.Source.Game.Resources;
 
 namespace Catan.Source.Scenes.Game
 {
@@ -79,7 +80,11 @@ namespace Catan.Source.Scenes.Game
                 return;
             }
 
-            // logica de producao acho 9?).
+            ResourceProductionCalculator calculator = new(_gameScene.Board);
+            var productions = calculator.CalculateExpectedProductions(roll.Total);
+
+            ResourceBankPlaceholder bank = new();
+            bank.DistributeResources(productions);
         }
     }
 }

@@ -62,5 +62,10 @@ namespace Catan.Source.Game.Player
                 [ResourceId.Wheat] = 0,
             };
         }
+
+        public void AddResource(ResourceId resource, int amount)
+        {
+            resources[resource] += amount;
+        }
     }
 }
