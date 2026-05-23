@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Catan.Source.Content;
 using System.Collections.Generic;
+using Catan.Source.Game.Resources;
 
 namespace Catan.Source.Game.Board
 {
@@ -23,6 +24,15 @@ namespace Catan.Source.Game.Board
             [TileType.Farm] = AtlasSpriteId.TileFarm,
         };
 
+        private static readonly Dictionary<TileType, ResourceId> _tileResourceId = new()
+        {
+            [TileType.Forest] = ResourceId.Wood,
+            [TileType.Sheep] = ResourceId.Wool,
+            [TileType.Brick] = ResourceId.Brick,
+            [TileType.Mountain] = ResourceId.Ore,
+            [TileType.Farm] = ResourceId.Wheat,
+        };
+
         public static readonly Dictionary<TileType, Vector2> _tileDiceNumberOffset = new()
         {
             [TileType.Forest] = new(48, 73),
@@ -38,6 +48,12 @@ namespace Catan.Source.Game.Board
         private readonly int diceNumber;
         private readonly TileVertex[] vertices;
 
+        public TileType TileType => tileType;
+        public int DiceNumber => diceNumber;
+        public IReadOnlyList<TileVertex> Vertices => vertices;
+        public ResourceId? ProducedResource =>
+            _tileResourceId.TryGetValue(tileType, out ResourceId resource) ? resource : null;
+
         public Tile(float x, float y, Atlas atlas, TileType tileType, int diceNumber, TileVertex[] vertices)
             : base(x, y)
         {
@@ -48,6 +64,17 @@ namespace Catan.Source.Game.Board
         }
         public Tile(float x, float y, Atlas atlas, TileType tileType, int diceNumber)
             : this(x, y, atlas, tileType, diceNumber, []) {}
+
+        public IEnumerable<Building> GetAdjacentBuildings()
+        {
+            foreach (TileVertex vertex in vertices)
+            {
+                if (vertex.HasBuilding)
+                {
+                    yield return vertex.Building;
+                }
+            }
+        }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {

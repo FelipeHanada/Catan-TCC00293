@@ -204,9 +204,24 @@ namespace Catan.Source.Game.Board
                 {
                     float x = startX + width/2 * Math.Abs(i - 2) + width * j;
                     float y = startY + (height - h) * i;
-                    yield return new(new Vector2(x, y), []);
+                    yield return new(new Vector2(x, y), GetTileVertices(i, j));
                 }
             }
+        }
+
+        private TileVertex[] GetTileVertices(int row, int column)
+        {
+            int topOffset = row > 2 ? 1 : 0;
+            int bottomOffset = row < 2 ? 1 : 0;
+
+            return [
+                vertexTableA[row][column + topOffset],
+                vertexTableB[row][column],
+                vertexTableB[row][column + 1],
+                vertexTableA[row + 1][column],
+                vertexTableA[row + 1][column + 1],
+                vertexTableB[row + 1][column + bottomOffset],
+            ];
         }
     }
 }

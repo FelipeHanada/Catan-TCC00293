@@ -15,7 +15,7 @@ namespace Catan.Source.Game.Player
             players = new();
             for (int i=0; i<numberOfPlayers; i++)
             {
-                players.Add(new Player());
+                players.Add(new Player(i + 1));
             }
         }
 
@@ -31,9 +31,11 @@ namespace Catan.Source.Game.Player
     public class Player : GameObject
     {
         public PlayerInventory Inventory { get; }
+        public int PlayerNumber { get; }
         
-        public Player() : base()
+        public Player(int playerNumber = 1) : base()
         {
+            PlayerNumber = playerNumber;
             Inventory = new PlayerInventory();
         }
     }
