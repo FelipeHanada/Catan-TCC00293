@@ -50,6 +50,14 @@ namespace Catan.Source.Game.Player
 
     public class PlayerInventory : GameObject
     {
+        private static readonly ResourceId[] _discardOrder = [
+            ResourceId.Wood,
+            ResourceId.Wool,
+            ResourceId.Brick,
+            ResourceId.Ore,
+            ResourceId.Wheat,
+        ];
+
         public Dictionary<ResourceId, int> resources { get; private set; }
 
         public PlayerInventory()
@@ -66,6 +74,48 @@ namespace Catan.Source.Game.Player
         public void AddResource(ResourceId resource, int amount)
         {
             resources[resource] += amount;
+        }
+
+        public int GetTotalResources()
+        {
+            int total = 0;
+
+            foreach (int amount in resources.Values)
+            {
+                total += amount;
+            }
+
+            return total;
+        }
+
+        public int RemoveResource(ResourceId resource, int amount)
+        {
+            int removedAmount = Math.Min(resources[resource], amount);
+            resources[resource] -= removedAmount;
+            return removedAmount;
+        }
+
+        public Dictionary<ResourceId, int> DiscardResources(int amount)
+        {
+            Dictionary<ResourceId, int> discardedResources = new();
+            int remainingAmount = amount;
+
+            foreach (ResourceId resource in _discardOrder)
+            {
+                if (remainingAmount <= 0)
+                {
+                    break;
+                }
+
+                int removedAmount = RemoveResource(resource, remainingAmount);
+                if (removedAmount > 0)
+                {
+                    discardedResources[resource] = removedAmount;
+                    remainingAmount -= removedAmount;
+                }
+            }
+
+            return discardedResources;
         }
     }
 }
