@@ -1,9 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Catan.Source.Game.Bank;
 using Catan.Source.Game.Dice;
-using Catan.Source.Game.Resources;
 
 namespace Catan.Source.Scenes.Game
 {
@@ -60,7 +58,7 @@ namespace Catan.Source.Scenes.Game
             {
                 DiceRoll roll = _diceRollControl.ConsumeSettledResult();
                 _gameScene.LastDiceRoll = roll;
-                ResolveDiceRoll(roll);
+                // ResolveDiceRoll(roll);
 
                 _gameScene.ExitState();
                 // _gameScene.AppendState(PlayerActions);
@@ -73,27 +71,5 @@ namespace Catan.Source.Scenes.Game
             base.Draw(gameTime, spriteBatch);
         }
 
-        private void ResolveDiceRoll(DiceRoll roll)
-        {
-            if (roll.Total == 7)
-            {
-                // Logica do ladrao.
-                return;
-            }
-
-            ResourceProductionCalculator calculator = new(_gameScene.Board);
-            var productions = calculator.CalculateExpectedProductions(roll.Total);
-            var distributionRequests = new System.Collections.Generic.List<ResourceDistributionRequest>();
-
-            foreach (ResourceProductionEntry production in productions)
-            {
-                distributionRequests.Add(new ResourceDistributionRequest(
-                    production.Player.Inventory.Resources,
-                    production.Resource,
-                    production.Amount));
-            }
-
-            _gameScene.Bank.DistributeProduction(distributionRequests);
-        }
     }
 }
