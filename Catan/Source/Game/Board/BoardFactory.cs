@@ -47,6 +47,7 @@ namespace Catan.Source.Game.Board
             {
                 Tiles = tiles
             };
+            board.InitializeRobber();
             return board;
         }
     }
@@ -103,6 +104,7 @@ namespace Catan.Source.Game.Board
                 Vertices = positionIterator.Vertices,
                 Edges = positionIterator.Edges
             };
+            board.InitializeRobber();
             return board;
         }
     }

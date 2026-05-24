@@ -10,9 +10,11 @@ namespace Catan.Source.Game.Board
     public class Board : GameObject
     {
         private readonly Atlas atlas;
+        private Tile _robberTile;
         public List<Tile> Tiles { get; set; }
         public List<TileVertex> Vertices { get; set; }
         public List<TileEdge> Edges { get; set; }
+        public Tile RobberTile => _robberTile;
 
         public Board(float x, float y, Atlas atlas)
             : base(x, y)
@@ -21,6 +23,44 @@ namespace Catan.Source.Game.Board
             Tiles = [];
             Vertices = [];
             Edges = [];
+        }
+
+        public void InitializeRobber()
+        {
+            foreach (Tile tile in Tiles)
+            {
+                if (tile.TileType == TileType.Desert)
+                {
+                    _robberTile = tile;
+                    return;
+                }
+            }
+
+            if (Tiles.Count > 0)
+            {
+                _robberTile = Tiles[0];
+            }
+        }
+
+        public bool IsTileBlockedByRobber(Tile tile)
+        {
+            return ReferenceEquals(_robberTile, tile);
+        }
+
+        public bool CanMoveRobberTo(Tile tile)
+        {
+            return Tiles.Contains(tile) && !IsTileBlockedByRobber(tile);
+        }
+
+        public bool MoveRobberTo(Tile tile)
+        {
+            if (!CanMoveRobberTo(tile))
+            {
+                return false;
+            }
+
+            _robberTile = tile;
+            return true;
         }
 
         public override void OnSubscribe(Scene scene)
@@ -54,7 +94,9 @@ namespace Catan.Source.Game.Board
         {
             foreach (Tile tile in Tiles)
             {
-                if (tile.DiceNumber == diceNumber && tile.ProducedResource != null)
+                if (tile.DiceNumber == diceNumber &&
+                    tile.ProducedResource != null &&
+                    !IsTileBlockedByRobber(tile))
                 {
                     yield return tile;
                 }
