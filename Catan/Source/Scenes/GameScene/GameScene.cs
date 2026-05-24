@@ -8,6 +8,7 @@ using Catan.Source.Game.Board;
 using Catan.Source.Game.Dice;
 using Catan.Source.Game.Debug;
 using Catan.Source.Scenes.Game;
+using Catan.Source.Game.Player;
 
 
 namespace Catan.Source.Scenes
@@ -22,9 +23,16 @@ namespace Catan.Source.Scenes
         public Board Board { get; private set; }
         public DiceRoll LastDiceRoll { get; set; }
 
+        public List<Player> _players;
+
         public GameScene()
         {
             _stateStack = new();
+            _players = [];
+            for (int i=0; i<4; i++)
+            {
+                _players.Add(new Player(i));
+            }
         }
 
         public override void Initialize()
@@ -46,17 +54,12 @@ namespace Catan.Source.Scenes
             Board = factory.CreateBoard();
             Subscribe(Board);
 
-            var viewport = Game1.GraphicsDeviceInstance.Viewport;
-            int diceControlWidth = (DiceRollControl.FaceSize * 2) + DiceRollControl.FaceSpacing;
-            DiceRollControl diceRollControl = new DiceRollControl(
-                viewport.Width - diceControlWidth - 32,
-                viewport.Height - DiceRollControl.FaceSize - 32,
-                _atlas,
-                this);
+            DiceRollControl diceRollControl = new(_atlas, this);
             Subscribe(diceRollControl);
 
-            _stateStack.Push(new PositionSettlementGameState(this));
-            _stateStack.Push(new WaitingForDiceRoll(this, diceRollControl));
+            // _stateStack.Push(new PositionSettlementGameState(this));
+            // _stateStack.Push(new WaitingForDiceRoll(this, diceRollControl));
+            _stateStack.Push(new ResourceProduction(this, _players[0], diceRollControl));
         }
 
         public override void UnloadContent()
@@ -66,6 +69,8 @@ namespace Catan.Source.Scenes
 
         public override void Update(GameTime gameTime)
         {
+            base.Update(gameTime);
+
             if (Keyboard.GetState().IsKeyDown(Keys.F1))//atalho temporario para tela de fim
             {
                 Game1.ChangeScene(new EndGameScene());
@@ -74,8 +79,6 @@ namespace Catan.Source.Scenes
 
             GameState currentState = GetCurrentStateGame();
             currentState.Update(gameTime);
-
-            base.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)

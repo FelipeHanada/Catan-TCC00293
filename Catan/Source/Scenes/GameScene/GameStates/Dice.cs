@@ -59,7 +59,7 @@ namespace Catan.Source.Scenes.Game
             {
                 DiceRoll roll = _diceRollControl.ConsumeSettledResult();
                 _gameScene.LastDiceRoll = roll;
-                ResolveDiceRoll(roll);
+                // ResolveDiceRoll(roll);
 
                 _gameScene.ExitState();
                 // _gameScene.AppendState(PlayerActions);
@@ -72,19 +72,20 @@ namespace Catan.Source.Scenes.Game
             base.Draw(gameTime, spriteBatch);
         }
 
-        private void ResolveDiceRoll(DiceRoll roll)
-        {
-            if (roll.Total == 7)
-            {
-                // Logica do ladrao.
-                return;
-            }
+        // DEPRECATED
+        // private void ResolveDiceRoll(DiceRoll roll)
+        // {
+        //     if (roll.Total == 7)
+        //     {
+        //         // Logica do ladrao.
+        //         return;
+        //     }
 
-            ResourceProductionCalculator calculator = new(_gameScene.Board);
-            var productions = calculator.CalculateExpectedProductions(roll.Total);
+        //     ResourceProductionCalculator calculator = new(_gameScene.Board);
+        //     var productions = calculator.CalculateExpectedProductions(roll.Total);
 
-            ResourceBankPlaceholder bank = new();
-            bank.DistributeResources(productions);
-        }
+        //     ResourceBankPlaceholder bank = new();
+        //     bank.DistributeResources(productions);
+        // }
     }
 }
