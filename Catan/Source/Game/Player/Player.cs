@@ -50,6 +50,7 @@ namespace Catan.Source.Game.Player
 
     public class PlayerInventory : GameObject
     {
+        // Temporário pra descarte automatico enquanto não temos a escolha do jogador.
         private static readonly ResourceId[] _discardOrder = [
             ResourceId.Wood,
             ResourceId.Wool,
@@ -88,6 +89,11 @@ namespace Catan.Source.Game.Player
             return total;
         }
 
+        public bool HasResources()
+        {
+            return GetTotalResources() > 0;
+        }
+
         public int RemoveResource(ResourceId resource, int amount)
         {
             int removedAmount = Math.Min(resources[resource], amount);
@@ -116,6 +122,32 @@ namespace Catan.Source.Game.Player
             }
 
             return discardedResources;
+        }
+
+        public bool TryRemoveRandomResource(out ResourceId resource)
+        {
+            int totalResources = GetTotalResources();
+            if (totalResources == 0)
+            {
+                resource = default;
+                return false;
+            }
+
+            int resourceIndex = Random.Shared.Next(totalResources);
+            foreach (KeyValuePair<ResourceId, int> resourceAmount in resources)
+            {
+                if (resourceIndex < resourceAmount.Value)
+                {
+                    resource = resourceAmount.Key;
+                    RemoveResource(resource, 1);
+                    return true;
+                }
+
+                resourceIndex -= resourceAmount.Value;
+            }
+
+            resource = default;
+            return false;
         }
     }
 }

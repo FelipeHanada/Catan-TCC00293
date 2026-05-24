@@ -2,20 +2,21 @@ using System.Collections.Generic;
 using DiagnosticsDebug = System.Diagnostics.Debug;
 using Catan.Source.Game.Player;
 using Catan.Source.Game.Resources;
+using Catan.Source.Game.Rules;
 using Microsoft.Xna.Framework;
 
 namespace Catan.Source.Scenes.Game
 {
     public class DiscardResourcesGameState : GameState
     {
-        private const int MinimumResourcesToDiscard = 8;
-
         private readonly List<Player> _players;
+        private readonly SevenRule _sevenRule;
 
         public DiscardResourcesGameState(GameScene gameScene, List<Player> players)
             : base(gameScene)
         {
             _players = players;
+            _sevenRule = new SevenRule();
         }
 
         public override void Update(GameTime gameTime)
@@ -24,13 +25,12 @@ namespace Catan.Source.Scenes.Game
 
             foreach (Player player in _players)
             {
-                int totalResources = player.Inventory.GetTotalResources();
-                if (totalResources < MinimumResourcesToDiscard)
+                if (!_sevenRule.ShouldDiscard(player))
                 {
                     continue;
                 }
 
-                int amountToDiscard = totalResources / 2;
+                int amountToDiscard = _sevenRule.GetDiscardAmount(player);
                 // Futuramente, o jogador deve escolher quais cartas descartar.
                 Dictionary<ResourceId, int> discardedResources = player.Inventory.DiscardResources(amountToDiscard);
 
