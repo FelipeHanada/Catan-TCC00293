@@ -84,6 +84,56 @@ namespace Catan.Source.Game.Bank
             _resources[resource] += amount;
         }
 
+        public bool CanTrade(
+            ResourceInventory inventory,
+            ResourceId giveToBank,
+            int giveAmount,
+            ResourceId receiveFromBank,
+            int receiveAmount)
+        {
+            ValidateTrade(inventory, giveToBank, giveAmount, receiveFromBank, receiveAmount);
+
+            return inventory.Has(giveToBank, giveAmount)
+                && CanReceive(giveToBank, giveAmount)
+                && CanGive(receiveFromBank, receiveAmount);
+        }
+
+        public void Trade(
+            ResourceInventory inventory,
+            ResourceId giveToBank,
+            int giveAmount,
+            ResourceId receiveFromBank,
+            int receiveAmount)
+        {
+            ValidateTrade(inventory, giveToBank, giveAmount, receiveFromBank, receiveAmount);
+
+            checked
+            {
+                _ = inventory.GetAmount(receiveFromBank) + receiveAmount;
+            }
+
+            if (!inventory.Has(giveToBank, giveAmount))
+            {
+                throw new InvalidOperationException("Jogador não possui recursos suficientes para a troca.");
+            }
+
+            if (!CanReceive(giveToBank, giveAmount))
+            {
+                throw new InvalidOperationException("Banco não pode receber essa quantidade de recursos.");
+            }
+
+            if (!CanGive(receiveFromBank, receiveAmount))
+            {
+                throw new InvalidOperationException("Banco não possui recursos suficientes.");
+            }
+
+            inventory.Remove(giveToBank, giveAmount);
+            _resources[giveToBank] += giveAmount;
+
+            _resources[receiveFromBank] -= receiveAmount;
+            inventory.Add(receiveFromBank, receiveAmount);
+        }
+
         public IReadOnlyList<ResourceDistributionRequest> DistributeProduction(IEnumerable<ResourceDistributionRequest> productions)
         {
             var requestsByResource = GetValidatedProductionRequests(productions);
@@ -220,6 +270,28 @@ namespace Catan.Source.Game.Bank
             if (inventory == null)
             {
                 throw new ArgumentNullException(paramName, "Inventário não pode ser nulo.");
+            }
+        }
+
+        private void ValidateTrade(
+            ResourceInventory inventory,
+            ResourceId giveToBank,
+            int giveAmount,
+            ResourceId receiveFromBank,
+            int receiveAmount)
+        {
+            ValidateInventory(inventory, nameof(inventory));
+            ValidateResourceAmount(giveToBank, giveAmount, nameof(giveToBank), nameof(giveAmount));
+            ValidateResourceAmount(receiveFromBank, receiveAmount, nameof(receiveFromBank), nameof(receiveAmount));
+
+            if (giveAmount == 0 || receiveAmount == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(giveAmount), "Quantidades da troca devem ser maiores que zero.");
+            }
+
+            if (giveToBank == receiveFromBank)
+            {
+                throw new ArgumentException("Recursos da troca devem ser diferentes.");
             }
         }
 

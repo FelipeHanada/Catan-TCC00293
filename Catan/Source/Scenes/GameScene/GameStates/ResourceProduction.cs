@@ -12,11 +12,13 @@ namespace Catan.Source.Scenes.Game
     public class ResourceProduction : GameState
     {
         private bool _rolled;
+        private Player _player;
         private DiceRollControl _diceRollControl;
 
         public ResourceProduction(GameScene gameScene, Player player, DiceRollControl diceRollControl)
             : base(gameScene)
         {
+            _player = player;
             _diceRollControl = diceRollControl;
 
             _rolled = false;
@@ -38,6 +40,7 @@ namespace Catan.Source.Scenes.Game
             {
                 // Logica do ladrao.
                 _rolled = false;
+                _gameScene.AppendState(new PlayerActionsGameState(_gameScene, _player));
                 return;
             }
 
@@ -55,6 +58,7 @@ namespace Catan.Source.Scenes.Game
 
             _gameScene.Bank.DistributeProduction(distributionRequests);
             _rolled = false;
+            _gameScene.AppendState(new PlayerActionsGameState(_gameScene, _player));
         }
     }
 }
