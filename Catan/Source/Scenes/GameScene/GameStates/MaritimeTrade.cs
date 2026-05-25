@@ -1,4 +1,5 @@
 using System;
+using Catan.Source.Game.Harbor;
 using Catan.Source.Game.Player;
 using Catan.Source.Game.Resources;
 using Microsoft.Xna.Framework;
@@ -7,9 +8,8 @@ using DiagnosticsDebug = System.Diagnostics.Debug;
 
 namespace Catan.Source.Scenes.Game
 {
-    public class BankTradeSelectionGameState : GameState
+    public class MaritimeTradeSelectionGameState : GameState
     {
-        private const int GiveAmount = 4;
         private const int ReceiveAmount = 1;
 
         private readonly Player _player;
@@ -26,13 +26,19 @@ namespace Catan.Source.Scenes.Game
         private int _receiveResourceIndex;
         private KeyboardState _previousKeyboardState;
 
-        public BankTradeSelectionGameState(GameScene gameScene, Player player)
+        public MaritimeTradeSelectionGameState(GameScene gameScene, Player player)
             : base(gameScene)
         {
             _player = player;
             _giveResourceIndex = 0;
             _receiveResourceIndex = 1;
             _previousKeyboardState = Keyboard.GetState();
+
+            #if DEBUG
+            DiagnosticsDebug.WriteLine(
+                $"Troca maritima: Jogador {_player.PlayerNumber} abriu selecao. Paga {SelectedGiveResource}, recebe {SelectedReceiveResource}."
+            );
+            #endif
         }
 
         public override void Update(GameTime gameTime)
@@ -41,6 +47,10 @@ namespace Catan.Source.Scenes.Game
 
             if (IsJustPressed(keyboardState, Keys.Escape))
             {
+                #if DEBUG
+                DiagnosticsDebug.WriteLine($"Troca maritima: Jogador {_player.PlayerNumber} cancelou selecao.");
+                #endif
+
                 _gameScene.ExitState();
                 return;
             }
@@ -48,30 +58,43 @@ namespace Catan.Source.Scenes.Game
             if (IsJustPressed(keyboardState, Keys.A))
             {
                 _giveResourceIndex = PreviousIndex(_giveResourceIndex);
+                LogSelection();
             }
 
             if (IsJustPressed(keyboardState, Keys.D))
             {
                 _giveResourceIndex = NextIndex(_giveResourceIndex);
+                LogSelection();
             }
 
             if (IsJustPressed(keyboardState, Keys.Left))
             {
                 _receiveResourceIndex = PreviousIndex(_receiveResourceIndex);
+                LogSelection();
             }
 
             if (IsJustPressed(keyboardState, Keys.Right))
             {
                 _receiveResourceIndex = NextIndex(_receiveResourceIndex);
+                LogSelection();
             }
 
             if (IsJustPressed(keyboardState, Keys.Enter))
             {
-                _gameScene.AppendState(new BankTradeExecutionGameState(
+                HarborService harborService = new(_gameScene.Board);
+                int giveAmount = harborService.GetBestTradeRate(_player, SelectedGiveResource);
+
+                #if DEBUG
+                DiagnosticsDebug.WriteLine(
+                    $"Troca maritima: Jogador {_player.PlayerNumber} confirmou selecao. Taxa {giveAmount}:1, paga {SelectedGiveResource}, recebe {SelectedReceiveResource}."
+                );
+                #endif
+
+                _gameScene.AppendState(new MaritimeTradeExecutionGameState(
                     _gameScene,
                     _player,
                     SelectedGiveResource,
-                    GiveAmount,
+                    giveAmount,
                     SelectedReceiveResource,
                     ReceiveAmount));
             }
@@ -96,9 +119,21 @@ namespace Catan.Source.Scenes.Game
         {
             return currentState.IsKeyDown(key) && !_previousKeyboardState.IsKeyDown(key);
         }
+
+        private void LogSelection()
+        {
+            #if DEBUG
+            HarborService harborService = new(_gameScene.Board);
+            int giveAmount = harborService.GetBestTradeRate(_player, SelectedGiveResource);
+
+            DiagnosticsDebug.WriteLine(
+                $"Troca maritima: Jogador {_player.PlayerNumber} selecionou taxa {giveAmount}:1, paga {SelectedGiveResource}, recebe {SelectedReceiveResource}."
+            );
+            #endif
+        }
     }
 
-    public class BankTradeExecutionGameState : GameState
+    public class MaritimeTradeExecutionGameState : GameState
     {
         private readonly Player _player;
         private readonly ResourceId _giveToBank;
@@ -106,7 +141,7 @@ namespace Catan.Source.Scenes.Game
         private readonly ResourceId _receiveFromBank;
         private readonly int _receiveAmount;
 
-        public BankTradeExecutionGameState(
+        public MaritimeTradeExecutionGameState(
             GameScene gameScene,
             Player player,
             ResourceId giveToBank,
@@ -126,6 +161,13 @@ namespace Catan.Source.Scenes.Game
         {
             try
             {
+                if (!IsTradeRequestValid())
+                {
+                    LogInvalidTrade();
+                    _gameScene.ExitState();
+                    return;
+                }
+
                 if (!_gameScene.Bank.CanTrade(
                     _player.Inventory.Resources,
                     _giveToBank,
@@ -133,6 +175,7 @@ namespace Catan.Source.Scenes.Game
                     _receiveFromBank,
                     _receiveAmount))
                 {
+                    LogInvalidTrade();
                     _gameScene.ExitState();
                     return;
                 }
@@ -146,7 +189,7 @@ namespace Catan.Source.Scenes.Game
 
                 #if DEBUG
                 DiagnosticsDebug.WriteLine(
-                    $"Troca com banco: Jogador {_player.PlayerNumber} entregou {_giveAmount} {_giveToBank} e recebeu {_receiveAmount} {_receiveFromBank}."
+                    $"Troca maritima: Jogador {_player.PlayerNumber} entregou {_giveAmount} {_giveToBank} e recebeu {_receiveAmount} {_receiveFromBank}."
                 );
                 #endif
 
@@ -161,6 +204,22 @@ namespace Catan.Source.Scenes.Game
             {
                 _gameScene.ExitState();
             }
+        }
+
+        private bool IsTradeRequestValid()
+        {
+            return _giveAmount > 0
+                && _receiveAmount > 0
+                && _giveToBank != _receiveFromBank;
+        }
+
+        private void LogInvalidTrade()
+        {
+            #if DEBUG
+            DiagnosticsDebug.WriteLine(
+                $"Troca maritima: Jogador {_player.PlayerNumber} tentou troca invalida. Paga {_giveAmount} {_giveToBank}, recebe {_receiveAmount} {_receiveFromBank}."
+            );
+            #endif
         }
     }
 }
