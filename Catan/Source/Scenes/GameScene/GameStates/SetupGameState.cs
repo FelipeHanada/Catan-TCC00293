@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Catan.Source.Game.Player;
 using Catan.Source.Game.Board;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Catan.Source.Scenes.Game
 {
@@ -14,8 +15,16 @@ namespace Catan.Source.Scenes.Game
         {
             _stateQueue = [];
 
+            Stack<Player> stk = new();
             foreach (Player player in gameScene._players)
             {
+                _stateQueue.Enqueue(new PositionSettlementGameState(gameScene, player, BuildingType.Settlement));
+                stk.Push(player);
+            }
+
+            while (stk.Count > 0)
+            {
+                Player player = stk.Pop();
                 _stateQueue.Enqueue(new PositionSettlementGameState(gameScene, player, BuildingType.Settlement));
             }
         }
