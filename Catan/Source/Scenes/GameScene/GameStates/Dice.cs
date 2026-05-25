@@ -2,7 +2,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Catan.Source.Game.Dice;
-using Catan.Source.Game.Resources;
 
 namespace Catan.Source.Scenes.Game
 {
@@ -72,20 +71,5 @@ namespace Catan.Source.Scenes.Game
             base.Draw(gameTime, spriteBatch);
         }
 
-        // DEPRECATED
-        // private void ResolveDiceRoll(DiceRoll roll)
-        // {
-        //     if (roll.Total == 7)
-        //     {
-        //         // Logica do ladrao.
-        //         return;
-        //     }
-
-        //     ResourceProductionCalculator calculator = new(_gameScene.Board);
-        //     var productions = calculator.CalculateExpectedProductions(roll.Total);
-
-        //     ResourceBankPlaceholder bank = new();
-        //     bank.DistributeResources(productions);
-        // }
     }
 }

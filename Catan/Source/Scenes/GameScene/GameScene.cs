@@ -7,8 +7,9 @@ using Catan.Source.Content;
 using Catan.Source.Game.Board;
 using Catan.Source.Game.Dice;
 using Catan.Source.Game.Debug;
-using Catan.Source.Scenes.Game;
 using Catan.Source.Game.Player;
+using Catan.Source.Scenes.Game;
+using GameBank = Catan.Source.Game.Bank.Bank;
 
 
 namespace Catan.Source.Scenes
@@ -20,6 +21,7 @@ namespace Catan.Source.Scenes
 
         private Stack<GameState> _stateStack;
 
+        public GameBank Bank { get; }
         public Board Board { get; private set; }
         public DiceRoll LastDiceRoll { get; set; }
 
@@ -28,6 +30,7 @@ namespace Catan.Source.Scenes
         public GameScene()
         {
             _stateStack = new();
+            Bank = new GameBank();
             _players = [];
             for (int i=0; i<4; i++)
             {
@@ -46,6 +49,7 @@ namespace Catan.Source.Scenes
 
             #if DEBUG
             Subscribe(new SoundBoardDebug());
+            Subscribe(new BankDebugPanel(Bank));
             #endif
 
             _atlas = new Atlas(Game1.ContentManager);
