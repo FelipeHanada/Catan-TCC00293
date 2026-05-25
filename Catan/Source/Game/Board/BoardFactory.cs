@@ -184,7 +184,7 @@ namespace Catan.Source.Game.Board
             {
                 for (int j=0; j<vertexTableB[i].Count; j++)
                 {
-                    Edges.Add(new(vertexTableA[i+1][j], vertexTableB[i][j], gameScene));
+                    Edges.Add(new(vertexTableA[i+1][j], vertexTableB[i][j], atlas, gameScene));
                 }
             }
 
@@ -194,15 +194,15 @@ namespace Catan.Source.Game.Board
                 {
                     for (int j=0; j<vertexTableA[i].Count; j++)
                     {
-                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j], gameScene));
-                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j+1], gameScene));
+                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j], atlas, gameScene));
+                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j+1], atlas, gameScene));
                     }
                 } else
                 {
                     for (int j=0; j<vertexTableB[i].Count; j++)
                     {
-                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j], gameScene));
-                        Edges.Add(new(vertexTableA[i][j+1], vertexTableB[i][j], gameScene));
+                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j], atlas, gameScene));
+                        Edges.Add(new(vertexTableA[i][j+1], vertexTableB[i][j], atlas, gameScene));
                     }
                 }
             }

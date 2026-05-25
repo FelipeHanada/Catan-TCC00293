@@ -58,6 +58,7 @@ namespace Catan.Source.Game.Board
         public override void Update(GameTime gameTime)
         {
             MouseState currentMouseState = Mouse.GetState();
+            
             if (gameScene.GetCurrentStateGame() is PositionSettlementGameState gameState)
             {
                 if (IsHovering(currentMouseState) && (currentMouseState.LeftButton == ButtonState.Pressed && 

@@ -19,6 +19,7 @@ namespace Catan.Source.Scenes.Game
             foreach (Player player in gameScene._players)
             {
                 _stateQueue.Enqueue(new PositionSettlementGameState(gameScene, player, BuildingType.Settlement));
+                _stateQueue.Enqueue(new PositionRoadGameState(gameScene, player));
                 stk.Push(player);
             }
 
@@ -26,6 +27,7 @@ namespace Catan.Source.Scenes.Game
             {
                 Player player = stk.Pop();
                 _stateQueue.Enqueue(new PositionSettlementGameState(gameScene, player, BuildingType.Settlement));
+                _stateQueue.Enqueue(new PositionRoadGameState(gameScene, player));
             }
         }
 
