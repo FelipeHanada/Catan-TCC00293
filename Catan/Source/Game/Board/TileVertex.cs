@@ -1,8 +1,8 @@
+using System;
 using Catan.Source.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
 using GamePlayer = Catan.Source.Game.Player.Player;
 using Catan.Source.Scenes;
 using Catan.Source.Scenes.Game;
@@ -60,19 +60,45 @@ namespace Catan.Source.Game.Board
             MouseState currentMouseState = Mouse.GetState();
             if (gameScene.GetCurrentStateGame() is PositionSettlementGameState gameState)
             {
-                if (currentMouseState.LeftButton == ButtonState.Pressed && 
-                    _previousMouseState.LeftButton == ButtonState.Released)
+                if (IsHovering(currentMouseState) && (currentMouseState.LeftButton == ButtonState.Pressed && 
+                    _previousMouseState.LeftButton == ButtonState.Released))
                 {
-                    if (IsHovering(currentMouseState) && !HasBuilding)
+                    if (CanPlaceBuilding(gameState.Player, gameState.BuildingType))
                     {
                         PlaceBuilding(new Building(gameState.Player, gameState.BuildingType));
                         gameScene.ExitState();
+
+                        SoundManager.Instance.Play(SfxId.ConstrucaoCasa);
+                    } else
+                    {
+                        SoundManager.Instance.Play(SfxId.TijoloCaindo);
                     }
                 }
             }
 
-
             _previousMouseState = currentMouseState;
+        }
+
+        public bool CanPlaceBuilding(GamePlayer player, BuildingType buildingType)
+        {
+            BoardGraph graph = gameScene.Board.Graph;
+
+            foreach (TileEdge edge in graph.Incident[this])
+            {
+                TileVertex a = edge.VertexA, b = edge.VertexB;
+                if (a != this && a.HasBuilding) return false;
+                if (b != this && b.HasBuilding) return false;
+            }
+
+            if (buildingType == BuildingType.Settlement)
+            {
+                return !HasBuilding;
+            } else if (buildingType == BuildingType.City)
+            {
+                return HasBuilding && Building.Type == BuildingType.Settlement && Building.Owner == player;
+            }
+
+            return false;
         }
 
         public void PlaceBuilding(Building building)
