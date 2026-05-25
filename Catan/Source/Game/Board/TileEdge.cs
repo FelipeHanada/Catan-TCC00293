@@ -2,6 +2,7 @@ using System;
 using System.Reflection.Emit;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Catan.Source.Scenes;
 
 namespace Catan.Source.Game.Board
 {
@@ -12,7 +13,7 @@ namespace Catan.Source.Game.Board
 
         private Texture2D _lineTexture;
 
-        public TileEdge(TileVertex vertexA, TileVertex vertexB)
+        public TileEdge(TileVertex vertexA, TileVertex vertexB, GameScene gameScene)
             : base(0, 0)
         {
             this.VertexA = vertexA;

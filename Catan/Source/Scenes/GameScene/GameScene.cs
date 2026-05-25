@@ -55,7 +55,7 @@ namespace Catan.Source.Scenes
             _atlas = new Atlas(Game1.ContentManager);
 
             StandardRandomBoardFactory factory = new(_atlas, 0, 0);
-            Board = factory.CreateBoard();
+            Board = factory.CreateBoard(this);
             Subscribe(Board);
 
             DiceRollControl diceRollControl = new(_atlas, this);

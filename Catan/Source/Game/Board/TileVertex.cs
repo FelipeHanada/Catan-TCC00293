@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using GamePlayer = Catan.Source.Game.Player.Player;
+using Catan.Source.Scenes;
 
 namespace Catan.Source.Game.Board
 {
@@ -20,7 +21,7 @@ namespace Catan.Source.Game.Board
         public Building Building { get; private set; }
         public bool HasBuilding => Building != null;
 
-        public TileVertex(float x, float y, Atlas atlas) 
+        public TileVertex(float x, float y, Atlas atlas, GameScene gameScene) 
             : base(x, y)
         {
             this.atlas = atlas;

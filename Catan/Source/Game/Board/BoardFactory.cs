@@ -5,12 +5,13 @@ using System.Runtime.InteropServices;
 using Microsoft.Xna.Framework;
 using Catan.Source.Content;
 using System.Linq;
+using Catan.Source.Scenes;
 
 namespace Catan.Source.Game.Board
 {
     public interface IBoardFactory
     {
-        Board CreateBoard();
+        Board CreateBoard(GameScene gameScene);
     }
 
     public class RandomBoardFactory : IBoardFactory
@@ -26,7 +27,7 @@ namespace Catan.Source.Game.Board
             this.startY = startY;
         }
 
-        public Board CreateBoard()
+        public Board CreateBoard(GameScene gameScene)
         {
             Random rand = new Random();
             List<Tile> tiles = [];
@@ -39,11 +40,11 @@ namespace Catan.Source.Game.Board
                     float tileY = startY + 96 * i;
                     TileType randomType = (TileType)rand.Next(0, 6);
                     int diceNum = randomType == TileType.Desert ? 7 : rand.Next(2, 13);
-                    tiles.Add(new Tile(tileX, tileY, atlas, randomType, diceNum));
+                    tiles.Add(new Tile(tileX, tileY, atlas, randomType, diceNum, gameScene));
                 }
             }
 
-            Board board = new Board(startX, startY, atlas)
+            Board board = new Board(startX, startY)
             {
                 Tiles = tiles
             };
@@ -64,7 +65,7 @@ namespace Catan.Source.Game.Board
             this.startY = startY;
         }
 
-        public Board CreateBoard()
+        public Board CreateBoard(GameScene gameScene)
         {
             List<int> diceNumbers = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12];
             Random.Shared.Shuffle(CollectionsMarshal.AsSpan(diceNumbers));
@@ -84,7 +85,7 @@ namespace Catan.Source.Game.Board
 
             List<Tile> tiles = [];
             int tile_idx = 0;
-            StandardTilePositionIterator positionIterator = new(startX, startY, atlas);
+            StandardTilePositionIterator positionIterator = new(startX, startY, atlas, gameScene);
             foreach (Tuple<Vector2, TileVertex[]> info in positionIterator)
             {
                 Vector2 position = info.Item1;
@@ -92,12 +93,12 @@ namespace Catan.Source.Game.Board
                 tiles.Add(new(
                     position.X, position.Y, atlas,
                     tilesConfig[tile_idx].Key, tilesConfig[tile_idx].Value,
-                    vertices
+                    vertices, gameScene
                 ));
                 tile_idx++;
             }
 
-            Board board = new(startX, startY, atlas)
+            Board board = new(startX, startY)
             {
                 Tiles = tiles,
                 Vertices = positionIterator.Vertices,
@@ -114,13 +115,14 @@ namespace Catan.Source.Game.Board
         private readonly float width;
         private readonly float height;
         private readonly float h;
+        private readonly GameScene gameScene;
         public List<TileVertex> Vertices { get; set; }
         public List<TileEdge> Edges { get; set; }
 
         private List<List<TileVertex>> vertexTableA;
         private List<List<TileVertex>> vertexTableB;
 
-        public StandardTilePositionIterator(float startX, float startY, Atlas atlas, float width = 128, float height = 128, float h = 32)
+        public StandardTilePositionIterator(float startX, float startY, Atlas atlas, GameScene gameScene, float width = 128, float height = 128, float h = 32)
         {
             this.startX = startX;
             this.startY = startY;
@@ -141,7 +143,8 @@ namespace Catan.Source.Game.Board
                     row.Add(new(
                         Math.Abs(3 - i) * width/2 + width * j,
                         (height - h) * i,
-                        atlas
+                        atlas,
+                        gameScene
                     ));
                 }
                 vertexTableA.Add(row);
@@ -156,7 +159,8 @@ namespace Catan.Source.Game.Board
                     row.Add(new(
                         Math.Abs(2 - i) * width/2 + width * j,
                         (height - h) * i + h,
-                        atlas
+                        atlas,
+                        gameScene
                     ));
                 }
                 vertexTableB.Add(row);
@@ -167,7 +171,7 @@ namespace Catan.Source.Game.Board
             {
                 for (int j=0; j<vertexTableB[i].Count; j++)
                 {
-                    Edges.Add(new(vertexTableA[i+1][j], vertexTableB[i][j]));
+                    Edges.Add(new(vertexTableA[i+1][j], vertexTableB[i][j], gameScene));
                 }
             }
 
@@ -177,15 +181,15 @@ namespace Catan.Source.Game.Board
                 {
                     for (int j=0; j<vertexTableA[i].Count; j++)
                     {
-                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j]));
-                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j+1]));
+                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j], gameScene));
+                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j+1], gameScene));
                     }
                 } else
                 {
                     for (int j=0; j<vertexTableB[i].Count; j++)
                     {
-                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j]));
-                        Edges.Add(new(vertexTableA[i][j+1], vertexTableB[i][j]));
+                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j], gameScene));
+                        Edges.Add(new(vertexTableA[i][j+1], vertexTableB[i][j], gameScene));
                     }
                 }
             }

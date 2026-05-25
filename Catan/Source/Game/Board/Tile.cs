@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Catan.Source.Content;
 using System.Collections.Generic;
 using Catan.Source.Game.Resources;
+using Catan.Source.Scenes;
 
 namespace Catan.Source.Game.Board
 {
@@ -54,7 +55,7 @@ namespace Catan.Source.Game.Board
         public ResourceId? ProducedResource =>
             _tileResourceId.TryGetValue(tileType, out ResourceId resource) ? resource : null;
 
-        public Tile(float x, float y, Atlas atlas, TileType tileType, int diceNumber, TileVertex[] vertices)
+        public Tile(float x, float y, Atlas atlas, TileType tileType, int diceNumber, TileVertex[] vertices, GameScene gameScene)
             : base(x, y)
         {
             this.atlas = atlas;
@@ -62,8 +63,8 @@ namespace Catan.Source.Game.Board
             this.diceNumber = diceNumber;
             this.vertices = vertices;
         }
-        public Tile(float x, float y, Atlas atlas, TileType tileType, int diceNumber)
-            : this(x, y, atlas, tileType, diceNumber, []) {}
+        public Tile(float x, float y, Atlas atlas, TileType tileType, int diceNumber, GameScene gameScene)
+            : this(x, y, atlas, tileType, diceNumber, [], gameScene) {}
 
         public IEnumerable<Building> GetAdjacentBuildings()
         {
