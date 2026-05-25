@@ -80,6 +80,8 @@ namespace Catan.Source.Game.Board
             {
                 scene.Subscribe(edge);
             }
+
+            scene.Subscribe(new RobberMarker(this));
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)

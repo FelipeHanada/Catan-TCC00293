@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -59,8 +59,7 @@ namespace Catan.Source.Scenes
             Subscribe(diceRollControl);
 
             // _stateStack.Push(new PositionSettlementGameState(this));
-            // _stateStack.Push(new WaitingForDiceRoll(this, diceRollControl));
-            _stateStack.Push(new ResourceProduction(this, _players[0], diceRollControl));
+            _stateStack.Push(new PlayerTurnGameState(this, _players[0], _players, diceRollControl));
         }
 
         public override void UnloadContent()

@@ -1,44 +1,29 @@
-using Catan.Source.Scenes;
-using Catan.Source.Game.Dice;
-using Catan.Source.Game.Player;
 using Catan.Source.Game.Resources;
 using Microsoft.Xna.Framework;
-
 
 namespace Catan.Source.Scenes.Game
 {
     public class ResourceProduction : GameState
     {
-        private bool _rolled;
-        private Player _player;
-        private DiceRollControl _diceRollControl;
+        private readonly int _diceNumber;
 
-        public ResourceProduction(GameScene gameScene, Player player, DiceRollControl diceRollControl)
+        public ResourceProduction(GameScene gameScene, int diceNumber)
             : base(gameScene)
         {
-            _player = player;
-            _diceRollControl = diceRollControl;
-
-            _rolled = false;
+            _diceNumber = diceNumber;
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
 
-            if (!_rolled) {
-                _rolled = true;
-                _gameScene.AppendState(new WaitingForDiceRoll(_gameScene, _diceRollControl));
-                return;
-            }
-
-            DiceRoll roll = _gameScene.LastDiceRoll;
-
             ResourceProductionCalculator calculator = new(_gameScene.Board);
-            var productions = calculator.CalculateExpectedProductions(roll.Total);
+            var productions = calculator.CalculateExpectedProductions(_diceNumber);
 
             ResourceBankPlaceholder bank = new();
             bank.DistributeResources(productions);
+
+            _gameScene.ExitState();
         }
     }
 }
