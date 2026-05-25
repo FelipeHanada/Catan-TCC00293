@@ -9,13 +9,13 @@ using Microsoft.Xna.Framework;
 
 namespace Catan.Source.Scenes.Game
 {
-    public class ResourceProduction : GameState
+    public class ResourceProductionGameState : GameState
     {
         private bool _rolled;
         private Player _player;
         private DiceRollControl _diceRollControl;
 
-        public ResourceProduction(GameScene gameScene, Player player, DiceRollControl diceRollControl)
+        public ResourceProductionGameState(GameScene gameScene, Player player, DiceRollControl diceRollControl)
             : base(gameScene)
         {
             _player = player;
@@ -30,7 +30,7 @@ namespace Catan.Source.Scenes.Game
 
             if (!_rolled) {
                 _rolled = true;
-                _gameScene.AppendState(new WaitingForDiceRoll(_gameScene, _diceRollControl));
+                _gameScene.AppendState(new WaitingForDiceRollGameState(_gameScene, _diceRollControl));
                 return;
             }
 

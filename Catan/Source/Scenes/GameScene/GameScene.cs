@@ -62,8 +62,8 @@ namespace Catan.Source.Scenes
             Subscribe(diceRollControl);
 
             // _stateStack.Push(new PositionSettlementGameState(this));
-            // _stateStack.Push(new WaitingForDiceRoll(this, diceRollControl));
-            _stateStack.Push(new ResourceProduction(this, _players[0], diceRollControl));
+            // _stateStack.Push(new WaitingForDiceRollGameState(this, diceRollControl));
+            _stateStack.Push(new ResourceProductionGameState(this, _players[0], diceRollControl));
         }
 
         public override void UnloadContent()
