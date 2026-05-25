@@ -66,7 +66,7 @@ namespace Catan.Source.Game.Harbor
 
             foreach (TileVertex vertex in _vertices)
             {
-                if (vertex.HasBuilding && vertex.Building.Owner == player)
+                if (vertex.HasBuilding && vertex.Building.Owner.PlayerNumber == player.PlayerNumber)
                 {
                     return true;
                 }
