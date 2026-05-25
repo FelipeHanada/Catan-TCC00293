@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using GamePlayer = Catan.Source.Game.Player.Player;
 using Catan.Source.Scenes;
+using Catan.Source.Scenes.Game;
 
 namespace Catan.Source.Game.Board
 {
@@ -14,10 +15,11 @@ namespace Catan.Source.Game.Board
         private const float Radius = CircleDiameter / 2f;
 
         private static Texture2D? _circleTexture;
-        private static readonly GamePlayer _placeholderPlayer = new(1);
+        private static readonly GamePlayer _placeholderPlayer = new(0);
         private MouseState _previousMouseState;
 
         private readonly Atlas atlas;
+        private readonly GameScene gameScene;
         public Building Building { get; private set; }
         public bool HasBuilding => Building != null;
 
@@ -25,6 +27,7 @@ namespace Catan.Source.Game.Board
             : base(x, y)
         {
             this.atlas = atlas;
+            this.gameScene = gameScene;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -55,15 +58,19 @@ namespace Catan.Source.Game.Board
         public override void Update(GameTime gameTime)
         {
             MouseState currentMouseState = Mouse.GetState();
-
-            if (currentMouseState.LeftButton == ButtonState.Pressed && 
-                _previousMouseState.LeftButton == ButtonState.Released)
+            if (gameScene.GetCurrentStateGame() is PositionSettlementGameState gameState)
             {
-                if (IsHovering(currentMouseState) && !HasBuilding)
+                if (currentMouseState.LeftButton == ButtonState.Pressed && 
+                    _previousMouseState.LeftButton == ButtonState.Released)
                 {
-                    PlaceBuilding(new Building(_placeholderPlayer, BuildingType.Settlement));
+                    if (IsHovering(currentMouseState) && !HasBuilding)
+                    {
+                        PlaceBuilding(new Building(gameState.Player, gameState.BuildingType));
+                        gameScene.ExitState();
+                    }
                 }
             }
+
 
             _previousMouseState = currentMouseState;
         }

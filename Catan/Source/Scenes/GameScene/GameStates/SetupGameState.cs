@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using Catan.Source.Game.Player;
 using Microsoft.Xna.Framework;
+using Catan.Source.Game.Player;
+using Catan.Source.Game.Board;
 
 namespace Catan.Source.Scenes.Game
 {
@@ -15,7 +16,7 @@ namespace Catan.Source.Scenes.Game
 
             foreach (Player player in gameScene._players)
             {
-                _stateQueue.Enqueue(new PositionSettlementGameState(gameScene, player));
+                _stateQueue.Enqueue(new PositionSettlementGameState(gameScene, player, BuildingType.Settlement));
             }
         }
 

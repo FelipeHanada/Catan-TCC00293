@@ -15,7 +15,7 @@ namespace Catan.Source.Game.Player
             players = new();
             for (int i=0; i<numberOfPlayers; i++)
             {
-                players.Add(new Player(i + 1));
+                players.Add(new Player(i));
             }
         }
 

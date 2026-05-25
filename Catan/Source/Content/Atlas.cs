@@ -97,7 +97,7 @@ namespace Catan.Source.Content
         };
         private static readonly Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>> _playerSpriteMappings = new Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>>
         {
-            [1] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
+            [0] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
             {
                 [AtlasPlayerSprite.Settlement] = AtlasSpriteId.SettlementPlayer1,
                 [AtlasPlayerSprite.City] = AtlasSpriteId.CityPlayer1,
@@ -105,7 +105,7 @@ namespace Catan.Source.Content
                 [AtlasPlayerSprite.Road2] = AtlasSpriteId.Road2Player1,
                 [AtlasPlayerSprite.Road3] = AtlasSpriteId.Road3Player1,
             },
-            [2] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
+            [1] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
             {
                 [AtlasPlayerSprite.Settlement] = AtlasSpriteId.SettlementPlayer2,
                 [AtlasPlayerSprite.City] = AtlasSpriteId.CityPlayer2,
@@ -113,7 +113,7 @@ namespace Catan.Source.Content
                 [AtlasPlayerSprite.Road2] = AtlasSpriteId.Road2Player2,
                 [AtlasPlayerSprite.Road3] = AtlasSpriteId.Road3Player2,
             },
-            [3] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
+            [2] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
             {
                 [AtlasPlayerSprite.Settlement] = AtlasSpriteId.SettlementPlayer3,
                 [AtlasPlayerSprite.City] = AtlasSpriteId.CityPlayer3,
@@ -121,7 +121,7 @@ namespace Catan.Source.Content
                 [AtlasPlayerSprite.Road2] = AtlasSpriteId.Road2Player3,
                 [AtlasPlayerSprite.Road3] = AtlasSpriteId.Road3Player3,
             },
-            [4] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
+            [3] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
             {
                 [AtlasPlayerSprite.Settlement] = AtlasSpriteId.SettlementPlayer4,
                 [AtlasPlayerSprite.City] = AtlasSpriteId.CityPlayer4,
@@ -187,7 +187,7 @@ namespace Catan.Source.Content
         {
             if (!_playerSpriteMappings.TryGetValue(player, out var playerSprites))
             {
-                throw new ArgumentOutOfRangeException(nameof(player), "Player deve ser entre 1 e 4.");
+                throw new ArgumentOutOfRangeException(nameof(player), "Player deve ser entre 0 e 3.");
             }
 
             if (!playerSprites.TryGetValue(sprite, out var spriteId))

@@ -2,47 +2,11 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Catan.Source.Content;
 using Catan.Source.Scenes;
-using System.Diagnostics.Contracts;
 
 
 namespace Catan.Source.Game.Board
-{
-    // public interface IBoardState
-    // {
-    //     public void EnterState();
-    //     public void ExitState();
-    //     public void Update(GameTime gameTime);
-    //     public void Draw(GameTime gameTime, SpriteBatch spriteBatch);
-    // }
-
-    // public abstract class BoardState : IBoardState
-    // {
-    //     protected Board _board;
-    //     public BoardState(Board board) 
-    //     {
-    //         _board = board;
-    //     }
-    //     public virtual void EnterState() {}
-    //     public virtual void ExitState() {}
-    //     public virtual void Update(GameTime gameTime) {}
-    //     public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch) {}
-    // }
-
-    // public class PlaceBuildingBoardState : BoardState
-    // {
-    //     private Player.Player _player;
-    //     private BuildingType _buildingType;
-    //     public PlaceBuildingBoardState(Board board)
-    //         : base(board) {}
-    //     public override void EnterState()
-    //     {
-    //         base.EnterState();
-
-    //     }
-    // }
-    
+{    
     public class Board : GameObject
     {
         public List<Tile> Tiles { get; set; }
