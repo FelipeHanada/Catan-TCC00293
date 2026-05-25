@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Catan.Source.Content;
 using System.Linq;
 using Catan.Source.Scenes;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Catan.Source.Game.Board
 {
@@ -44,10 +45,18 @@ namespace Catan.Source.Game.Board
                 }
             }
 
-            Board board = new Board(startX, startY)
+            StandardTilePositionIterator positionIterator = new(startX, startY, atlas, gameScene);
+            BoardGraph graph = new();
+            foreach (TileVertex vertex in positionIterator.Vertices)
             {
-                Tiles = tiles
-            };
+                graph.AddVertex(vertex);
+            }
+            foreach (TileEdge edge in positionIterator.Edges)
+            {
+                graph.AddEdge(edge);
+            }
+
+            Board board = new Board(startX, startY, tiles, graph);
             return board;
         }
     }
@@ -98,12 +107,17 @@ namespace Catan.Source.Game.Board
                 tile_idx++;
             }
 
-            Board board = new(startX, startY)
+            BoardGraph graph = new();
+            foreach (TileVertex vertex in positionIterator.Vertices)
             {
-                Tiles = tiles,
-                Vertices = positionIterator.Vertices,
-                Edges = positionIterator.Edges
-            };
+                graph.AddVertex(vertex);
+            }
+            foreach (TileEdge edge in positionIterator.Edges)
+            {
+                graph.AddEdge(edge);
+            }
+
+            Board board = new(startX, startY, tiles, graph);
             return board;
         }
     }
@@ -115,7 +129,6 @@ namespace Catan.Source.Game.Board
         private readonly float width;
         private readonly float height;
         private readonly float h;
-        private readonly GameScene gameScene;
         public List<TileVertex> Vertices { get; set; }
         public List<TileEdge> Edges { get; set; }
 
