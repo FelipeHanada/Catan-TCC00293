@@ -163,8 +163,8 @@ namespace Catan.Source.Game.Inventory
 
             foreach (var entry in resources)
             {
-                ValidateResource(entry.Key, paramName);
-                ValidateAmount(entry.Value, paramName);
+                ValidateResource(entry.Key, "resource");
+                ValidateAmount(entry.Value, "amount");
                 entries.Add(entry);
             }
 

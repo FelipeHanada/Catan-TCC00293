@@ -237,8 +237,12 @@ namespace Catan.Source.Game.Bank
                     throw new ArgumentException("Produção não pode conter itens nulos.", nameof(productions));
                 }
 
-                ValidateInventory(production.RecipientInventory, nameof(productions));
-                ValidateResourceAmount(production.Resource, production.Amount, nameof(productions), nameof(productions));
+                ValidateInventory(production.RecipientInventory, nameof(production.RecipientInventory));
+                ValidateResourceAmount(
+                    production.Resource,
+                    production.Amount,
+                    nameof(production.Resource),
+                    nameof(production.Amount));
 
                 if (production.Amount == 0)
                 {
@@ -284,9 +288,14 @@ namespace Catan.Source.Game.Bank
             ValidateResourceAmount(giveToBank, giveAmount, nameof(giveToBank), nameof(giveAmount));
             ValidateResourceAmount(receiveFromBank, receiveAmount, nameof(receiveFromBank), nameof(receiveAmount));
 
-            if (giveAmount == 0 || receiveAmount == 0)
+            if (giveAmount == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(giveAmount), "Quantidades da troca devem ser maiores que zero.");
+            }
+
+            if (receiveAmount == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(receiveAmount), "Quantidades da troca devem ser maiores que zero.");
             }
 
             if (giveToBank == receiveFromBank)

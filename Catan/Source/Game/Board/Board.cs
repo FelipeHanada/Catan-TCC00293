@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Catan.Source.Content;
 using System.Collections.Generic;
 using Catan.Source.Scenes;
+using HarborModel = Catan.Source.Game.Harbor.Harbor;
 
 namespace Catan.Source.Game.Board
 {
@@ -13,6 +14,7 @@ namespace Catan.Source.Game.Board
         public List<Tile> Tiles { get; set; }
         public List<TileVertex> Vertices { get; set; }
         public List<TileEdge> Edges { get; set; }
+        public List<HarborModel> Harbors { get; set; }
 
         public Board(float x, float y, Atlas atlas)
             : base(x, y)
@@ -21,6 +23,7 @@ namespace Catan.Source.Game.Board
             Tiles = [];
             Vertices = [];
             Edges = [];
+            Harbors = [];
         }
 
         public override void OnSubscribe(Scene scene)

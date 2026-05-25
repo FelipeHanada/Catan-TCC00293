@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 using Microsoft.Xna.Framework;
 using Catan.Source.Content;
 using System.Linq;
+using Catan.Source.Game.Resources;
+using HarborModel = Catan.Source.Game.Harbor.Harbor;
 
 namespace Catan.Source.Game.Board
 {
@@ -101,7 +103,8 @@ namespace Catan.Source.Game.Board
             {
                 Tiles = tiles,
                 Vertices = positionIterator.Vertices,
-                Edges = positionIterator.Edges
+                Edges = positionIterator.Edges,
+                Harbors = positionIterator.CreateHarbors(),
             };
             return board;
         }
@@ -221,6 +224,21 @@ namespace Catan.Source.Game.Board
                 vertexTableA[row + 1][column],
                 vertexTableA[row + 1][column + 1],
                 vertexTableB[row + 1][column + bottomOffset],
+            ];
+        }
+
+        public List<HarborModel> CreateHarbors()
+        {
+            return [
+                HarborModel.CreateGeneric([vertexTableA[0][0], vertexTableA[0][1]]),
+                HarborModel.CreateSpecific(ResourceId.Ore, [vertexTableB[0][0], vertexTableA[1][0]]),
+                HarborModel.CreateSpecific(ResourceId.Wood, [vertexTableA[0][2], vertexTableB[0][3]]),
+                HarborModel.CreateGeneric([vertexTableB[1][4], vertexTableA[2][4]]),
+                HarborModel.CreateSpecific(ResourceId.Brick, [vertexTableA[3][5], vertexTableB[3][4]]),
+                HarborModel.CreateGeneric([vertexTableA[5][3], vertexTableB[5][2]]),
+                HarborModel.CreateSpecific(ResourceId.Wheat, [vertexTableB[5][0], vertexTableB[5][1]]),
+                HarborModel.CreateSpecific(ResourceId.Wool, [vertexTableA[5][0], vertexTableB[4][0]]),
+                HarborModel.CreateGeneric([vertexTableB[2][0], vertexTableA[3][0]]),
             ];
         }
     }
