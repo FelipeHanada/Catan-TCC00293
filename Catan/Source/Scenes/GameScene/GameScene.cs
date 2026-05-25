@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -90,7 +89,7 @@ namespace Catan.Source.Scenes
             currentState.Draw(gameTime, spriteBatch);
         }
 
-        public GameState GetCurrentStateGame() => _stateStack.First();
+        public GameState GetCurrentStateGame() => _stateStack.Peek();
         public void ExitState()
         {
             GameState currentState = GetCurrentStateGame();
