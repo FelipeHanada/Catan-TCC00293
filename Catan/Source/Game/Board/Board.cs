@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Catan.Source.Scenes;
-
+using HarborModel = Catan.Source.Game.Harbor.Harbor;
 
 namespace Catan.Source.Game.Board
 {    
@@ -64,12 +64,14 @@ namespace Catan.Source.Game.Board
     {
         public List<Tile> Tiles { get; private set; }
         public BoardGraph Graph { get; private set; }
+        public List<HarborModel> Harbors { get; set; }
 
-        public Board(float x, float y, List<Tile> tiles, BoardGraph graph)
+        public Board(float x, float y, List<Tile> tiles, List<HarborModel> harbors, BoardGraph graph)
             : base(x, y)
         {
             Tiles = tiles;
             Graph = graph;
+            Harbors = harbors;
         }
 
         public override void OnSubscribe(Scene scene)

@@ -20,14 +20,15 @@ namespace Catan.Source.Scenes.Game
         {
             KeyboardState keyboardState = Keyboard.GetState();
 
-            // Controles temporários até existir UI de ações do jogador
-            // T abre a seleção de troca com o banco.
+            // Controles temporarios ate existir UI de acoes do jogador:
+            // T abre a selecao de troca maritima. A taxa pode ser 4:1, 3:1 ou 2:1,
+            // dependendo dos portos acessiveis pelo jogador no tabuleiro.
             if (IsJustPressed(keyboardState, Keys.T))
             {
-                _gameScene.AppendState(new BankTradeSelectionGameState(_gameScene, _player));
+                _gameScene.AppendState(new MaritimeTradeSelectionGameState(_gameScene, _player));
             }
 
-            // Enter encerra as ações temporárias do jogador e volta ao fluxo atual do turno
+            // Enter encerrar as acoes temporarias do jogador e volta ao fluxo atual do turno.
             if (IsJustPressed(keyboardState, Keys.Enter))
             {
                 _gameScene.ExitState();

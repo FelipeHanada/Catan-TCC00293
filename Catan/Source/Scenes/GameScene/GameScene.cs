@@ -34,7 +34,7 @@ namespace Catan.Source.Scenes
             _players = [];
             for (int i=0; i<4; i++)
             {
-                _players.Add(new Player(i));
+                _players.Add(new Player(i + 1));
             }
         }
 
