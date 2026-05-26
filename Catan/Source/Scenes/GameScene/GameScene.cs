@@ -83,6 +83,9 @@ namespace Catan.Source.Scenes
             }
 
             GameState currentState = GetCurrentStateGame();
+
+            Console.Out.WriteLine(currentState);
+
             currentState.Update(gameTime);
         }
 

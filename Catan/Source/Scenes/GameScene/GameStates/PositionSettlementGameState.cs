@@ -6,13 +6,11 @@ namespace Catan.Source.Scenes.Game
 {
     public class PositionSettlementGameState : GameState
     {
-        private GameScene gameScene;
         public Player Player { get; private set; }
         public BuildingType BuildingType { get; private set; }
         public PositionSettlementGameState(GameScene gameScene, Player player, BuildingType buildingType)
             : base(gameScene)
         {
-            this.gameScene = gameScene;
             Player = player;
             BuildingType = buildingType;
         }
@@ -24,7 +22,7 @@ namespace Catan.Source.Scenes.Game
 
         public bool CanPlaceBuilding(TileVertex tileVertex)
         {
-            BoardGraph graph = gameScene.Board.Graph;
+            BoardGraph graph = _gameScene.Board.Graph;
 
             foreach (TileEdge edge in graph.Incident[tileVertex])
             {
@@ -44,6 +42,38 @@ namespace Catan.Source.Scenes.Game
             }
 
             return false;
+        }
+
+        public virtual void OnPlaceBuilding(TileVertex vertex)
+        {
+            _gameScene.ExitState();
+        }
+    }
+
+    public class SetupPositionSettlementGameState : PositionSettlementGameState
+    {
+        public bool Produce { get; } 
+
+        public SetupPositionSettlementGameState(
+            GameScene gameScene,
+            Player player,
+            BuildingType buildingType,
+            bool produce = false
+        ) : base(gameScene, player, buildingType)
+        {
+            Produce = produce;
+        }
+
+        public override void OnPlaceBuilding(TileVertex vertex)
+        {
+            base.OnPlaceBuilding(vertex);
+
+            if (Produce)
+            {
+                // produz pro jogador atual
+            }
+
+            _gameScene.AppendState(new SetupPositionRoadGameState(_gameScene, Player, vertex));
         }
     }
 }

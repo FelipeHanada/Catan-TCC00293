@@ -84,10 +84,10 @@ namespace Catan.Source.Game.Board
                     && IsHovering(currentMouseState)
                 )
                 {
-                    if (CanPlaceRoad(gameState.Player))
+                    if (gameState.CanPlaceRoad(this))
                     {
                         PlaceRoad(gameState.Player);
-                        gameScene.ExitState();
+                        gameState.OnPlaceRoad(this);
 
                         SoundManager.Instance.Play(SfxId.ConstrucaoEstrada);
                     } else
@@ -98,11 +98,6 @@ namespace Catan.Source.Game.Board
             }
 
             _previousMouseState = currentMouseState;
-        }
-
-        public bool CanPlaceRoad(Player.Player player)
-        {
-            return true;
         }
 
         public void PlaceRoad(Player.Player player)

@@ -67,7 +67,7 @@ namespace Catan.Source.Game.Board
                     if (gameState.CanPlaceBuilding(this))
                     {
                         PlaceBuilding(new Building(gameState.Player, gameState.BuildingType));
-                        gameScene.ExitState();
+                        gameState.OnPlaceBuilding(this);
 
                         SoundManager.Instance.Play(SfxId.ConstrucaoCasa);
                     } else

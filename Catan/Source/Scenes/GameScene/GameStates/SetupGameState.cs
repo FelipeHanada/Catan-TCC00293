@@ -18,16 +18,14 @@ namespace Catan.Source.Scenes.Game
             Stack<Player> stk = new();
             foreach (Player player in gameScene._players)
             {
-                _stateQueue.Enqueue(new PositionSettlementGameState(gameScene, player, BuildingType.Settlement));
-                _stateQueue.Enqueue(new PositionRoadGameState(gameScene, player));
+                _stateQueue.Enqueue(new SetupPositionSettlementGameState(gameScene, player, BuildingType.Settlement));
                 stk.Push(player);
             }
 
             while (stk.Count > 0)
             {
                 Player player = stk.Pop();
-                _stateQueue.Enqueue(new PositionSettlementGameState(gameScene, player, BuildingType.Settlement));
-                _stateQueue.Enqueue(new PositionRoadGameState(gameScene, player));
+                _stateQueue.Enqueue(new SetupPositionSettlementGameState(gameScene, player, BuildingType.Settlement));
             }
         }
 
