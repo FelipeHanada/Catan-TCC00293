@@ -1,4 +1,3 @@
-using Catan.Source.Game.Board;
 using Catan.Source.Game.Player;
 using Microsoft.Xna.Framework;
 

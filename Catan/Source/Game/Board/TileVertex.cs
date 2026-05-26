@@ -64,7 +64,7 @@ namespace Catan.Source.Game.Board
                 if (IsHovering(currentMouseState) && (currentMouseState.LeftButton == ButtonState.Pressed && 
                     _previousMouseState.LeftButton == ButtonState.Released))
                 {
-                    if (CanPlaceBuilding(gameState.Player, gameState.BuildingType))
+                    if (gameState.CanPlaceBuilding(this))
                     {
                         PlaceBuilding(new Building(gameState.Player, gameState.BuildingType));
                         gameScene.ExitState();
@@ -78,28 +78,6 @@ namespace Catan.Source.Game.Board
             }
 
             _previousMouseState = currentMouseState;
-        }
-
-        public bool CanPlaceBuilding(GamePlayer player, BuildingType buildingType)
-        {
-            BoardGraph graph = gameScene.Board.Graph;
-
-            foreach (TileEdge edge in graph.Incident[this])
-            {
-                TileVertex a = edge.VertexA, b = edge.VertexB;
-                if (a != this && a.HasBuilding) return false;
-                if (b != this && b.HasBuilding) return false;
-            }
-
-            if (buildingType == BuildingType.Settlement)
-            {
-                return !HasBuilding;
-            } else if (buildingType == BuildingType.City)
-            {
-                return HasBuilding && Building.Type == BuildingType.Settlement && Building.Owner == player;
-            }
-
-            return false;
         }
 
         public void PlaceBuilding(Building building)
