@@ -15,7 +15,8 @@ namespace Catan.Source.Game.Board
 
         private Texture2D _lineTexture;
 
-        private const float Radius = 4;
+        private const float Radius = 16;
+        private const float Gap = 8;
         private MouseState _previousMouseState;
 
         private readonly Atlas atlas;
@@ -46,7 +47,7 @@ namespace Catan.Source.Game.Board
                 float ax = VertexA.X, ay = VertexA.Y;
                 float bx = VertexB.X, by = VertexB.Y;
 
-                if (ax < bx || (ax == bx && ay < by))
+                if (ax > bx || (ax == bx && ay > by))
                 {
                     (ax, ay, bx, by) = (bx, by, ax, ay);
                 }
@@ -55,19 +56,20 @@ namespace Catan.Source.Game.Board
                 if (ax == bx)
                 {
                     // draw vertical road
-                    spriteId = AtlasPlayerSprite.Road1;
+                    spriteId = AtlasPlayerSprite.Road3; ax -= 8;
                 } else if (ay < by)
                 {
                     // draw horizontal descending road
-                    spriteId = AtlasPlayerSprite.Road1;
+                    spriteId = AtlasPlayerSprite.Road2; ay -= 1;
                 } else
                 {
                     // draw horizontal ascending road
-                    spriteId = AtlasPlayerSprite.Road1;
+                    spriteId = AtlasPlayerSprite.Road1;  by -= 1;
                 }
 
-                Rectangle rect = Atlas.GetRectangle(spriteId, RoadOwner.PlayerNumber);
-                spriteBatch.Draw(atlas.Texture, rect, Color.White);
+                Rectangle sourceRect = Atlas.GetRectangle(spriteId, RoadOwner.PlayerNumber);
+                Rectangle destRect = new((int)ax, (int)Math.Min(ay, by), sourceRect.Width, sourceRect.Height);
+                spriteBatch.Draw(atlas.Texture, destRect, sourceRect, Color.White, 0, new(0, 0), SpriteEffects.None, 1);
             }
         }
 
@@ -110,10 +112,10 @@ namespace Catan.Source.Game.Board
 
         private bool IsHovering(MouseState mouseState)
         {
-            float left = Math.Min(VertexA.X, VertexB.X);
-            float right = Math.Max(VertexA.X, VertexB.X);
-            float top = Math.Min(VertexA.Y, VertexB.Y);
-            float bottom = Math.Max(VertexA.Y, VertexB.Y);
+            float left = Math.Min(VertexA.X, VertexB.X) - Gap;
+            float right = Math.Max(VertexA.X, VertexB.X) + Gap;
+            float top = Math.Min(VertexA.Y, VertexB.Y) - Gap;
+            float bottom = Math.Max(VertexA.Y, VertexB.Y) + Gap;
             float mx = mouseState.X, my = mouseState.Y;
 
             if (mx < left || mx > right || my < top || my > bottom) return false;

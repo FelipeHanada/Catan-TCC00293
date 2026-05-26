@@ -24,14 +24,14 @@ namespace Catan.Source.Game.Board
         {
             base.OnSubscribe(scene);
             
-            foreach (TileVertex vertex in Vertices)
-            {
-                scene.Subscribe(vertex);
-            }
-
             foreach (TileEdge edge in Edges)
             {
                 scene.Subscribe(edge);
+            }
+
+            foreach (TileVertex vertex in Vertices)
+            {
+                scene.Subscribe(vertex);
             }
         }
 
