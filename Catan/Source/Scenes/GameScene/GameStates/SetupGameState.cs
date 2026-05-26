@@ -25,7 +25,7 @@ namespace Catan.Source.Scenes.Game
             while (stk.Count > 0)
             {
                 Player player = stk.Pop();
-                _stateQueue.Enqueue(new SetupPositionSettlementGameState(gameScene, player, BuildingType.Settlement));
+                _stateQueue.Enqueue(new SetupPositionSettlementGameState(gameScene, player, BuildingType.Settlement, true));
             }
         }
 
