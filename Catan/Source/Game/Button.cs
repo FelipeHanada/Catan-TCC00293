@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
@@ -142,5 +143,24 @@ namespace Catan.Source.Game
 
             previousMouseState = mouseState;
         }
+    }
+
+    public class ButtonAction : Button
+    {
+        private class ActionICommand(Action action) : ICommand
+        {
+            public Action Action { get; private set; } = action;
+
+            public void Execute()
+            {
+                Action.Invoke();
+            }            
+        }
+
+        public ButtonAction(float x, float y, Atlas atlas, int width, int height, Action action, string label)
+            : base(x, y, atlas, width, height, new ActionICommand(action), label) {}
+
+        public ButtonAction(float x, float y, Atlas atlas, Action action, string label)
+            : base(x, y, atlas, new ActionICommand(action), label) {}
     }
 }
