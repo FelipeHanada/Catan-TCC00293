@@ -15,7 +15,6 @@ namespace Catan.Source.Game
     {
         void Execute();
     }
-
     public class Button : GameObject
     {
         private readonly Atlas atlas;
@@ -28,6 +27,7 @@ namespace Catan.Source.Game
 
         private bool hovered;
         private bool pressed = false;
+        private bool enabled = true;
         private ICommand buttonCommand;
         private MouseState previousMouseState;
 
@@ -58,10 +58,20 @@ namespace Catan.Source.Game
         {
             this.fontScale = scale;
         }
-
+        public void setEnabled(bool isEnabled)
+        {
+            this.enabled = isEnabled;
+        }
+        public Boolean getEnabled()
+        {
+            return this.enabled;
+        }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            Color edgeColor = enabled ? Color.White : Color.Gray;
+            Color fillColor = enabled ? (hovered ? Color.LightGray : Color.White) : Color.DarkGray;
+
             Vector2 size = _font.MeasureString(label);
             if (isDynamicSize)
             {
@@ -72,58 +82,58 @@ namespace Catan.Source.Game
                 atlas.Texture,
                 new Vector2(this.X, this.Y),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonUpLeft),
-                Color.White);
+                edgeColor);
 
             spriteBatch.Draw(
                 atlas.Texture,
                 new Vector2(this.X + width + cornerWidth, this.Y),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonUpRight),
-                Color.White);
+                edgeColor);
 
             spriteBatch.Draw(
                 atlas.Texture,
                 new Vector2(this.X, this.Y + height + cornerHeight),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonBotLeft),
-                Color.White);
+                edgeColor);
 
             spriteBatch.Draw(
                 atlas.Texture,
                 new Vector2(this.X + width + cornerWidth, this.Y + height + cornerHeight),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonBotRight),
-                Color.White);
+                edgeColor);
 
             spriteBatch.Draw(
                 atlas.Texture,
                 new Rectangle((int) this.X, (int) this.Y + cornerHeight, cornerWidth, height),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonEdgeLeft),
-                Color.White);
+                edgeColor);
 
             spriteBatch.Draw(
                 atlas.Texture,
                 new Rectangle((int) this.X + width + cornerWidth, (int) this.Y + cornerHeight, cornerWidth, height),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonEdgeRight),
-                Color.White);
+                edgeColor);
 
             spriteBatch.Draw(
                 atlas.Texture,
                 new Rectangle((int) this.X + cornerWidth, (int) this.Y, width, cornerHeight),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonEdgeTop),
-                Color.White);
+                edgeColor);
 
             spriteBatch.Draw(
                 atlas.Texture,
                 new Rectangle((int) this.X + cornerWidth, (int) this.Y + height + cornerHeight, width, cornerHeight),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonEdgeBot),
-                Color.White);
+                edgeColor);
 
             spriteBatch.Draw(
                 atlas.Texture,
                 new Rectangle((int)this.X + cornerWidth, (int)this.Y + cornerHeight, width, height),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonFill),
-                hovered ? Color.LightGray : Color.White);
+                fillColor);
             
 //            spriteBatch.DrawString(_font, label, new Vector2(this.X + padding * cornerWidth + 1, this.Y + padding * cornerHeight + 1), new Color(0, 0, 0, 120), 0.0f, new Vector2(0, 0), fontScale, SpriteEffects.None, 0.0f);
-            spriteBatch.DrawString(_font, label, new Vector2(this.X + cornerWidth + width/2, this.Y + cornerHeight + height/2), hovered ? Color.SaddleBrown : Color.Brown, 0.0f, new Vector2(size.X/2, size.Y/2.5f), fontScale, SpriteEffects.None, 0.0f);
+            spriteBatch.DrawString(_font, label, new Vector2(this.X + cornerWidth + width/2, this.Y + cornerHeight + height/2), enabled ? (hovered ? Color.SaddleBrown : Color.SaddleBrown) : Color.Brown, 0.0f, new Vector2(size.X/2, size.Y/2.5f), fontScale, SpriteEffects.None, 0.0f);
         }
         public override void Update(GameTime gameTime) {
             MouseState mouseState = Mouse.GetState();
@@ -133,6 +143,7 @@ namespace Catan.Source.Game
                 if (hovered == false) hovered = true;
                 else
                 {
+                    if (!enabled) return;
                     if (previousMouseState.LeftButton == ButtonState.Released && mouseState.LeftButton == ButtonState.Pressed) buttonCommand.Execute();
                 }
             }
