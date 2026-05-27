@@ -55,15 +55,16 @@ namespace Catan.Source.Scenes
             _atlas = new Atlas(Game1.ContentManager);
 
             StandardRandomBoardFactory factory = new(_atlas, 0, 0);
-            Board = factory.CreateBoard();
+            Board = factory.CreateBoard(this);
             Subscribe(Board);
 
             DiceRollControl diceRollControl = new(_atlas, this);
             Subscribe(diceRollControl);
 
             // _stateStack.Push(new PositionSettlementGameState(this));
-            // _stateStack.Push(new WaitingForDiceRoll(this, diceRollControl));
-            _stateStack.Push(new ResourceProduction(this, _players[0], diceRollControl));
+            // _stateStack.Push(new WaitingForDiceRollGameState(this, diceRollControl));
+            // _stateStack.Push(new ResourceProductionGameState(this, _players[0], diceRollControl));
+            _stateStack.Push(new SetupGameState(this));
         }
 
         public override void UnloadContent()
@@ -82,6 +83,9 @@ namespace Catan.Source.Scenes
             }
 
             GameState currentState = GetCurrentStateGame();
+
+            Console.Out.WriteLine(currentState);
+
             currentState.Update(gameTime);
         }
 

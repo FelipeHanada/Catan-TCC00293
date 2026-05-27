@@ -1,29 +1,77 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Catan.Source.Content;
-using System.Collections.Generic;
 using Catan.Source.Scenes;
 using HarborModel = Catan.Source.Game.Harbor.Harbor;
 
 namespace Catan.Source.Game.Board
-{
-    public class Board : GameObject
+{    
+    public class BoardGraph : GameObject
     {
-        private readonly Atlas atlas;
-        public List<Tile> Tiles { get; set; }
-        public List<TileVertex> Vertices { get; set; }
-        public List<TileEdge> Edges { get; set; }
-        public List<HarborModel> Harbors { get; set; }
+        public HashSet<TileVertex> Vertices { get; private set; }
+        public HashSet<TileEdge> Edges { get; private set; }
+        public Dictionary<TileVertex, HashSet<TileEdge>> Incident { get; private set; }
 
-        public Board(float x, float y, Atlas atlas)
-            : base(x, y)
+        public BoardGraph()
         {
-            this.atlas = atlas;
-            Tiles = [];
             Vertices = [];
             Edges = [];
-            Harbors = [];
+            Incident = [];
+        }
+
+        public override void OnSubscribe(Scene scene)
+        {
+            base.OnSubscribe(scene);
+            
+            foreach (TileEdge edge in Edges)
+            {
+                scene.Subscribe(edge);
+            }
+
+            foreach (TileVertex vertex in Vertices)
+            {
+                scene.Subscribe(vertex);
+            }
+        }
+
+        public void AddVertex(TileVertex vertex)
+        {
+            ArgumentNullException.ThrowIfNull(vertex);
+
+            if (Vertices.Add(vertex))
+            {
+                Incident[vertex] = [];
+            }
+        }
+
+        public void AddEdge(TileEdge edge)
+        {
+            ArgumentNullException.ThrowIfNull(edge);
+
+            if (!Vertices.Contains(edge.VertexA) || !Vertices.Contains(edge.VertexB))
+                throw new InvalidOperationException("Both vertices of the edge must already belong to the graph.");
+
+            if (Edges.Add(edge))
+            {
+                Incident[edge.VertexA].Add(edge);
+                Incident[edge.VertexB].Add(edge);
+            }
+        }
+    }
+
+    public class Board : GameObject
+    {
+        public List<Tile> Tiles { get; private set; }
+        public BoardGraph Graph { get; private set; }
+        public List<HarborModel> Harbors { get; set; }
+
+        public Board(float x, float y, List<Tile> tiles, List<HarborModel> harbors, BoardGraph graph)
+            : base(x, y)
+        {
+            Tiles = tiles;
+            Graph = graph;
+            Harbors = harbors;
         }
 
         public override void OnSubscribe(Scene scene)
@@ -34,15 +82,7 @@ namespace Catan.Source.Game.Board
                 scene.Subscribe(tile);
             }
 
-            foreach (TileVertex vertex in Vertices)
-            {
-                scene.Subscribe(vertex);
-            }
-
-            foreach (TileEdge edge in Edges)
-            {
-                scene.Subscribe(edge);
-            }
+            scene.Subscribe(Graph);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)

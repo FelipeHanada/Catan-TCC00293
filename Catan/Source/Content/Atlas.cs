@@ -44,24 +44,24 @@ namespace Catan.Source.Content
             [AtlasSpriteId.TileFarm] = new Rectangle(640, 0, 128, 128),
             [AtlasSpriteId.SettlementPlayer1] = new Rectangle(0, 128, 32, 32),
             [AtlasSpriteId.CityPlayer1] = new Rectangle(32, 160, 32, 32),
-            [AtlasSpriteId.Road1Player1] = new Rectangle(64, 64, 48, 16),
-            [AtlasSpriteId.Road2Player1] = new Rectangle(64, 80, 48, 16),
-            [AtlasSpriteId.Road3Player1] = new Rectangle(64, 96, 48, 16),
+            [AtlasSpriteId.Road1Player1] = new Rectangle(128, 128, 64, 34),
+            [AtlasSpriteId.Road2Player1] = new Rectangle(192, 128, 64, 34),
+            [AtlasSpriteId.Road3Player1] = new Rectangle(256, 128, 16, 64),
             [AtlasSpriteId.SettlementPlayer2] = new Rectangle(32, 128, 32, 32),
             [AtlasSpriteId.CityPlayer2] = new Rectangle(32, 160, 32, 32),
-            [AtlasSpriteId.Road1Player2] = new Rectangle(64, 128, 48, 16),
-            [AtlasSpriteId.Road2Player2] = new Rectangle(64, 144, 48, 16),
-            [AtlasSpriteId.Road3Player2] = new Rectangle(64, 160, 48, 16),
+            [AtlasSpriteId.Road1Player2] = new Rectangle(128+144, 128, 64, 34),
+            [AtlasSpriteId.Road2Player2] = new Rectangle(192+144, 128, 64, 34),
+            [AtlasSpriteId.Road3Player2] = new Rectangle(256+144, 128, 16, 64),
             [AtlasSpriteId.SettlementPlayer3] = new Rectangle(64, 128, 32, 32),
             [AtlasSpriteId.CityPlayer3] = new Rectangle(64, 160, 32, 32),
-            [AtlasSpriteId.Road1Player3] = new Rectangle(64, 192, 48, 16),
-            [AtlasSpriteId.Road2Player3] = new Rectangle(64, 208, 48, 16),
-            [AtlasSpriteId.Road3Player3] = new Rectangle(64, 224, 48, 16),
+            [AtlasSpriteId.Road1Player3] = new Rectangle(128+2*144, 128, 64, 34),
+            [AtlasSpriteId.Road2Player3] = new Rectangle(192+2*144, 128, 64, 34),
+            [AtlasSpriteId.Road3Player3] = new Rectangle(256+2*144, 128, 16, 64),
             [AtlasSpriteId.SettlementPlayer4] = new Rectangle(96, 128, 32, 32),
             [AtlasSpriteId.CityPlayer4] = new Rectangle(96, 160, 32, 32),
-            [AtlasSpriteId.Road1Player4] = new Rectangle(64, 256, 48, 16),
-            [AtlasSpriteId.Road2Player4] = new Rectangle(64, 272, 48, 16),
-            [AtlasSpriteId.Road3Player4] = new Rectangle(64, 288, 48, 16),
+            [AtlasSpriteId.Road1Player4] = new Rectangle(128+3*144, 128, 64, 34),
+            [AtlasSpriteId.Road2Player4] = new Rectangle(192+3*144, 128, 64, 34),
+            [AtlasSpriteId.Road3Player4] = new Rectangle(256+3*144, 128, 16, 64),
             [AtlasSpriteId.DevCardInvention] = new Rectangle(0, 320, 48, 64),
             [AtlasSpriteId.DevCardRoad] = new Rectangle(48, 320, 48, 64),
             [AtlasSpriteId.DevCardMonopoly] = new Rectangle(96, 320, 48, 64),
@@ -97,7 +97,7 @@ namespace Catan.Source.Content
         };
         private static readonly Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>> _playerSpriteMappings = new Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>>
         {
-            [1] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
+            [0] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
             {
                 [AtlasPlayerSprite.Settlement] = AtlasSpriteId.SettlementPlayer1,
                 [AtlasPlayerSprite.City] = AtlasSpriteId.CityPlayer1,
@@ -105,7 +105,7 @@ namespace Catan.Source.Content
                 [AtlasPlayerSprite.Road2] = AtlasSpriteId.Road2Player1,
                 [AtlasPlayerSprite.Road3] = AtlasSpriteId.Road3Player1,
             },
-            [2] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
+            [1] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
             {
                 [AtlasPlayerSprite.Settlement] = AtlasSpriteId.SettlementPlayer2,
                 [AtlasPlayerSprite.City] = AtlasSpriteId.CityPlayer2,
@@ -113,7 +113,7 @@ namespace Catan.Source.Content
                 [AtlasPlayerSprite.Road2] = AtlasSpriteId.Road2Player2,
                 [AtlasPlayerSprite.Road3] = AtlasSpriteId.Road3Player2,
             },
-            [3] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
+            [2] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
             {
                 [AtlasPlayerSprite.Settlement] = AtlasSpriteId.SettlementPlayer3,
                 [AtlasPlayerSprite.City] = AtlasSpriteId.CityPlayer3,
@@ -121,7 +121,7 @@ namespace Catan.Source.Content
                 [AtlasPlayerSprite.Road2] = AtlasSpriteId.Road2Player3,
                 [AtlasPlayerSprite.Road3] = AtlasSpriteId.Road3Player3,
             },
-            [4] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
+            [3] = new Dictionary<AtlasPlayerSprite, AtlasSpriteId>
             {
                 [AtlasPlayerSprite.Settlement] = AtlasSpriteId.SettlementPlayer4,
                 [AtlasPlayerSprite.City] = AtlasSpriteId.CityPlayer4,
@@ -187,7 +187,7 @@ namespace Catan.Source.Content
         {
             if (!_playerSpriteMappings.TryGetValue(player, out var playerSprites))
             {
-                throw new ArgumentOutOfRangeException(nameof(player), "Player deve ser entre 1 e 4.");
+                throw new ArgumentOutOfRangeException(nameof(player), "Player deve ser entre 0 e 3.");
             }
 
             if (!playerSprites.TryGetValue(sprite, out var spriteId))

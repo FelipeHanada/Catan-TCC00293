@@ -96,7 +96,7 @@ namespace Catan.Source.Game.Dice
 
         public override void Update(GameTime gameTime)
         {
-            IsEnabled = _gameScene.GetCurrentStateGame() is WaitingForDiceRoll;
+            IsEnabled = _gameScene.GetCurrentStateGame() is WaitingForDiceRollGameState;
 
             if (state != DiceRollControlState.Rolling)
             {

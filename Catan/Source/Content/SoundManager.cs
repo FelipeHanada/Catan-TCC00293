@@ -23,7 +23,7 @@ namespace Catan.Source.Content
         private static SoundManager _instance;
 
         private readonly Dictionary<SfxId, SoundEffect> _soundEffects = new();
-        private float _globalVolume = 1f;
+        private float _globalVolume = 0.1f;
 
         private static readonly Dictionary<SfxId, string> _soundPaths = new()
         {
