@@ -63,7 +63,7 @@ namespace Catan.Source.Scenes
                 var obj = ToUnsubscribe.Dequeue();
                 if (GameObjects.Remove(obj))
                 {
-                    obj.OnUnsubscribe();
+                    obj.OnUnsubscribe(this);
                 }
             }
         }
@@ -93,7 +93,7 @@ namespace Catan.Source.Scenes
             {
                 foreach (var obj in GameObjects)
                 {
-                    obj.OnUnsubscribe();
+                    obj.OnUnsubscribe(this);
                 }
                 GameObjects.Clear();
                 UnloadContent();
