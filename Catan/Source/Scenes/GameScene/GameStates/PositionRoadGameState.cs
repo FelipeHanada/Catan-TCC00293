@@ -4,13 +4,11 @@ using Microsoft.Xna.Framework;
 
 namespace Catan.Source.Scenes.Game
 {
-    public class PositionRoadGameState : GameState
+    public class PositionRoadGameState : PlayerTurnGameState
     {
-        public Player Player { get; private set; }
         public PositionRoadGameState(GameScene gameScene, Player player)
-            : base(gameScene)
+            : base(gameScene, player)
         {
-            Player = player;
         }
 
         public override void Update(GameTime gameTime)

@@ -4,14 +4,12 @@ using Microsoft.Xna.Framework;
 
 namespace Catan.Source.Scenes.Game
 {
-    public class PositionSettlementGameState : GameState
+    public class PositionSettlementGameState : PlayerTurnGameState
     {
-        public Player Player { get; private set; }
         public BuildingType BuildingType { get; private set; }
         public PositionSettlementGameState(GameScene gameScene, Player player, BuildingType buildingType)
-            : base(gameScene)
+            : base(gameScene, player)
         {
-            Player = player;
             BuildingType = buildingType;
         }
 
