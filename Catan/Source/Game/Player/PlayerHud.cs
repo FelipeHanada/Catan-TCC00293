@@ -1,3 +1,4 @@
+using Catan.Source.Game.Resources;
 using Catan.Source.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,23 +17,34 @@ namespace Catan.Source.Game.Player
             Font ??= Game1.ContentManager.Load<SpriteFont>("bigFont");
         }
 
-        public override void OnSubscribe(Scene scene)
+        public static void DrawString(SpriteBatch spriteBatch, string text, Vector2 position)
         {
+            spriteBatch.DrawString(
+                Font,
+                text,
+                position,
+                Color.White, 0,
+                new Vector2(0, 0),
+                new Vector2(0.1f, 0.1f),
+                SpriteEffects.None,
+                0);   
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             base.Draw(gameTime, spriteBatch);
 
-            spriteBatch.DrawString(
-                Font,
-                "TESTE " + Player.PlayerNumber,
-                new Vector2(X, Y),
-                Color.Black, 0,
-                new Vector2(0, 0),
-                new Vector2(1, 1),
-                SpriteEffects.None,
-                0);
+            float deltaY = 0;
+
+            DrawString(spriteBatch, "PlayerNumber: " + Player.PlayerNumber, new(X, Y + deltaY));
+            deltaY += 16;
+
+            foreach (ResourceId resourceId in ResourceUtils.ResourceIds)
+            {
+                int amount = Player.Inventory.Resources.GetAmount(resourceId);
+                DrawString(spriteBatch, ResourceUtils.ResourceName[resourceId].ToUpper() + ": " + amount, new(X, Y + deltaY));
+                deltaY += 16;
+            }
         }
     }
 }
