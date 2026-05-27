@@ -1,3 +1,4 @@
+using Catan.Source.Content;
 using Catan.Source.Game.Player;
 
 namespace Catan.Source.Scenes.Game
@@ -10,7 +11,7 @@ namespace Catan.Source.Scenes.Game
             : base(gameScene)
         {
             Player = player;
-            Hud = new PlayerHud(0, 0, Player);
+            Hud = new PlayerHud(gameScene.Atlas, Player);
         }
         public override void LoadContent()
         {

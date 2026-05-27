@@ -17,7 +17,7 @@ namespace Catan.Source.Scenes
     public class GameScene : Scene
     {
         public override MusicId? Music => MusicId.Partida;
-        private Atlas _atlas;
+        public Atlas Atlas { get; private set; }
 
         private Stack<GameState> _stateStack;
 
@@ -52,13 +52,13 @@ namespace Catan.Source.Scenes
             Subscribe(new BankDebugPanel(Bank));
             #endif
 
-            _atlas = new Atlas(Game1.ContentManager);
+            Atlas = new Atlas(Game1.ContentManager);
 
-            StandardRandomBoardFactory factory = new(_atlas, 0, 0);
+            StandardRandomBoardFactory factory = new(Atlas, 0, 0);
             Board = factory.CreateBoard(this);
             Subscribe(Board);
 
-            DiceRollControl diceRollControl = new(_atlas, this);
+            DiceRollControl diceRollControl = new(Atlas, this);
             Subscribe(diceRollControl);
 
             // _stateStack.Push(new PositionSettlementGameState(this));

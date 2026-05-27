@@ -1,20 +1,31 @@
-using Catan.Source.Game.Resources;
-using Catan.Source.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Catan.Source.Scenes;
+using Catan.Source.Game;
+using Catan.Source.Game.Resources;
+using Catan.Source.Content;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace Catan.Source.Game.Player
 {
     public class PlayerHud : GameObject
     {
+        private Atlas _atlas;
         public Player Player { get; }
         private static SpriteFont Font = null;
 
-        public PlayerHud(float x, float y, Player player) : base(x, y)
+
+        public PlayerHud(Atlas atlas, Player player) : base(0, 0)
         {
+            _atlas = atlas;
             Player = player;
             Font ??= Game1.ContentManager.Load<SpriteFont>("bigFont");
+
+            Action doNothing = () => {};
+            AddChild(new ButtonAction(200, 0, _atlas, doNothing, "asdasd"));
         }
 
         public static void DrawString(SpriteBatch spriteBatch, string text, Vector2 position)
