@@ -10,7 +10,8 @@ namespace Catan.Source.Game.Bank
         public const int DefaultCardsPerResource = 19;
 
         private readonly int _cardsPerResource;
-        private readonly Dictionary<ResourceId, int> _resources;
+
+        public ResourceInventory Resources { get; }
 
         public Bank(int cardsPerResource = DefaultCardsPerResource)
         {
@@ -20,30 +21,30 @@ namespace Catan.Source.Game.Bank
             }
 
             _cardsPerResource = cardsPerResource;
-            _resources = new Dictionary<ResourceId, int>();
+            Resources = new ResourceInventory();
 
             foreach (ResourceId resource in Enum.GetValues<ResourceId>())
             {
-                _resources[resource] = cardsPerResource;
+                Resources.Add(resource, cardsPerResource);
             }
         }
 
         public int GetAmount(ResourceId resource)
         {
             ValidateResource(resource, nameof(resource));
-            return _resources[resource];
+            return Resources.GetAmount(resource);
         }
 
         public bool CanGive(ResourceId resource, int amount)
         {
             ValidateResourceAmount(resource, amount, nameof(resource), nameof(amount));
-            return _resources[resource] >= amount;
+            return Resources.Has(resource, amount);
         }
 
         public bool CanReceive(ResourceId resource, int amount)
         {
             ValidateResourceAmount(resource, amount, nameof(resource), nameof(amount));
-            return amount <= _cardsPerResource - _resources[resource];
+            return amount <= _cardsPerResource - Resources.GetAmount(resource);
         }
 
         public void Give(ResourceInventory inventory, ResourceId resource, int amount)
@@ -62,7 +63,7 @@ namespace Catan.Source.Game.Bank
             }
 
             inventory.Add(resource, amount);
-            _resources[resource] -= amount;
+            Resources.Remove(resource, amount);
         }
 
         public void Receive(ResourceInventory inventory, ResourceId resource, int amount)
@@ -81,7 +82,7 @@ namespace Catan.Source.Game.Bank
             }
 
             inventory.Remove(resource, amount);
-            _resources[resource] += amount;
+            Resources.Add(resource, amount);
         }
 
         public bool CanTrade(
@@ -128,9 +129,9 @@ namespace Catan.Source.Game.Bank
             }
 
             inventory.Remove(giveToBank, giveAmount);
-            _resources[giveToBank] += giveAmount;
+            Resources.Add(giveToBank, giveAmount);
 
-            _resources[receiveFromBank] -= receiveAmount;
+            Resources.Remove(receiveFromBank, receiveAmount);
             inventory.Add(receiveFromBank, receiveAmount);
         }
 
@@ -164,7 +165,7 @@ namespace Catan.Source.Game.Bank
                     continue;
                 }
 
-                if (_resources[resource] >= totalRequested)
+                if (Resources.GetAmount(resource) >= totalRequested)
                 {
                     AddFullDeliveries(deliveries, resource, requestsByInventory);
                     continue;
@@ -196,7 +197,7 @@ namespace Catan.Source.Game.Bank
         {
             foreach (var request in requestsByInventory)
             {
-                int amount = Math.Min(_resources[resource], request.Value);
+                int amount = Math.Min(Resources.GetAmount(resource), request.Value);
                 if (amount > 0)
                 {
                     deliveries.Add(new ResourceDistributionRequest(request.Key, resource, amount));
@@ -312,7 +313,7 @@ namespace Catan.Source.Game.Bank
 
         private void ValidateResource(ResourceId resource, string paramName)
         {
-            if (!_resources.ContainsKey(resource))
+            if (!Resources.Resources.ContainsKey(resource))
             {
                 throw new ArgumentOutOfRangeException(paramName, resource, "Recurso não suportado.");
             }
