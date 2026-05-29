@@ -1,5 +1,6 @@
 using Catan.Source.Game.Board;
 using Catan.Source.Game.Player;
+using Catan.Source.Game.Resources;
 using Microsoft.Xna.Framework;
 
 namespace Catan.Source.Scenes.Game
@@ -70,10 +71,37 @@ namespace Catan.Source.Scenes.Game
 
             if (Produce)
             {
-                // produz pro jogador atual
+                ProduceInitialResources(vertex);
             }
 
             _gameScene.AppendState(new SetupPositionRoadGameState(_gameScene, Player, vertex));
+        }
+
+        private void ProduceInitialResources(TileVertex vertex)
+        {
+            foreach (Tile tile in _gameScene.Board.Tiles)
+            {
+                if (!IsAdjacentTo(tile, vertex) ||
+                    tile.ProducedResource is not ResourceId resource)
+                {
+                    continue;
+                }
+
+                _gameScene.Bank.Give(Player.Inventory.Resources, resource, 1);
+            }
+        }
+
+        private static bool IsAdjacentTo(Tile tile, TileVertex vertex)
+        {
+            foreach (TileVertex tileVertex in tile.Vertices)
+            {
+                if (ReferenceEquals(tileVertex, vertex))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

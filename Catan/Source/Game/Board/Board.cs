@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Catan.Source.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Catan.Source.Scenes;
@@ -64,6 +65,7 @@ namespace Catan.Source.Game.Board
 
     public class Board : GameObject
     {
+        private readonly Atlas _atlas;
         private Tile _robberTile;
 
         public List<Tile> Tiles { get; private set; }
@@ -71,9 +73,10 @@ namespace Catan.Source.Game.Board
         public List<HarborModel> Harbors { get; set; }
         public Tile RobberTile => _robberTile;
 
-        public Board(float x, float y, List<Tile> tiles, List<HarborModel> harbors, BoardGraph graph)
+        public Board(float x, float y, Atlas atlas, List<Tile> tiles, List<HarborModel> harbors, BoardGraph graph)
             : base(x, y)
         {
+            _atlas = atlas;
             Tiles = tiles;
             Graph = graph;
             Harbors = harbors;
@@ -127,7 +130,7 @@ namespace Catan.Source.Game.Board
             }
 
             scene.Subscribe(Graph);
-            scene.Subscribe(new RobberMarker(this));
+            scene.Subscribe(new RobberMarker(this, _atlas));
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)

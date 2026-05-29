@@ -12,21 +12,31 @@ namespace Catan.Source.Scenes.Game
     public class ResourceProductionGameState : GameState
     {
         private bool _rolled;
-        private Player _player;
-        private DiceRollControl _diceRollControl;
+        private bool _waitingForPlayerActions;
+        private readonly List<Player> _players;
+        private int _currentPlayerIndex;
+        private readonly DiceRollControl _diceRollControl;
 
-        public ResourceProductionGameState(GameScene gameScene, Player player, DiceRollControl diceRollControl)
+        public ResourceProductionGameState(GameScene gameScene, List<Player> players, DiceRollControl diceRollControl)
             : base(gameScene)
         {
-            _player = player;
+            _players = players;
             _diceRollControl = diceRollControl;
 
             _rolled = false;
+            _waitingForPlayerActions = false;
+            _currentPlayerIndex = 0;
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+
+            if (_waitingForPlayerActions)
+            {
+                AdvanceTurn();
+                _waitingForPlayerActions = false;
+            }
 
             if (!_rolled) {
                 _rolled = true;
@@ -56,14 +66,27 @@ namespace Catan.Source.Scenes.Game
 
             _gameScene.Bank.DistributeProduction(distributionRequests);
             _rolled = false;
-            _gameScene.AppendState(new PlayerActionsGameState(_gameScene, _player));
+            StartPlayerActions();
         }
 
         private void StartSevenRuleFlow()
         {
             _rolled = false;
-            _gameScene.AppendState(new PlayerActionsGameState(_gameScene, _player));
-            _gameScene.AppendState(new SevenRuleGameState(_gameScene, _player, _gameScene._players));
+            StartPlayerActions();
+            _gameScene.AppendState(new SevenRuleGameState(_gameScene, CurrentPlayer, _players));
         }
+
+        private void StartPlayerActions()
+        {
+            _waitingForPlayerActions = true;
+            _gameScene.AppendState(new PlayerActionsGameState(_gameScene, CurrentPlayer));
+        }
+
+        private void AdvanceTurn()
+        {
+            _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.Count;
+        }
+
+        private Player CurrentPlayer => _players[_currentPlayerIndex];
     }
 }

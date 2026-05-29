@@ -47,7 +47,7 @@ namespace Catan.Source.Game.Board
 
             StandardTilePositionIterator positionIterator = new(startX, startY, atlas, gameScene);
             BoardGraph graph = CreateGraph(positionIterator);
-            Board board = new(startX, startY, tiles, positionIterator.CreateHarbors(), graph);
+            Board board = new(startX, startY, atlas, tiles, positionIterator.CreateHarbors(), graph);
             board.InitializeRobber();
             return board;
         }
@@ -123,7 +123,7 @@ namespace Catan.Source.Game.Board
             }
 
             BoardGraph graph = CreateGraph(positionIterator);
-            Board board = new(startX, startY, tiles, positionIterator.CreateHarbors(), graph);
+            Board board = new(startX, startY, atlas, tiles, positionIterator.CreateHarbors(), graph);
             board.InitializeRobber();
             return board;
         }
