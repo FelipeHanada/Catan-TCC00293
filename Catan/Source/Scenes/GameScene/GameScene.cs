@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -8,8 +7,9 @@ using Catan.Source.Content;
 using Catan.Source.Game.Board;
 using Catan.Source.Game.Dice;
 using Catan.Source.Game.Debug;
-using Catan.Source.Scenes.Game;
 using Catan.Source.Game.Player;
+using Catan.Source.Scenes.Game;
+using GameBank = Catan.Source.Game.Bank.Bank;
 
 
 namespace Catan.Source.Scenes
@@ -21,6 +21,7 @@ namespace Catan.Source.Scenes
 
         private Stack<GameState> _stateStack;
 
+        public GameBank Bank { get; }
         public Board Board { get; private set; }
         public DiceRoll LastDiceRoll { get; set; }
 
@@ -29,10 +30,11 @@ namespace Catan.Source.Scenes
         public GameScene()
         {
             _stateStack = new();
+            Bank = new GameBank();
             _players = [];
             for (int i=0; i<4; i++)
             {
-                _players.Add(new Player(i));
+                _players.Add(new Player(i + 1));
             }
         }
 
@@ -47,19 +49,22 @@ namespace Catan.Source.Scenes
 
             #if DEBUG
             Subscribe(new SoundBoardDebug());
+            Subscribe(new BankDebugPanel(Bank));
             #endif
 
             _atlas = new Atlas(Game1.ContentManager);
 
             StandardRandomBoardFactory factory = new(_atlas, 0, 0);
-            Board = factory.CreateBoard();
+            Board = factory.CreateBoard(this);
             Subscribe(Board);
 
             DiceRollControl diceRollControl = new(_atlas, this);
             Subscribe(diceRollControl);
 
             // _stateStack.Push(new PositionSettlementGameState(this));
-            _stateStack.Push(new PlayerTurnGameState(this, _players[0], _players, diceRollControl));
+            // _stateStack.Push(new WaitingForDiceRollGameState(this, diceRollControl));
+            // _stateStack.Push(new ResourceProductionGameState(this, _players[0], diceRollControl));
+            _stateStack.Push(new SetupGameState(this));
         }
 
         public override void UnloadContent()
@@ -78,6 +83,9 @@ namespace Catan.Source.Scenes
             }
 
             GameState currentState = GetCurrentStateGame();
+
+            Console.Out.WriteLine(currentState);
+
             currentState.Update(gameTime);
         }
 
@@ -89,7 +97,7 @@ namespace Catan.Source.Scenes
             currentState.Draw(gameTime, spriteBatch);
         }
 
-        public GameState GetCurrentStateGame() => _stateStack.First();
+        public GameState GetCurrentStateGame() => _stateStack.Peek();
         public void ExitState()
         {
             GameState currentState = GetCurrentStateGame();

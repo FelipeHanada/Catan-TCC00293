@@ -2,17 +2,16 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Catan.Source.Game.Dice;
-using Catan.Source.Game.Resources;
 
 namespace Catan.Source.Scenes.Game
 {
-    public class WaitingForDiceRoll : GameState
+    public class WaitingForDiceRollGameState : GameState
     {
         private DiceRollControl _diceRollControl;
         private RandomDiceRoller _diceRoller;
         private MouseState _previousMouseState;
 
-        public WaitingForDiceRoll(GameScene gameScene, DiceRollControl diceRollControl)
+        public WaitingForDiceRollGameState(GameScene gameScene, DiceRollControl diceRollControl)
             : base(gameScene)
         {
             _diceRollControl = diceRollControl;
@@ -30,7 +29,7 @@ namespace Catan.Source.Scenes.Game
                 _diceRollControl.StartRoll(_diceRoller.Roll());
                 
                 _gameScene.ExitState();
-                _gameScene.AppendState(new RollingDice(_gameScene, _diceRollControl));
+                _gameScene.AppendState(new RollingDiceGameState(_gameScene, _diceRollControl));
             }
 
             _previousMouseState = mouseState;
@@ -42,11 +41,11 @@ namespace Catan.Source.Scenes.Game
         }
     }
 
-    public class RollingDice : GameState
+    public class RollingDiceGameState : GameState
     {
         private DiceRollControl _diceRollControl;
 
-        public RollingDice(GameScene gameScene, DiceRollControl diceRollControl)
+        public RollingDiceGameState(GameScene gameScene, DiceRollControl diceRollControl)
             : base(gameScene)
         {
             _diceRollControl = diceRollControl;
@@ -72,20 +71,5 @@ namespace Catan.Source.Scenes.Game
             base.Draw(gameTime, spriteBatch);
         }
 
-        // DEPRECATED
-        // private void ResolveDiceRoll(DiceRoll roll)
-        // {
-        //     if (roll.Total == 7)
-        //     {
-        //         // Logica do ladrao.
-        //         return;
-        //     }
-
-        //     ResourceProductionCalculator calculator = new(_gameScene.Board);
-        //     var productions = calculator.CalculateExpectedProductions(roll.Total);
-
-        //     ResourceBankPlaceholder bank = new();
-        //     bank.DistributeResources(productions);
-        // }
     }
 }

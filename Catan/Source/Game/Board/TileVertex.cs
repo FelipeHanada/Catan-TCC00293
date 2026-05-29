@@ -1,9 +1,11 @@
+using System;
 using Catan.Source.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
 using GamePlayer = Catan.Source.Game.Player.Player;
+using Catan.Source.Scenes;
+using Catan.Source.Scenes.Game;
 
 namespace Catan.Source.Game.Board
 {
@@ -13,17 +15,19 @@ namespace Catan.Source.Game.Board
         private const float Radius = CircleDiameter / 2f;
 
         private static Texture2D? _circleTexture;
-        private static readonly GamePlayer _placeholderPlayer = new(1);
+        private static readonly GamePlayer _placeholderPlayer = new(0);
         private MouseState _previousMouseState;
 
         private readonly Atlas atlas;
+        private readonly GameScene gameScene;
         public Building Building { get; private set; }
         public bool HasBuilding => Building != null;
 
-        public TileVertex(float x, float y, Atlas atlas) 
+        public TileVertex(float x, float y, Atlas atlas, GameScene gameScene) 
             : base(x, y)
         {
             this.atlas = atlas;
+            this.gameScene = gameScene;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -54,13 +58,22 @@ namespace Catan.Source.Game.Board
         public override void Update(GameTime gameTime)
         {
             MouseState currentMouseState = Mouse.GetState();
-
-            if (currentMouseState.LeftButton == ButtonState.Pressed && 
-                _previousMouseState.LeftButton == ButtonState.Released)
+            
+            if (gameScene.GetCurrentStateGame() is PositionSettlementGameState gameState)
             {
-                if (IsHovering(currentMouseState) && !HasBuilding)
+                if (IsHovering(currentMouseState) && (currentMouseState.LeftButton == ButtonState.Pressed && 
+                    _previousMouseState.LeftButton == ButtonState.Released))
                 {
-                    PlaceBuilding(new Building(_placeholderPlayer, BuildingType.Settlement));
+                    if (gameState.CanPlaceBuilding(this))
+                    {
+                        PlaceBuilding(new Building(gameState.Player, gameState.BuildingType));
+                        gameState.OnPlaceBuilding(this);
+
+                        SoundManager.Instance.Play(SfxId.ConstrucaoCasa);
+                    } else
+                    {
+                        SoundManager.Instance.Play(SfxId.TijoloCaindo);
+                    }
                 }
             }
 

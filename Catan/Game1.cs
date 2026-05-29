@@ -72,7 +72,7 @@ namespace Catan
 
         protected override void Draw(GameTime gameTime)
         {
-            _spriteBatch.Begin();
+            _spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null, null);
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
 

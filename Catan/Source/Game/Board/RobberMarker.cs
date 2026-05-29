@@ -1,7 +1,7 @@
 using Catan;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-// Só para ter algo que represente o ladrão por agora
+
 namespace Catan.Source.Game.Board
 {
     public class RobberMarker : GameObject

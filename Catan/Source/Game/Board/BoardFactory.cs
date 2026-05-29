@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Microsoft.Xna.Framework;
 using Catan.Source.Content;
-using System.Linq;
+using Catan.Source.Game.Resources;
+using HarborModel = Catan.Source.Game.Harbor.Harbor;
+using Catan.Source.Scenes;
 
 namespace Catan.Source.Game.Board
 {
     public interface IBoardFactory
     {
-        Board CreateBoard();
+        Board CreateBoard(GameScene gameScene);
     }
 
     public class RandomBoardFactory : IBoardFactory
@@ -26,7 +28,7 @@ namespace Catan.Source.Game.Board
             this.startY = startY;
         }
 
-        public Board CreateBoard()
+        public Board CreateBoard(GameScene gameScene)
         {
             Random rand = new Random();
             List<Tile> tiles = [];
@@ -39,16 +41,31 @@ namespace Catan.Source.Game.Board
                     float tileY = startY + 96 * i;
                     TileType randomType = (TileType)rand.Next(0, 6);
                     int diceNum = randomType == TileType.Desert ? 7 : rand.Next(2, 13);
-                    tiles.Add(new Tile(tileX, tileY, atlas, randomType, diceNum));
+                    tiles.Add(new Tile(tileX, tileY, atlas, randomType, diceNum, gameScene));
                 }
             }
 
-            Board board = new Board(startX, startY, atlas)
-            {
-                Tiles = tiles
-            };
+            StandardTilePositionIterator positionIterator = new(startX, startY, atlas, gameScene);
+            BoardGraph graph = CreateGraph(positionIterator);
+            Board board = new(startX, startY, tiles, positionIterator.CreateHarbors(), graph);
             board.InitializeRobber();
             return board;
+        }
+
+        private static BoardGraph CreateGraph(StandardTilePositionIterator positionIterator)
+        {
+            BoardGraph graph = new();
+            foreach (TileVertex vertex in positionIterator.Vertices)
+            {
+                graph.AddVertex(vertex);
+            }
+
+            foreach (TileEdge edge in positionIterator.Edges)
+            {
+                graph.AddEdge(edge);
+            }
+
+            return graph;
         }
     }
 
@@ -65,7 +82,7 @@ namespace Catan.Source.Game.Board
             this.startY = startY;
         }
 
-        public Board CreateBoard()
+        public Board CreateBoard(GameScene gameScene)
         {
             List<int> diceNumbers = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12];
             Random.Shared.Shuffle(CollectionsMarshal.AsSpan(diceNumbers));
@@ -79,33 +96,52 @@ namespace Catan.Source.Game.Board
             ];
             Random.Shared.Shuffle(CollectionsMarshal.AsSpan(resources));
 
-            List<KeyValuePair<TileType, int>> tilesConfig = [ new(TileType.Desert, 7) ];
-            for (int i=0; i<18; i++) tilesConfig.Add(new(resources[i], diceNumbers[i]));
+            List<KeyValuePair<TileType, int>> tilesConfig = [new(TileType.Desert, 7)];
+            for (int i = 0; i < 18; i++)
+            {
+                tilesConfig.Add(new(resources[i], diceNumbers[i]));
+            }
             Random.Shared.Shuffle(CollectionsMarshal.AsSpan(tilesConfig));
 
             List<Tile> tiles = [];
-            int tile_idx = 0;
-            StandardTilePositionIterator positionIterator = new(startX, startY, atlas);
+            int tileIndex = 0;
+            StandardTilePositionIterator positionIterator = new(startX, startY, atlas, gameScene);
             foreach (Tuple<Vector2, TileVertex[]> info in positionIterator)
             {
                 Vector2 position = info.Item1;
                 TileVertex[] vertices = info.Item2;
                 tiles.Add(new(
-                    position.X, position.Y, atlas,
-                    tilesConfig[tile_idx].Key, tilesConfig[tile_idx].Value,
-                    vertices
+                    position.X,
+                    position.Y,
+                    atlas,
+                    tilesConfig[tileIndex].Key,
+                    tilesConfig[tileIndex].Value,
+                    vertices,
+                    gameScene
                 ));
-                tile_idx++;
+                tileIndex++;
             }
 
-            Board board = new(startX, startY, atlas)
-            {
-                Tiles = tiles,
-                Vertices = positionIterator.Vertices,
-                Edges = positionIterator.Edges
-            };
+            BoardGraph graph = CreateGraph(positionIterator);
+            Board board = new(startX, startY, tiles, positionIterator.CreateHarbors(), graph);
             board.InitializeRobber();
             return board;
+        }
+
+        private static BoardGraph CreateGraph(StandardTilePositionIterator positionIterator)
+        {
+            BoardGraph graph = new();
+            foreach (TileVertex vertex in positionIterator.Vertices)
+            {
+                graph.AddVertex(vertex);
+            }
+
+            foreach (TileEdge edge in positionIterator.Edges)
+            {
+                graph.AddEdge(edge);
+            }
+
+            return graph;
         }
     }
 
@@ -122,7 +158,7 @@ namespace Catan.Source.Game.Board
         private List<List<TileVertex>> vertexTableA;
         private List<List<TileVertex>> vertexTableB;
 
-        public StandardTilePositionIterator(float startX, float startY, Atlas atlas, float width = 128, float height = 128, float h = 32)
+        public StandardTilePositionIterator(float startX, float startY, Atlas atlas, GameScene gameScene, float width = 128, float height = 128, float h = 32)
         {
             this.startX = startX;
             this.startY = startY;
@@ -135,59 +171,62 @@ namespace Catan.Source.Game.Board
             Edges = [];
 
             vertexTableA = [];
-            for (int i=0; i<6; i++)
+            for (int i = 0; i < 6; i++)
             {
                 List<TileVertex> row = [];
-                for (int j=0; j<6 - Math.Abs(3 - i); j++)
+                for (int j = 0; j < 6 - Math.Abs(3 - i); j++)
                 {
                     row.Add(new(
-                        Math.Abs(3 - i) * width/2 + width * j,
+                        Math.Abs(3 - i) * width / 2 + width * j,
                         (height - h) * i,
-                        atlas
+                        atlas,
+                        gameScene
                     ));
                 }
                 vertexTableA.Add(row);
                 Vertices.AddRange(row);
             }
             vertexTableB = [];
-            for (int i=0; i<6; i++)
+            for (int i = 0; i < 6; i++)
             {
                 List<TileVertex> row = [];
-                for (int j=0; j<6 - Math.Abs(2 - i); j++)
+                for (int j = 0; j < 6 - Math.Abs(2 - i); j++)
                 {
                     row.Add(new(
-                        Math.Abs(2 - i) * width/2 + width * j,
+                        Math.Abs(2 - i) * width / 2 + width * j,
                         (height - h) * i + h,
-                        atlas
+                        atlas,
+                        gameScene
                     ));
                 }
                 vertexTableB.Add(row);
                 Vertices.AddRange(row);
             }
 
-            for (int i=0; i<vertexTableB.Count-1; i++)
+            for (int i = 0; i < vertexTableB.Count - 1; i++)
             {
-                for (int j=0; j<vertexTableB[i].Count; j++)
+                for (int j = 0; j < vertexTableB[i].Count; j++)
                 {
-                    Edges.Add(new(vertexTableA[i+1][j], vertexTableB[i][j]));
+                    Edges.Add(new(vertexTableA[i + 1][j], vertexTableB[i][j], atlas, gameScene));
                 }
             }
 
-            for (int i=0; i<vertexTableA.Count; i++)
+            for (int i = 0; i < vertexTableA.Count; i++)
             {
                 if (vertexTableA[i].Count < vertexTableB[i].Count)
                 {
-                    for (int j=0; j<vertexTableA[i].Count; j++)
+                    for (int j = 0; j < vertexTableA[i].Count; j++)
                     {
-                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j]));
-                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j+1]));
+                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j], atlas, gameScene));
+                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j + 1], atlas, gameScene));
                     }
-                } else
+                }
+                else
                 {
-                    for (int j=0; j<vertexTableB[i].Count; j++)
+                    for (int j = 0; j < vertexTableB[i].Count; j++)
                     {
-                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j]));
-                        Edges.Add(new(vertexTableA[i][j+1], vertexTableB[i][j]));
+                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j], atlas, gameScene));
+                        Edges.Add(new(vertexTableA[i][j + 1], vertexTableB[i][j], atlas, gameScene));
                     }
                 }
             }
@@ -204,7 +243,7 @@ namespace Catan.Source.Game.Board
                 int rowCount = 3 + 2 - Math.Abs(i - 2);
                 for (int j = 0; j < rowCount; j++)
                 {
-                    float x = startX + width/2 * Math.Abs(i - 2) + width * j;
+                    float x = startX + width / 2 * Math.Abs(i - 2) + width * j;
                     float y = startY + (height - h) * i;
                     yield return new(new Vector2(x, y), GetTileVertices(i, j));
                 }
@@ -223,6 +262,21 @@ namespace Catan.Source.Game.Board
                 vertexTableA[row + 1][column],
                 vertexTableA[row + 1][column + 1],
                 vertexTableB[row + 1][column + bottomOffset],
+            ];
+        }
+
+        public List<HarborModel> CreateHarbors()
+        {
+            return [
+                HarborModel.CreateGeneric([vertexTableA[0][0], vertexTableA[0][1]]),
+                HarborModel.CreateSpecific(ResourceId.Ore, [vertexTableB[0][0], vertexTableA[1][0]]),
+                HarborModel.CreateSpecific(ResourceId.Wood, [vertexTableA[0][2], vertexTableB[0][3]]),
+                HarborModel.CreateGeneric([vertexTableB[1][4], vertexTableA[2][4]]),
+                HarborModel.CreateSpecific(ResourceId.Brick, [vertexTableA[3][5], vertexTableB[3][4]]),
+                HarborModel.CreateGeneric([vertexTableA[5][3], vertexTableB[5][2]]),
+                HarborModel.CreateSpecific(ResourceId.Wheat, [vertexTableB[5][0], vertexTableB[5][1]]),
+                HarborModel.CreateSpecific(ResourceId.Wool, [vertexTableA[5][0], vertexTableB[4][0]]),
+                HarborModel.CreateGeneric([vertexTableB[2][0], vertexTableA[3][0]]),
             ];
         }
     }

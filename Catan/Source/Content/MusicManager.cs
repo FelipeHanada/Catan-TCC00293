@@ -18,7 +18,7 @@ namespace Catan.Source.Content
         private static MusicManager _instance;
 
         private readonly Dictionary<MusicId, Song> _songs = new();
-        private float _globalVolume = 1f;
+        private float _globalVolume = 0.1f;
         private MusicId? _currentMusic;
 
         private static readonly Dictionary<MusicId, string> _musicPaths = new()
