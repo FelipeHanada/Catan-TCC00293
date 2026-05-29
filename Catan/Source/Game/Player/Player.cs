@@ -3,17 +3,17 @@ using Catan.Source.Game;
 using Catan.Source.Game.Inventory;
 using Catan.Source.Scenes;
 
-
 namespace Catan.Source.Game.Player
 {
     public class PlayerManager : GameObject
     {
         public List<Player> players { get; private set; }
 
-        public PlayerManager(int numberOfPlayers) : base()
+        public PlayerManager(int numberOfPlayers)
+            : base()
         {
             players = new();
-            for (int i=0; i<numberOfPlayers; i++)
+            for (int i = 0; i < numberOfPlayers; i++)
             {
                 players.Add(new Player(i));
             }
@@ -32,8 +32,9 @@ namespace Catan.Source.Game.Player
     {
         public PlayerInventory Inventory { get; }
         public int PlayerNumber { get; }
-        
-        public Player(int playerNumber = 1) : base()
+
+        public Player(int playerNumber = 1)
+            : base()
         {
             PlayerNumber = playerNumber;
             Inventory = new PlayerInventory();

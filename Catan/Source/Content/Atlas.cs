@@ -8,7 +8,7 @@ namespace Catan.Source.Content
 {
     public enum AtlasSpriteId
     {
-        TileForest, TileSheep, TileBrick, TileMountain, TileDesert, TileFarm,
+        TileForest, TileSheep, TileBrick, TileMountain, TileDesert, TileFarm, Robber,
 
         SettlementPlayer1, CityPlayer1, Road1Player1, Road2Player1, Road3Player1,
         SettlementPlayer2, CityPlayer2, Road1Player2, Road2Player2, Road3Player2,
@@ -42,6 +42,7 @@ namespace Catan.Source.Content
             [AtlasSpriteId.TileMountain] = new Rectangle(384, 0, 128, 128),
             [AtlasSpriteId.TileDesert] = new Rectangle(512, 0, 128, 128),
             [AtlasSpriteId.TileFarm] = new Rectangle(640, 0, 128, 128),
+            [AtlasSpriteId.Robber] = new Rectangle(768, 0, 32, 32),
             [AtlasSpriteId.SettlementPlayer1] = new Rectangle(0, 128, 32, 32),
             [AtlasSpriteId.CityPlayer1] = new Rectangle(32, 160, 32, 32),
             [AtlasSpriteId.Road1Player1] = new Rectangle(128, 128, 64, 34),
