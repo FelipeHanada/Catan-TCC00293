@@ -28,6 +28,12 @@ namespace Catan.Source.Scenes.Game
                 _gameScene.AppendState(new MaritimeTradeSelectionGameState(_gameScene, _player));
             }
 
+            // Controle temporario ate existir UI de negociacao entre jogadores.
+            if (IsJustPressed(keyboardState, Keys.P))
+            {
+                _gameScene.AppendState(new PlayerTradeOfferCreationGameState(_gameScene, _player));
+            }
+
             // Enter encerrar as acoes temporarias do jogador e volta ao fluxo atual do turno.
             if (IsJustPressed(keyboardState, Keys.Enter))
             {
