@@ -77,6 +77,69 @@ namespace Catan.Tests.Source.Game.Trading
         }
 
         [Fact]
+        public void CreateOffer_WithNegativeQuantity_Fails()
+        {
+            Player offeringPlayer = PlayerWith(1, (ResourceId.Wood, 2));
+            var service = new PlayerTradeService();
+
+            PlayerTradeResult result = service.CreateOffer(
+                offeringPlayer,
+                Resources((ResourceId.Wood, -1)),
+                Resources((ResourceId.Ore, 1)),
+                out PlayerTradeOffer? offer);
+
+            Assert.False(result.Success);
+            Assert.Null(offer);
+        }
+
+        [Fact]
+        public void CreateOffer_WithNullOfferingPlayer_Fails()
+        {
+            var service = new PlayerTradeService();
+
+            PlayerTradeResult result = service.CreateOffer(
+                null!,
+                Resources((ResourceId.Wood, 1)),
+                Resources((ResourceId.Ore, 1)),
+                out PlayerTradeOffer? offer);
+
+            Assert.False(result.Success);
+            Assert.Null(offer);
+        }
+
+        [Fact]
+        public void CreateOffer_WithNullOfferedResources_Fails()
+        {
+            Player offeringPlayer = PlayerWith(1, (ResourceId.Wood, 2));
+            var service = new PlayerTradeService();
+
+            PlayerTradeResult result = service.CreateOffer(
+                offeringPlayer,
+                null!,
+                Resources((ResourceId.Ore, 1)),
+                out PlayerTradeOffer? offer);
+
+            Assert.False(result.Success);
+            Assert.Null(offer);
+        }
+
+        [Fact]
+        public void CreateOffer_WithNullRequestedResources_Fails()
+        {
+            Player offeringPlayer = PlayerWith(1, (ResourceId.Wood, 2));
+            var service = new PlayerTradeService();
+
+            PlayerTradeResult result = service.CreateOffer(
+                offeringPlayer,
+                Resources((ResourceId.Wood, 1)),
+                null!,
+                out PlayerTradeOffer? offer);
+
+            Assert.False(result.Success);
+            Assert.Null(offer);
+        }
+
+        [Fact]
         public void CreateOffer_WithUnsupportedResource_Fails()
         {
             Player offeringPlayer = PlayerWith(1, (ResourceId.Wood, 2));
@@ -139,6 +202,54 @@ namespace Catan.Tests.Source.Game.Trading
             Assert.False(result.Success);
             AssertAmount(offeringPlayer, ResourceId.Wood, 2);
             AssertAmount(offeringPlayer, ResourceId.Ore, 0);
+        }
+
+        [Fact]
+        public void Execute_WithNullOffer_Fails()
+        {
+            Player acceptingPlayer = PlayerWith(2, (ResourceId.Ore, 1));
+            var service = new PlayerTradeService();
+
+            PlayerTradeResult result = service.Execute(null!, acceptingPlayer);
+
+            Assert.False(result.Success);
+            AssertAmount(acceptingPlayer, ResourceId.Ore, 1);
+        }
+
+        [Fact]
+        public void Execute_WithNullAcceptingPlayer_FailsWithoutChangingInventory()
+        {
+            Player offeringPlayer = PlayerWith(1, (ResourceId.Wood, 1));
+            PlayerTradeOffer offer = CreateOffer(
+                offeringPlayer,
+                Resources((ResourceId.Wood, 1)),
+                Resources((ResourceId.Ore, 1)));
+            var service = new PlayerTradeService();
+
+            PlayerTradeResult result = service.Execute(offer, null!);
+
+            Assert.False(result.Success);
+            AssertAmount(offeringPlayer, ResourceId.Wood, 1);
+            Assert.True(offer.IsOpen);
+        }
+
+        [Fact]
+        public void Execute_WithInvalidOfferShape_FailsWithoutChangingInventories()
+        {
+            Player offeringPlayer = PlayerWith(1, (ResourceId.Wood, 1));
+            Player acceptingPlayer = PlayerWith(2, (ResourceId.Ore, 1));
+            var offer = new PlayerTradeOffer(
+                offeringPlayer,
+                Resources((ResourceId.Wood, 1)),
+                Resources());
+            var service = new PlayerTradeService();
+
+            PlayerTradeResult result = service.Execute(offer, acceptingPlayer);
+
+            Assert.False(result.Success);
+            AssertAmount(offeringPlayer, ResourceId.Wood, 1);
+            AssertAmount(acceptingPlayer, ResourceId.Ore, 1);
+            Assert.True(offer.IsOpen);
         }
 
         [Fact]
