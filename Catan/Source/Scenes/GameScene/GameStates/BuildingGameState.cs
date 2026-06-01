@@ -1,13 +1,12 @@
-﻿using Catan.Source.Game;
+using Catan.Source.Game;
 using Catan.Source.Game.Player;
 using Catan.Source.Scenes;
 using Catan.Source.Scenes.Game;
 using Catan.Source.Game.Resources;
 using Microsoft.Xna.Framework;
 using Catan.Source.Content;
-using System.Security.Cryptography.X509Certificates;
 
-public class TradingGameState : PlayerTurnGameState
+public class BuildingGameState : PlayerTurnGameState
 {
 	static UISlate BuildUISlate(Atlas atlas)
 	{
@@ -25,7 +24,7 @@ public class TradingGameState : PlayerTurnGameState
 	}
 
 	public UISlate UISlate { get; private set; }
-	public TradingGameState(GameScene gameScene, Player player) : base(gameScene, player)
+	public BuildingGameState(GameScene gameScene, Player player) : base(gameScene, player)
 	{
 		UISlate = BuildUISlate(gameScene.Atlas);
 	}
