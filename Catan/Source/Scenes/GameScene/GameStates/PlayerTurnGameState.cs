@@ -12,17 +12,7 @@ namespace Catan.Source.Scenes.Game
         {
             Player = player;
             Hud = new PlayerHud(gameScene.Atlas, Player);
-        }
-        public override void LoadContent()
-        {
-            base.LoadContent();
-            _gameScene.Subscribe(Hud);
-        }
-
-        public override void UnloadContent()
-        {
-            base.UnloadContent();
-            _gameScene.Unsubscribe(Hud);           
+            AddChild(Hud);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Catan.Source.Scenes.Game
             _player = player;
             _previousKeyboardState = Keyboard.GetState();
 
-                        Action EnableBuildSlate = () =>
+            Action EnableBuildSlate = () =>
             {
                 if (gameScene.GetCurrentStateGame() is BuildingGameState gameState)
                 {
@@ -35,7 +35,6 @@ namespace Catan.Source.Scenes.Game
                 if (gameScene.GetCurrentStateGame() is TradingGameState gameState)
                 {
                     gameScene.ExitState();
-                    System.Console.WriteLine("Exiting");
                 } else
                 {
                     gameScene.AppendState(new TradingGameState(gameScene, player));
@@ -44,6 +43,9 @@ namespace Catan.Source.Scenes.Game
 
             BuildButton = new ButtonAction(700, 650, gameScene.Atlas, EnableBuildSlate, "Construir");
             TradeButton = new ButtonAction(600, 650, gameScene.Atlas, EnableTradeSlate, "Trocar");
+
+            AddChild(BuildButton);
+            AddChild(TradeButton);
         }
 
         public override void Update(GameTime gameTime)
@@ -70,20 +72,6 @@ namespace Catan.Source.Scenes.Game
         private bool IsJustPressed(KeyboardState currentState, Keys key)
         {
             return currentState.IsKeyDown(key) && !_previousKeyboardState.IsKeyDown(key);
-        }
-
-        public override void LoadContent()
-        {
-            base.LoadContent();
-            _gameScene.Subscribe(BuildButton);
-            _gameScene.Subscribe(TradeButton);
-        }
-
-        public override void UnloadContent()
-        {
-            base.UnloadContent();
-            _gameScene.Unsubscribe(BuildButton);
-            _gameScene.Unsubscribe(TradeButton);
         }
     }
 }
