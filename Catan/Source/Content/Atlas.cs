@@ -27,7 +27,9 @@ namespace Catan.Source.Content
 
         Background, BackgroundOrigin,
 
-        WoolTradePopup, WheatTradePopup, OreTradePopup, BrickTradePopup, WoodTradePopup, UniversalTradePopup
+        WoolTradePopup, WheatTradePopup, OreTradePopup, BrickTradePopup, WoodTradePopup, UniversalTradePopup,
+
+        WoolResource, WheatResource, OreResource, BrickResource, WoodResource,
     }
 
     public enum AtlasPlayerSprite
@@ -106,6 +108,11 @@ namespace Catan.Source.Content
             [AtlasSpriteId.BrickTradePopup] = new Rectangle(240, 544, 80, 96),
             [AtlasSpriteId.WoodTradePopup] = new Rectangle(320, 544, 80, 96),
             [AtlasSpriteId.UniversalTradePopup] = new Rectangle(400, 544, 80, 96),
+            [AtlasSpriteId.WoolResource] = new Rectangle(480, 544, 80, 96),
+            [AtlasSpriteId.WheatResource] = new Rectangle(560, 544, 80, 96),
+            [AtlasSpriteId.OreResource] = new Rectangle(640, 544, 80, 96),
+            [AtlasSpriteId.BrickResource] = new Rectangle(720, 544, 80, 96),
+            [AtlasSpriteId.WoodResource] = new Rectangle(800, 544, 80, 96),
 
         };
         private static readonly Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>> _playerSpriteMappings = new Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>>

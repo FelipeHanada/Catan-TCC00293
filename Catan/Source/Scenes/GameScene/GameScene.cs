@@ -51,7 +51,7 @@ namespace Catan.Source.Scenes
             base.LoadContent();
 
             #if DEBUG
-            Subscribe(new SoundBoardDebug());
+            //Subscribe(new SoundBoardDebug());
             Subscribe(new BankDebugPanel(Bank));
             #endif
 
