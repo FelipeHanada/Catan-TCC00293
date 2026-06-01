@@ -10,6 +10,7 @@ using Catan.Source.Game.Debug;
 using Catan.Source.Game.Player;
 using Catan.Source.Scenes.Game;
 using GameBank = Catan.Source.Game.Bank.Bank;
+using Catan.Source.Game;
 
 
 namespace Catan.Source.Scenes
@@ -23,6 +24,8 @@ namespace Catan.Source.Scenes
 
         public GameBank Bank { get; }
         public Board Board { get; private set; }
+
+        public BoardBackground Background;
         public DiceRoll LastDiceRoll { get; set; }
 
         public List<Player> _players;
@@ -54,9 +57,20 @@ namespace Catan.Source.Scenes
 
             Atlas = new Atlas(Game1.ContentManager);
 
+            
+
             StandardRandomBoardFactory factory = new(Atlas, 0, 0);
             Board = factory.CreateBoard(this);
+
+
+            Background = new BoardBackground(Board.Tiles[0].X, Board.Tiles[0].Y, Atlas);
+            Subscribe(Background);
+
+
             Subscribe(Board);
+
+
+            
 
             DiceRollControl diceRollControl = new(Atlas, this);
             Subscribe(diceRollControl);

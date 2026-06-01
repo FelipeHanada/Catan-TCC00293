@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Catan.Source.Scenes;
 using HarborModel = Catan.Source.Game.Harbor.Harbor;
+using Catan.Source.Content;
 
 namespace Catan.Source.Game.Board
 {    
@@ -89,7 +90,7 @@ namespace Catan.Source.Game.Board
         {
             foreach (Tile tile in Tiles)
             {
-                tile.Draw(gameTime, spriteBatch);
+                //tile.Draw(gameTime, spriteBatch);
             }
         }
 
@@ -104,6 +105,38 @@ namespace Catan.Source.Game.Board
             }
         }
 
+        public override void Update(GameTime gameTime) { }
+    }
+
+    public class BoardBackground : GameObject
+    {
+        private Atlas atlas;
+
+        public BoardBackground(float x, float y, Atlas atlas)
+            : base(x, y)
+        {
+            this.atlas = atlas;
+        }
+
+        public override void OnSubscribe(Scene scene)
+        {
+            base.OnSubscribe(scene);
+        }
+
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(
+                atlas.Texture,
+                new Vector2(this.X, this.Y),
+                Atlas.GetRectangle(AtlasSpriteId.Background),
+                Color.White, 0.0f,
+                new Vector2(
+                    Atlas.GetRectangle(AtlasSpriteId.BackgroundOrigin).X,
+                    Atlas.GetRectangle(AtlasSpriteId.BackgroundOrigin).Y
+                    ),
+                1.0f, SpriteEffects.None, 0.0f
+            );
+        }
         public override void Update(GameTime gameTime) { }
     }
 }
