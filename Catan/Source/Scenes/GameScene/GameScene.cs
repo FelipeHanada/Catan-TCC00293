@@ -118,10 +118,20 @@ namespace Catan.Source.Scenes
             GameState currentState = GetCurrentStateGame();
             currentState.Dispose();
             _stateStack.Pop();
+
+            if (_stateStack.Count > 0)
+            {
+                _stateStack.Peek().Initialize();
+            }
         }
 
         public void AppendState(GameState gameState)
         {
+            if (_stateStack.Count > 0)
+            {
+                _stateStack.Peek().Uninitialize();
+            }
+
             _stateStack.Push(gameState);
             gameState.Initialize();
         }
