@@ -11,20 +11,24 @@ public class TradingGameState : PlayerTurnGameState
 {
     public Button BuildButton { get; private set; }
     public Button TradeButton { get; private set; }
-	static UISlate BuildUISlate(Atlas atlas)
+	static UISlate BuildUISlate(Atlas atlas, Player player)
 	{
         Action doNothing = () => {};
-		UISlate tradeSlate = new UISlate(600, 200, atlas, Color.Gray, 600, 350, "Trocar");
+		UISlate tradeSlate = new UISlate(600, 200, atlas, Color.Gray, 600, 370, "Trocar");
 
 		ResourceDisplay playerResourceDisplay = new ResourceDisplay(630,250, atlas);
 		tradeSlate.AddChild(playerResourceDisplay);
-        tradeSlate.AddChild(new ButtonAction(630, 220, atlas, doNothing, "Voce oferece: ", false));
+        tradeSlate.AddChild(new ButtonAction(660, 220, atlas, doNothing, "Voce oferece: ", false));
 
         ResourceDisplay tradeResourceDisplay = new ResourceDisplay(630, 400, atlas);
         tradeSlate.AddChild(tradeResourceDisplay);
-        tradeSlate.AddChild(new ButtonAction(630, 370, atlas, doNothing, "Voce recebe: ", false));
+        tradeSlate.AddChild(new ButtonAction(660, 370, atlas, doNothing, "Voce recebe: ", false));
 
-        tradeSlate.AddChild(new ButtonAction(630, 520, atlas, () => { }, "Criar proposta"));
+
+        for(int i = 0; i < 4; i++)
+        {
+            tradeSlate.AddChild(new ButtonAction(660 + i*90, 520, atlas, () => { }, "  Aceitar\n(player " + i + ")", player.PlayerNumber == i ? false : true));
+        }
 
         return tradeSlate;
 	}
@@ -32,7 +36,7 @@ public class TradingGameState : PlayerTurnGameState
 	public UISlate UISlate { get; private set; }
 	public TradingGameState(GameScene gameScene, Player player) : base(gameScene, player)
 	{
-		UISlate = BuildUISlate(gameScene.Atlas);
+		UISlate = BuildUISlate(gameScene.Atlas, player);
         AddChild(UISlate);
         // UISlate.setEnabled(false);
 
