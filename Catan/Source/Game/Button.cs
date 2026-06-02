@@ -173,5 +173,10 @@ namespace Catan.Source.Game
 
         public ButtonAction(float x, float y, Atlas atlas, Action action, string label)
             : base(x, y, atlas, new ActionICommand(action), label) {}
+
+        public ButtonAction(float x, float y, Atlas atlas, Action action, string label, bool enabled)
+            : base(x, y, atlas, new ActionICommand(action), label) {
+            this.setEnabled(enabled);
+        }
     }
 }

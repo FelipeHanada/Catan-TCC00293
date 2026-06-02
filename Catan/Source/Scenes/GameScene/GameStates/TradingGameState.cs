@@ -13,18 +13,18 @@ public class TradingGameState : PlayerTurnGameState
     public Button TradeButton { get; private set; }
 	static UISlate BuildUISlate(Atlas atlas)
 	{
-
+        Action doNothing = () => {};
 		UISlate tradeSlate = new UISlate(600, 200, atlas, Color.Gray, 600, 300, "Trocar");
 
-		ResourceDisplay resourceDisplay = new ResourceDisplay(600,250, atlas);
-		for (int i = 0; i < 10; i++) resourceDisplay.incrementResource(ResourceId.Wool);
-		for (int i = 0; i < 21; i++) resourceDisplay.incrementResource(ResourceId.Wood);
-		for (int i = 0; i < 3; i++) resourceDisplay.incrementResource(ResourceId.Ore);
-		for (int i = 0; i < 4; i++) resourceDisplay.incrementResource(ResourceId.Brick);
-		for (int i = 0; i < 5; i++) resourceDisplay.incrementResource(ResourceId.Wheat);
-		tradeSlate.AddChild(resourceDisplay);
+		ResourceDisplay playerResourceDisplay = new ResourceDisplay(630,250, atlas);
+		tradeSlate.AddChild(playerResourceDisplay);
+        tradeSlate.AddChild(new ButtonAction(630, 220, atlas, doNothing, "Voce oferece: ", false));
 
-		return tradeSlate;
+        ResourceDisplay tradeResourceDisplay = new ResourceDisplay(630, 390, atlas);
+        tradeSlate.AddChild(tradeResourceDisplay);
+        tradeSlate.AddChild(new ButtonAction(630, 360, atlas, doNothing, "Voce recebe: ", false));
+
+        return tradeSlate;
 	}
 
 	public UISlate UISlate { get; private set; }
