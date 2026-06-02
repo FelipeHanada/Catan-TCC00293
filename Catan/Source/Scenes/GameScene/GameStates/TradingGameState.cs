@@ -14,15 +14,17 @@ public class TradingGameState : PlayerTurnGameState
 	static UISlate BuildUISlate(Atlas atlas)
 	{
         Action doNothing = () => {};
-		UISlate tradeSlate = new UISlate(600, 200, atlas, Color.Gray, 600, 300, "Trocar");
+		UISlate tradeSlate = new UISlate(600, 200, atlas, Color.Gray, 600, 350, "Trocar");
 
 		ResourceDisplay playerResourceDisplay = new ResourceDisplay(630,250, atlas);
 		tradeSlate.AddChild(playerResourceDisplay);
         tradeSlate.AddChild(new ButtonAction(630, 220, atlas, doNothing, "Voce oferece: ", false));
 
-        ResourceDisplay tradeResourceDisplay = new ResourceDisplay(630, 390, atlas);
+        ResourceDisplay tradeResourceDisplay = new ResourceDisplay(630, 400, atlas);
         tradeSlate.AddChild(tradeResourceDisplay);
-        tradeSlate.AddChild(new ButtonAction(630, 360, atlas, doNothing, "Voce recebe: ", false));
+        tradeSlate.AddChild(new ButtonAction(630, 370, atlas, doNothing, "Voce recebe: ", false));
+
+        tradeSlate.AddChild(new ButtonAction(630, 520, atlas, () => { }, "Criar proposta"));
 
         return tradeSlate;
 	}
