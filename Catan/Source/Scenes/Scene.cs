@@ -44,6 +44,16 @@ namespace Catan.Source.Scenes
 
         public virtual void Update(GameTime gameTime)
         {
+            while (ToUnsubscribe.Count > 0)
+            {
+                var obj = ToUnsubscribe.Dequeue();
+                if (GameObjects.Remove(obj))
+                {
+                    obj.OnUnsubscribe(this);
+                }
+            }
+
+
             foreach (var obj in GameObjects)
             {
                 obj.Update(gameTime);
@@ -58,14 +68,7 @@ namespace Catan.Source.Scenes
                 }
             }
 
-            while (ToUnsubscribe.Count > 0)
-            {
-                var obj = ToUnsubscribe.Dequeue();
-                if (GameObjects.Remove(obj))
-                {
-                    obj.OnUnsubscribe(this);
-                }
-            }
+
         }
 
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)

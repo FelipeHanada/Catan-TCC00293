@@ -56,6 +56,7 @@ namespace Catan.Source.Scenes.Game
             if (disposing)
             {
                 UnloadContent();
+                Uninitialize();
             }
 
             IsDisposed = true;

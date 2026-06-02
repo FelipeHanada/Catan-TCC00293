@@ -1,16 +1,20 @@
-﻿using Catan.Source.Game;
+﻿using Catan.Source.Content;
+using Catan.Source.Game;
 using Catan.Source.Game.Player;
+using Catan.Source.Game.Resources;
 using Catan.Source.Scenes;
 using Catan.Source.Scenes.Game;
-using Catan.Source.Game.Resources;
 using Microsoft.Xna.Framework;
-using Catan.Source.Content;
+using System;
 using System.Security.Cryptography.X509Certificates;
 
 public class TradingGameState : PlayerTurnGameState
 {
+        public Button BuildButton { get; private set; }
+        public Button TradeButton { get; private set; }
 	static UISlate BuildUISlate(Atlas atlas)
 	{
+
 		UISlate tradeSlate = new UISlate(600, 200, atlas, Color.Gray, 600, 300, "Trocar");
 
 		ResourceDisplay resourceDisplay = new ResourceDisplay(600,250, atlas);
@@ -28,17 +32,23 @@ public class TradingGameState : PlayerTurnGameState
 	public TradingGameState(GameScene gameScene, Player player) : base(gameScene, player)
 	{
 		UISlate = BuildUISlate(gameScene.Atlas);
-	}
+        AddChild(UISlate);
+        UISlate.setEnabled(false);
 
-    public override void LoadContent()
-    {
-        base.LoadContent();
-		_gameScene.Subscribe(UISlate);
-    }
+        Action EnableBuildSlate = () =>
+        {
+            gameScene.ExitState();
+            gameScene.AppendState(new BuildingGameState(gameScene, player));
+        };
 
-    public override void UnloadContent()
-    {
-        base.UnloadContent();
-		_gameScene.Unsubscribe(UISlate);
+        Action EnableTradeSlate = () => {
+                gameScene.ExitState();
+        };
+
+        BuildButton = new ButtonAction(700, 650, gameScene.Atlas, EnableBuildSlate, "Construir");
+        TradeButton = new ButtonAction(600, 650, gameScene.Atlas, EnableTradeSlate, "Trocar");
+
+        AddChild(BuildButton);
+        AddChild(TradeButton);
     }
 }
