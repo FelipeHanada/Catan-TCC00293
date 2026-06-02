@@ -25,7 +25,7 @@ namespace Catan.Source.Game.Player
             Player = player;
             Font ??= Game1.ContentManager.Load<SpriteFont>("bigFont");
 
-            PlayerInfo PlayerInfo = new PlayerInfo(1280 - 210, 10, _atlas, Color.White, 200, 200, "");
+            PlayerInfo PlayerInfo = new PlayerInfo(1280 - 210, 10, _atlas, Color.White, 200, 170, "");
             PlayerInfo.setPlayer(Player);
             AddChild(PlayerInfo);            
         }
