@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Catan.Source.Game;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Catan.Source.Scenes.Game
 {
@@ -22,8 +21,7 @@ namespace Catan.Source.Scenes.Game
         }
         ~GameState() => Dispose(false);
         public virtual void Initialize()
-        { // quando entra pela primeira vez na stack
-            LoadContent();
+        { // quando vira o topo da stack
             foreach (GameObject obj in Children)
             {
                 _gameScene.Subscribe(obj);
@@ -37,10 +35,9 @@ namespace Catan.Source.Scenes.Game
                 _gameScene.Unsubscribe(obj);
             }
         }
-        public virtual void LoadContent() { }
-        public virtual void UnloadContent() { }
+        public virtual void LoadContent() { } // quando entra pela primeira vez na stack
+        public virtual void UnloadContent() { } // quando sai da stack
         public virtual void Update(GameTime gameTime) { }
-        public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch) { }
         public void Dispose()
         {
             Dispose(true);
@@ -55,8 +52,8 @@ namespace Catan.Source.Scenes.Game
 
             if (disposing)
             {
-                UnloadContent();
                 Uninitialize();
+                UnloadContent();
             }
 
             IsDisposed = true;

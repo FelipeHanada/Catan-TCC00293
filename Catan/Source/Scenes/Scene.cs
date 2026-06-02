@@ -12,7 +12,7 @@ namespace Catan.Source.Scenes
         public bool IsDisposed { get; private set; }
         public virtual MusicId? Music => null;
 
-        protected HashSet<GameObject> GameObjects { get; } = [];
+        protected List<GameObject> GameObjects { get; } = [];
         private Queue<GameObject> ToSubscribe { get; set; } = [];
         private Queue<GameObject> ToUnsubscribe { get; set; } = [];
 
@@ -62,8 +62,9 @@ namespace Catan.Source.Scenes
             while (ToSubscribe.Count > 0)
             {
                 var obj = ToSubscribe.Dequeue();
-                if (GameObjects.Add(obj))
+                if (!GameObjects.Contains(obj))
                 {
+                    GameObjects.Add(obj);
                     obj.OnSubscribe(this);
                 }
             }

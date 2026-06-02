@@ -6,12 +6,11 @@ using Catan.Source.Scenes;
 using Catan.Source.Scenes.Game;
 using Microsoft.Xna.Framework;
 using System;
-using System.Security.Cryptography.X509Certificates;
 
 public class TradingGameState : PlayerTurnGameState
 {
-        public Button BuildButton { get; private set; }
-        public Button TradeButton { get; private set; }
+    public Button BuildButton { get; private set; }
+    public Button TradeButton { get; private set; }
 	static UISlate BuildUISlate(Atlas atlas)
 	{
 
@@ -33,7 +32,7 @@ public class TradingGameState : PlayerTurnGameState
 	{
 		UISlate = BuildUISlate(gameScene.Atlas);
         AddChild(UISlate);
-        UISlate.setEnabled(false);
+        // UISlate.setEnabled(false);
 
         Action EnableBuildSlate = () =>
         {
