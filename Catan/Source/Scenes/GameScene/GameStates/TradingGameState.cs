@@ -50,8 +50,8 @@ public class TradingGameState : PlayerTurnGameState
                 gameScene.ExitState();
         };
 
-        BuildButton = new ButtonAction(700, 650, gameScene.Atlas, EnableBuildSlate, "Construir");
-        TradeButton = new ButtonAction(600, 650, gameScene.Atlas, EnableTradeSlate, "Trocar");
+        BuildButton = new ButtonAction(1000, 650, gameScene.Atlas, 75, 30, EnableBuildSlate, "Construir");
+        TradeButton = new ButtonAction(900, 650, gameScene.Atlas, 75, 30, EnableTradeSlate, "Trocar");
 
         AddChild(BuildButton);
         AddChild(TradeButton);

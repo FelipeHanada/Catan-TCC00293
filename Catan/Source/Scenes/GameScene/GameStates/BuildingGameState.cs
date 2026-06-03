@@ -15,7 +15,7 @@ public class BuildingGameState : PlayerTurnGameState
     static UISlate BuildUISlate(Atlas atlas, Player player)
 	{
         Action doNothing = () => { };
-        int posX = 560;
+        int posX = 760;
         int posY = 350;
         UISlate buildSlate = new UISlate(posX, posY, atlas, Color.Gray, 360, 220, "Construir");    
 
@@ -71,8 +71,8 @@ public class BuildingGameState : PlayerTurnGameState
             gameScene.AppendState(new TradingGameState(gameScene, player));
         };
 
-        BuildButton = new ButtonAction(700, 650, gameScene.Atlas, EnableBuildSlate, "Construir");
-        TradeButton = new ButtonAction(600, 650, gameScene.Atlas, EnableTradeSlate, "Trocar");
+        BuildButton = new ButtonAction(1000, 650, gameScene.Atlas, 75, 30, EnableBuildSlate, "Construir");
+        TradeButton = new ButtonAction(900, 650, gameScene.Atlas, 75, 30, EnableTradeSlate, "Trocar");
 
         AddChild(BuildButton);
         AddChild(TradeButton);
