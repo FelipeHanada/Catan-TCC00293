@@ -63,7 +63,7 @@ namespace Catan.Source.Scenes
 
             Background = new BoardBackground(Board.Tiles[0].X, Board.Tiles[0].Y, Atlas);
             Subscribe(Background);
-            // Subscribe(Board);
+            Subscribe(Board);
 
             DiceRollControl diceRollControl = new(Atlas, this);
             Subscribe(diceRollControl);
