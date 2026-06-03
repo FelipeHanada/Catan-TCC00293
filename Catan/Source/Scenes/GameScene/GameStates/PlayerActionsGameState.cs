@@ -13,6 +13,8 @@ namespace Catan.Source.Scenes.Game
 
         public Button BuildButton { get; private set; }
         public Button TradeButton { get; private set; }
+        public Button EndTurnButton { get; private set; }
+        public Button DevelopmentCardButton { get; private set; }
 
         public PlayerActionsGameState(GameScene gameScene, Player player)
             : base(gameScene, player)
@@ -41,12 +43,26 @@ namespace Catan.Source.Scenes.Game
                 }
             };
 
-            BuildButton = new ButtonAction(1000, 620, gameScene.Atlas, 75, 30, EnableBuildSlate, "Construir");
-            TradeButton = new ButtonAction(900, 620, gameScene.Atlas, 75, 30, EnableTradeSlate, "Trocar");
+            Action EnableDevelopmentCardState = () => {
+                if (gameScene.GetCurrentStateGame() is DevelopmentCardState gameState)
+                {
+                    gameScene.ExitState();
+                }
+                else
+                {
+                    gameScene.AppendState(new DevelopmentCardState(gameScene, player));
+                }
+            };
+
+            TradeButton = new ButtonAction(840, 620, gameScene.Atlas, 75, 30, EnableTradeSlate, "Trocar");
+            BuildButton = new ButtonAction(930, 620, gameScene.Atlas, 75, 30, EnableBuildSlate, "Construir");
+            DevelopmentCardButton = new ButtonAction(1020, 620, gameScene.Atlas, 75, 30, EnableDevelopmentCardState , "Usar");
+            EndTurnButton = new ButtonAction(880, 660, gameScene.Atlas, 175, 30, () => { }, "Terminar turno");
 
             AddChild(BuildButton);
             AddChild(TradeButton);
-            AddChild(new ButtonAction(900, 660, gameScene.Atlas, 175, 30, () => { }, "Terminar turno"));
+            AddChild(EndTurnButton);
+            AddChild(DevelopmentCardButton);
         }
 
         public override void Update(GameTime gameTime)

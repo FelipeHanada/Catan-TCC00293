@@ -11,7 +11,9 @@ public class TradingGameState : PlayerTurnGameState
 {
     public Button BuildButton { get; private set; }
     public Button TradeButton { get; private set; }
-	static UISlate BuildUISlate(Atlas atlas, Player player)
+    public Button EndTurnButton { get; private set; }
+    public Button DevelopmentCardButton { get; private set; }
+    static UISlate BuildUISlate(Atlas atlas, Player player)
 	{
         Action doNothing = () => {};
 		UISlate tradeSlate = new UISlate(600, 200, atlas, Color.Gray, 600, 370, "Trocar");
@@ -50,11 +52,19 @@ public class TradingGameState : PlayerTurnGameState
                 gameScene.ExitState();
         };
 
-        BuildButton = new ButtonAction(1000, 620, gameScene.Atlas, 75, 30, EnableBuildSlate, "Construir");
-        TradeButton = new ButtonAction(900, 620, gameScene.Atlas, 75, 30, EnableTradeSlate, "Trocar");
+        Action EnableDevelopmentCardState = () => {
+            gameScene.ExitState();
+            gameScene.AppendState(new DevelopmentCardState(gameScene, player));
+        };
+
+        TradeButton = new ButtonAction(840, 620, gameScene.Atlas, 75, 30, EnableTradeSlate, "Trocar");
+        BuildButton = new ButtonAction(930, 620, gameScene.Atlas, 75, 30, EnableBuildSlate, "Construir");
+        DevelopmentCardButton = new ButtonAction(1020, 620, gameScene.Atlas, 75, 30, EnableDevelopmentCardState, "Usar");
+        EndTurnButton = new ButtonAction(880, 660, gameScene.Atlas, 175, 30, () => { }, "Terminar turno");
 
         AddChild(BuildButton);
         AddChild(TradeButton);
-        AddChild(new ButtonAction(900, 660, gameScene.Atlas, 175, 30, () => { }, "Terminar turno"));
+        AddChild(EndTurnButton);
+        AddChild(DevelopmentCardButton);
     }
 }
