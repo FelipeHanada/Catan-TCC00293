@@ -49,11 +49,6 @@ namespace Catan.Source.Scenes.Game
             _previousKeyboardState = keyboardState;
         }
 
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            base.Draw(gameTime, spriteBatch);
-        }
-
         private bool IsJustPressed(KeyboardState currentState, Keys key)
         {
             return currentState.IsKeyDown(key) && !_previousKeyboardState.IsKeyDown(key);
@@ -84,11 +79,5 @@ namespace Catan.Source.Scenes.Game
                 // _turnPhase = TurnPhase.PlayerActions;
             }
         }
-
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            base.Draw(gameTime, spriteBatch);
-        }
-
     }
 }

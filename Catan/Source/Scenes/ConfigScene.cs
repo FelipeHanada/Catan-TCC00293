@@ -58,6 +58,8 @@ namespace Catan.Source.Scenes
 
         public override void LoadContent()
         {
+            base.LoadContent();
+
             _font = Game1.ContentManager.Load<SpriteFont>("defaultFont");
 
             _pixel = new Texture2D(Game1.GraphicsDeviceInstance, 1, 1);
@@ -70,16 +72,14 @@ namespace Catan.Source.Scenes
             _nextButton = new Rectangle(420, 330, 240, 50);
             _backButton = new Rectangle(420, 330, 110, 50);
             _confirmButton = new Rectangle(550, 330, 110, 50);
-
-            base.LoadContent();
         }
 
         public override void UnloadContent()
         {
+            base.UnloadContent();
+
             _pixel?.Dispose();
             _pixel = null!;
-
-            base.UnloadContent();
         }
 
         public override void Update(GameTime gameTime)

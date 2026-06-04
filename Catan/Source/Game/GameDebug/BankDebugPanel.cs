@@ -1,4 +1,5 @@
 using Catan.Source.Game.Resources;
+using Catan.Source.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -34,9 +35,9 @@ namespace Catan.Source.Game.Debug
             _pixel.SetData(new[] { Color.White });
         }
 
-        public override void OnUnsubscribe()
+        public override void OnUnsubscribe(Scene scene)
         {
-            base.OnUnsubscribe();
+            base.OnUnsubscribe(scene);
             _pixel?.Dispose();
             _pixel = null;
             _font = null;

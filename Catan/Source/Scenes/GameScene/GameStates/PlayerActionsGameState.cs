@@ -1,19 +1,68 @@
+using System;
+using Catan.Source.Game;
 using Catan.Source.Game.Player;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace Catan.Source.Scenes.Game
 {
-    public class PlayerActionsGameState : GameState
+    public class PlayerActionsGameState : PlayerTurnGameState
     {
         private readonly Player _player;
         private KeyboardState _previousKeyboardState;
 
+        public Button BuildButton { get; private set; }
+        public Button TradeButton { get; private set; }
+        public Button EndTurnButton { get; private set; }
+        public Button DevelopmentCardButton { get; private set; }
+
         public PlayerActionsGameState(GameScene gameScene, Player player)
-            : base(gameScene)
+            : base(gameScene, player)
         {
             _player = player;
             _previousKeyboardState = Keyboard.GetState();
+
+            Action EnableBuildSlate = () =>
+            {
+                if (gameScene.GetCurrentStateGame() is BuildingGameState gameState)
+                {
+                    gameScene.ExitState();
+                } else
+                {
+                    gameScene.AppendState(new BuildingGameState(gameScene, player));
+                }
+            };
+
+            Action EnableTradeSlate = () => {
+                if (gameScene.GetCurrentStateGame() is TradingGameState gameState)
+                {
+                    gameScene.ExitState();
+                } else
+                {
+                    gameScene.AppendState(new TradingGameState(gameScene, player));
+                }
+            };
+
+            Action EnableDevelopmentCardState = () => {
+                if (gameScene.GetCurrentStateGame() is DevelopmentCardState gameState)
+                {
+                    gameScene.ExitState();
+                }
+                else
+                {
+                    gameScene.AppendState(new DevelopmentCardState(gameScene, player));
+                }
+            };
+
+            TradeButton = new ButtonAction(840, 620, gameScene.Atlas, 75, 30, EnableTradeSlate, "Trocar");
+            BuildButton = new ButtonAction(930, 620, gameScene.Atlas, 75, 30, EnableBuildSlate, "Construir");
+            DevelopmentCardButton = new ButtonAction(1020, 620, gameScene.Atlas, 75, 30, EnableDevelopmentCardState , "Usar");
+            EndTurnButton = new ButtonAction(880, 660, gameScene.Atlas, 175, 30, () => { }, "Terminar turno");
+
+            AddChild(BuildButton);
+            AddChild(TradeButton);
+            AddChild(EndTurnButton);
+            AddChild(DevelopmentCardButton);
         }
 
         public override void Update(GameTime gameTime)

@@ -42,7 +42,6 @@ namespace Catan.Source.Scenes.Game
             else
             {
                 _gameScene.ExitState();
-                _gameScene.AppendState(new ResourceProductionGameState(_gameScene, _gameScene._players, _diceRollControl));
             }
         }
     }

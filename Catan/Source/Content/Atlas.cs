@@ -24,6 +24,12 @@ namespace Catan.Source.Content
         ButtonEdgeRight, ButtonEdgeTop, ButtonEdgeBot, ButtonFill,
 
         DiceFace1, DiceFace2, DiceFace3, DiceFace4, DiceFace5, DiceFace6,
+
+        Background, BackgroundOrigin,
+
+        WoolTradePopup, WheatTradePopup, OreTradePopup, BrickTradePopup, WoodTradePopup, UniversalTradePopup,
+
+        WoolResource, WheatResource, OreResource, BrickResource, WoodResource,
     }
 
     public enum AtlasPlayerSprite
@@ -95,6 +101,20 @@ namespace Catan.Source.Content
             [AtlasSpriteId.ButtonEdgeTop] = new Rectangle(10, 528, 1, 3),
             [AtlasSpriteId.ButtonEdgeBot] = new Rectangle(12, 528, 1, 3),
             [AtlasSpriteId.ButtonFill] = new Rectangle(14, 529, 1, 1),
+            [AtlasSpriteId.Background] = new Rectangle(0, 640, 720, 576),
+            [AtlasSpriteId.BackgroundOrigin] = new Rectangle(178, 35, 1, 1),
+            [AtlasSpriteId.WoolTradePopup] = new Rectangle(0, 544, 80, 96),
+            [AtlasSpriteId.WheatTradePopup] = new Rectangle(80, 544, 80, 96),
+            [AtlasSpriteId.OreTradePopup] = new Rectangle(160, 544, 80, 96),
+            [AtlasSpriteId.BrickTradePopup] = new Rectangle(240, 544, 80, 96),
+            [AtlasSpriteId.WoodTradePopup] = new Rectangle(320, 544, 80, 96),
+            [AtlasSpriteId.UniversalTradePopup] = new Rectangle(400, 544, 80, 96),
+            [AtlasSpriteId.WoolResource] = new Rectangle(480, 544, 80, 96),
+            [AtlasSpriteId.WheatResource] = new Rectangle(560, 544, 80, 96),
+            [AtlasSpriteId.OreResource] = new Rectangle(640, 544, 80, 96),
+            [AtlasSpriteId.BrickResource] = new Rectangle(720, 544, 80, 96),
+            [AtlasSpriteId.WoodResource] = new Rectangle(800, 544, 80, 96),
+
         };
         private static readonly Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>> _playerSpriteMappings = new Dictionary<int, Dictionary<AtlasPlayerSprite, AtlasSpriteId>>
         {

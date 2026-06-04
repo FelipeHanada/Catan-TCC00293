@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using Catan.Source.Game;
 using Catan.Source.Game.Inventory;
-using Catan.Source.Scenes;
 
 namespace Catan.Source.Game.Player
 {
