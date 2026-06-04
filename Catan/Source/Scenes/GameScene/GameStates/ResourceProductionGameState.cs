@@ -9,18 +9,13 @@ using Microsoft.Xna.Framework;
 
 namespace Catan.Source.Scenes.Game
 {
-    public class ResourceProductionGameState : GameState
+    public class ResourceProductionGameState : PlayerTurnGameState
     {
         private bool _rolled;
-        private Player _player;
-        private DiceRollControl _diceRollControl;
 
-        public ResourceProductionGameState(GameScene gameScene, Player player, DiceRollControl diceRollControl)
-            : base(gameScene)
+        public ResourceProductionGameState(GameScene gameScene, Player player)
+            : base(gameScene, player)
         {
-            _player = player;
-            _diceRollControl = diceRollControl;
-
             _rolled = false;
         }
 
@@ -30,17 +25,17 @@ namespace Catan.Source.Scenes.Game
 
             if (!_rolled) {
                 _rolled = true;
-                _gameScene.AppendState(new WaitingForDiceRollGameState(_gameScene, _diceRollControl));
+                _gameScene.AppendState(new WaitingForDiceRollGameState(_gameScene, _gameScene.DiceRollControl));
                 return;
             }
 
-            DiceRoll roll = _gameScene.LastDiceRoll;
+            _gameScene.ExitState();
 
+            DiceRoll roll = _gameScene.LastDiceRoll;
             if (roll.Total == 7)
             {
                 // Logica do ladrao.
-                _rolled = false;
-                _gameScene.AppendState(new PlayerActionsGameState(_gameScene, _player));
+                // add game state do ladrão
                 return;
             }
 
@@ -57,8 +52,6 @@ namespace Catan.Source.Scenes.Game
             }
 
             _gameScene.Bank.DistributeProduction(distributionRequests);
-            _rolled = false;
-            _gameScene.AppendState(new PlayerActionsGameState(_gameScene, _player));
         }
     }
 }

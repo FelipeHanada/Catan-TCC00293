@@ -20,6 +20,7 @@ namespace Catan.Source.Scenes.Game
         {
             Player currentPlayer = Players[CurrentPlayerIndex];
             _gameScene.AppendState(new PlayerActionsGameState(_gameScene, currentPlayer));
+            _gameScene.AppendState(new ResourceProductionGameState(_gameScene, currentPlayer));
             if (++CurrentPlayerIndex >= Players.Count) CurrentPlayerIndex = 0;
         }
     }

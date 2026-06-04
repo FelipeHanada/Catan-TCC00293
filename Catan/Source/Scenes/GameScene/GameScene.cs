@@ -20,7 +20,8 @@ namespace Catan.Source.Scenes
 
         private Stack<GameState> _stateStack;
 
-        public GameBank Bank { get; }
+        public DiceRollControl DiceRollControl { get; private set; }
+        public GameBank Bank { get; private set; }
         public Board Board { get; private set; }
 
         public BoardBackground Background;
@@ -55,18 +56,15 @@ namespace Catan.Source.Scenes
 
             Atlas = new Atlas(Game1.ContentManager);
 
-            
-
             StandardRandomBoardFactory factory = new(Atlas, 0, 0);
             Board = factory.CreateBoard(this);
-
 
             Background = new BoardBackground(Board.Tiles[0].X, Board.Tiles[0].Y, Atlas);
             Subscribe(Background);
             Subscribe(Board);
 
-            DiceRollControl diceRollControl = new(Atlas, this);
-            Subscribe(diceRollControl);
+            DiceRollControl = new(Atlas, this);
+            Subscribe(DiceRollControl);
 
             // AppendState.Push(new PositionSettlementGameState(this));
             // AppendState.Push(new WaitingForDiceRollGameState(this, diceRollControl));
