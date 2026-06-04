@@ -34,11 +34,6 @@ namespace Catan.Source.Scenes.Game
 
             _previousMouseState = mouseState;
         }
-
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            base.Draw(gameTime, spriteBatch);
-        }
     }
 
     public class RollingDiceGameState : GameState
@@ -65,11 +60,5 @@ namespace Catan.Source.Scenes.Game
                 // _turnPhase = TurnPhase.PlayerActions;
             }
         }
-
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            base.Draw(gameTime, spriteBatch);
-        }
-
     }
 }

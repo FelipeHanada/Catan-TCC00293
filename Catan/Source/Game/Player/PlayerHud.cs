@@ -1,12 +1,13 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Catan.Source.Scenes;
+using Catan.Source.Content;
 using Catan.Source.Game;
 using Catan.Source.Game.Resources;
-using Catan.Source.Content;
+using Catan.Source.Scenes;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 
 namespace Catan.Source.Game.Player
@@ -24,8 +25,9 @@ namespace Catan.Source.Game.Player
             Player = player;
             Font ??= Game1.ContentManager.Load<SpriteFont>("bigFont");
 
-            Action doNothing = () => {};
-            AddChild(new ButtonAction(200, 0, _atlas, doNothing, "asdasd"));
+            PlayerInfo PlayerInfo = new PlayerInfo(1280 - 210, 10, _atlas, Color.White, 200, 170, "");
+            PlayerInfo.setPlayer(Player);
+            AddChild(PlayerInfo);            
         }
 
         public static void DrawString(SpriteBatch spriteBatch, string text, Vector2 position)
@@ -42,7 +44,8 @@ namespace Catan.Source.Game.Player
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
+        {   
+            /*
             base.Draw(gameTime, spriteBatch);
 
             float deltaY = 0;
@@ -56,6 +59,7 @@ namespace Catan.Source.Game.Player
                 DrawString(spriteBatch, ResourceUtils.ResourceName[resourceId].ToUpper() + ": " + amount, new(X, Y + deltaY));
                 deltaY += 16;
             }
+            */
         }
     }
 }

@@ -38,8 +38,7 @@ namespace Catan.Source.Scenes.Game
                 _gameScene.AppendState(_stateQueue.Dequeue());
             } else
             {
-                // _gameScene.ExitState();
-                // add next state
+                _gameScene.ExitState();
             }
         }
     }

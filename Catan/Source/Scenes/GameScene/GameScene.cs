@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Catan.Source.Content;
 using Catan.Source.Game.Board;
@@ -10,7 +9,6 @@ using Catan.Source.Game.Debug;
 using Catan.Source.Game.Player;
 using Catan.Source.Scenes.Game;
 using GameBank = Catan.Source.Game.Bank.Bank;
-using Catan.Source.Game;
 
 
 namespace Catan.Source.Scenes
@@ -51,7 +49,7 @@ namespace Catan.Source.Scenes
             base.LoadContent();
 
             #if DEBUG
-            Subscribe(new SoundBoardDebug());
+            //Subscribe(new SoundBoardDebug());
             Subscribe(new BankDebugPanel(Bank));
             #endif
 
@@ -65,20 +63,17 @@ namespace Catan.Source.Scenes
 
             Background = new BoardBackground(Board.Tiles[0].X, Board.Tiles[0].Y, Atlas);
             Subscribe(Background);
-
-
             Subscribe(Board);
-
-
-            
 
             DiceRollControl diceRollControl = new(Atlas, this);
             Subscribe(diceRollControl);
 
-            // _stateStack.Push(new PositionSettlementGameState(this));
-            // _stateStack.Push(new WaitingForDiceRollGameState(this, diceRollControl));
-            // _stateStack.Push(new ResourceProductionGameState(this, _players[0], diceRollControl));
-            _stateStack.Push(new SetupGameState(this));
+            // AppendState.Push(new PositionSettlementGameState(this));
+            // AppendState.Push(new WaitingForDiceRollGameState(this, diceRollControl));
+            // AppendState.Push(new ResourceProductionGameState(this, _players[0], diceRollControl));
+
+            AppendState(new PlayerTurnManagerGameState(this, _players));
+            // AppendState(new SetupGameState(this));
         }
 
         public override void UnloadContent()
@@ -102,25 +97,26 @@ namespace Catan.Source.Scenes
 
             currentState.Update(gameTime);
         }
-
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            base.Draw(gameTime, spriteBatch);
-
-            GameState currentState = GetCurrentStateGame();
-            currentState.Draw(gameTime, spriteBatch);
-        }
-
         public GameState GetCurrentStateGame() => _stateStack.Peek();
         public void ExitState()
         {
             GameState currentState = GetCurrentStateGame();
             currentState.Dispose();
             _stateStack.Pop();
+
+            if (_stateStack.Count > 0)
+            {
+                _stateStack.Peek().Initialize();
+            }
         }
 
         public void AppendState(GameState gameState)
         {
+            if (_stateStack.Count > 0)
+            {
+                _stateStack.Peek().Uninitialize();
+            }
+
             _stateStack.Push(gameState);
             gameState.Initialize();
         }
