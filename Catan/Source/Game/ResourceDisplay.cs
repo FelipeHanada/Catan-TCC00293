@@ -56,6 +56,29 @@ namespace Catan.Source.Game
             ResourceCounts[resourceId]++;
         }
 
+        public Dictionary<ResourceId, int> GetSelectedResources()
+        {
+            Dictionary<ResourceId, int> selectedResources = new();
+
+            foreach (KeyValuePair<ResourceId, int> resource in ResourceCounts)
+            {
+                if (resource.Value > 0)
+                {
+                    selectedResources[resource.Key] = resource.Value;
+                }
+            }
+
+            return selectedResources;
+        }
+
+        public void Clear()
+        {
+            foreach (ResourceId resource in ResourceUtils.ResourceIds)
+            {
+                ResourceCounts[resource] = 0;
+            }
+        }
+
 
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)

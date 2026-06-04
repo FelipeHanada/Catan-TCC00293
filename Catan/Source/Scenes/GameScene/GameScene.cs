@@ -98,6 +98,11 @@ namespace Catan.Source.Scenes
             currentState.Update(gameTime);
         }
         public GameState GetCurrentStateGame() => _stateStack.Peek();
+        public Player GetPlayer(int playerNumber)
+        {
+            return _players[playerNumber];
+        }
+
         public void ExitState()
         {
             GameState currentState = GetCurrentStateGame();
