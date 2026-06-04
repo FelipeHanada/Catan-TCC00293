@@ -58,10 +58,19 @@ public class DevelopmentCardState : PlayerTurnGameState
             return;
         }
 
-        gameScene.MarkDevelopmentCardUsed();
+        if (type == DevelopmentCardType.YearOfPlenty)
+        {
+            gameScene.AppendState(new YearOfPlentySelectionGameState(gameScene, player));
+            return;
+        }
+
+        if (type == DevelopmentCardType.Monopoly)
+        {
+            gameScene.AppendState(new MonopolySelectionGameState(gameScene, player));
+            return;
+        }
+
         Console.WriteLine($"{GetDisplayName(type)}: efeito ainda pendente.");
-        gameScene.ExitState();
-        gameScene.AppendState(new DevelopmentCardState(gameScene, player));
     }
 
     private static string GetDisplayName(DevelopmentCardType type)
