@@ -24,25 +24,25 @@ public class DevelopmentCardState : PlayerTurnGameState
         int i = 0;
         ButtonAction settlementButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, () => { }, "Monopoly");
         settlementButton.setEnabled(
-            player.Inventory.DevelopmentCards.CountByType(DevelopmentCardType.Monopoly) > 0
+            player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Monopoly) > 0
         );
         buildSlate.AddChild(settlementButton);
         i++;
         ButtonAction cityButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, () => { }, "Knight");
         cityButton.setEnabled(
-            player.Inventory.DevelopmentCards.CountByType(DevelopmentCardType.Knight) > 0
+            player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Knight) > 0
         );
         buildSlate.AddChild(cityButton);
         i++;
         ButtonAction roadButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, () => { }, "Year of plenty");
         roadButton.setEnabled(
-            player.Inventory.DevelopmentCards.CountByType(DevelopmentCardType.YearOfPlenty) > 0
+            player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.YearOfPlenty) > 0
         );
         buildSlate.AddChild(roadButton);
         i++;
         ButtonAction developmentCardButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, () => { }, "Road building");
         developmentCardButton.setEnabled(
-            player.Inventory.DevelopmentCards.CountByType(DevelopmentCardType.RoadBuilding) > 0
+            player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.RoadBuilding) > 0
         );
         buildSlate.AddChild(developmentCardButton);
 

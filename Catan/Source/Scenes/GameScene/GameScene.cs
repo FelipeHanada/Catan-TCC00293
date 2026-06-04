@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Catan.Source.Content;
 using Catan.Source.Game.Board;
+using Catan.Source.Game.DevelopmentCards;
 using Catan.Source.Game.Dice;
 using Catan.Source.Game.Debug;
 using Catan.Source.Game.Player;
@@ -22,6 +23,7 @@ namespace Catan.Source.Scenes
 
         public DiceRollControl DiceRollControl { get; private set; }
         public GameBank Bank { get; private set; }
+        public DevelopmentCardDeck DevelopmentCardDeck { get; private set; }
         public Board Board { get; private set; }
 
         public BoardBackground Background;
@@ -33,6 +35,7 @@ namespace Catan.Source.Scenes
         {
             _stateStack = new();
             Bank = new GameBank();
+            DevelopmentCardDeck = new DevelopmentCardDeck();
             _players = [];
             for (int i=0; i<4; i++)
             {

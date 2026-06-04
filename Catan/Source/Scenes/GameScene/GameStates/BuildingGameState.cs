@@ -1,5 +1,6 @@
 using Catan.Source.Content;
 using Catan.Source.Game;
+using Catan.Source.Game.DevelopmentCards;
 using Catan.Source.Game.Player;
 using Catan.Source.Game.Resources;
 using Catan.Source.Scenes;
@@ -14,8 +15,9 @@ public class BuildingGameState : PlayerTurnGameState
     public Button TradeButton { get; private set; }
     public Button EndTurnButton { get; private set; }
     public Button DevelopmentCardButton { get; private set; }
-    static UISlate BuildUISlate(Atlas atlas, Player player)
+    static UISlate BuildUISlate(GameScene gameScene, Player player)
 	{
+        Atlas atlas = gameScene.Atlas;
         Action doNothing = () => { };
         int posX = 760;
         int posY = 350;
@@ -45,12 +47,18 @@ public class BuildingGameState : PlayerTurnGameState
         );
         buildSlate.AddChild(roadButton);
         i++;
-        ButtonAction developmentCardButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, () => { }, "Construir Carta de desenvolvimento");
-        developmentCardButton.setEnabled(
-            player.Inventory.Resources.GetAmount(ResourceId.Wood) > 0 &&
-            player.Inventory.Resources.GetAmount(ResourceId.Ore) > 0 &&
-            player.Inventory.Resources.GetAmount(ResourceId.Wheat) > 0
-        );
+        DevelopmentCardPurchaseService purchaseService = new();
+        ButtonAction developmentCardButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, () => {
+            DevelopmentCardPurchaseResult result = purchaseService.Purchase(player, gameScene.Bank, gameScene.DevelopmentCardDeck);
+            Console.WriteLine(result.Message);
+            if (result.Success)
+            {
+                Console.WriteLine($"Carta comprada: {result.Card.Type}");
+                gameScene.ExitState();
+                gameScene.AppendState(new BuildingGameState(gameScene, player));
+            }
+        }, "Construir Carta de desenvolvimento");
+        developmentCardButton.setEnabled(purchaseService.CanPurchase(player, gameScene.Bank, gameScene.DevelopmentCardDeck).Success);
         buildSlate.AddChild(developmentCardButton);
 
         return buildSlate;
@@ -59,7 +67,7 @@ public class BuildingGameState : PlayerTurnGameState
 	public UISlate UISlate { get; private set; }
 	public BuildingGameState(GameScene gameScene, Player player) : base(gameScene, player)
 	{
-        UISlate = BuildUISlate(gameScene.Atlas, player);
+        UISlate = BuildUISlate(gameScene, player);
         AddChild(UISlate);
         // UISlate.setEnabled(false);
 

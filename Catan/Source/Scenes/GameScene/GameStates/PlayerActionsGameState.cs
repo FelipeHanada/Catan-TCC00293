@@ -67,6 +67,7 @@ namespace Catan.Source.Scenes.Game
 
         private void EndTurn()
         {
+            _player.Inventory.DevelopmentCards.ReleaseNewCards();
             _gameScene.ExitState();
         }
 
@@ -85,7 +86,7 @@ namespace Catan.Source.Scenes.Game
             // Enter encerrar as acoes temporarias do jogador e volta ao fluxo atual do turno.
             if (IsJustPressed(keyboardState, Keys.Enter))
             {
-                _gameScene.ExitState();
+                EndTurn();
             }
 
             _previousKeyboardState = keyboardState;
