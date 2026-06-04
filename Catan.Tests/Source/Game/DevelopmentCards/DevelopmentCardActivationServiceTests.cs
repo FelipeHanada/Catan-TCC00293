@@ -224,6 +224,50 @@ namespace Catan.Tests.Source.Game.DevelopmentCards
             Assert.Equal(1, player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Monopoly));
         }
 
+        [Fact]
+        public void ConfirmKnightUse_WithPlayableKnight_ConsumesCardAndIncrementsCounter()
+        {
+            Player player = PlayerWithCard(DevelopmentCardType.Knight);
+            DevelopmentCardActivationService service = new();
+
+            DevelopmentCardActivationResult result = service.ConfirmKnightUse(
+                player,
+                hasUsedDevelopmentCardThisTurn: false);
+
+            Assert.True(result.Success, result.Message);
+            Assert.Equal(0, player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Knight));
+            Assert.Equal(1, player.Inventory.PlayedKnightsCount);
+        }
+
+        [Fact]
+        public void ConfirmKnightUse_WithoutPlayableKnight_FailsWithoutIncrementingCounter()
+        {
+            Player player = new(0);
+            DevelopmentCardActivationService service = new();
+
+            DevelopmentCardActivationResult result = service.ConfirmKnightUse(
+                player,
+                hasUsedDevelopmentCardThisTurn: false);
+
+            Assert.False(result.Success);
+            Assert.Equal(0, player.Inventory.PlayedKnightsCount);
+        }
+
+        [Fact]
+        public void ConfirmKnightUse_WhenCardAlreadyUsedThisTurn_FailsWithoutConsumingOrIncrementingCounter()
+        {
+            Player player = PlayerWithCard(DevelopmentCardType.Knight);
+            DevelopmentCardActivationService service = new();
+
+            DevelopmentCardActivationResult result = service.ConfirmKnightUse(
+                player,
+                hasUsedDevelopmentCardThisTurn: true);
+
+            Assert.False(result.Success);
+            Assert.Equal(1, player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Knight));
+            Assert.Equal(0, player.Inventory.PlayedKnightsCount);
+        }
+
         private static Player PlayerWithCard(DevelopmentCardType type)
         {
             Player player = new(0);

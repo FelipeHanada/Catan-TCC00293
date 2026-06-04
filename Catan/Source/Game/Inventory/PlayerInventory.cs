@@ -17,6 +17,7 @@ namespace Catan.Source.Game.Inventory
 
         public ResourceInventory Resources { get; }
         public DevelopmentCardInventory DevelopmentCards { get; }
+        public int PlayedKnightsCount { get; private set; }
         public int TotalResourceCards => Resources.TotalCards();
         public int TotalDevelopmentCards => DevelopmentCards.Count;
 
@@ -34,6 +35,11 @@ namespace Catan.Source.Game.Inventory
         public int GetTotalResources()
         {
             return TotalResourceCards;
+        }
+
+        public void IncrementPlayedKnights()
+        {
+            PlayedKnightsCount++;
         }
 
         public bool HasResources()

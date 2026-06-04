@@ -70,6 +70,12 @@ public class DevelopmentCardState : PlayerTurnGameState
             return;
         }
 
+        if (type == DevelopmentCardType.Knight)
+        {
+            gameScene.AppendState(new KnightGameState(gameScene, player));
+            return;
+        }
+
         Console.WriteLine($"{GetDisplayName(type)}: efeito ainda pendente.");
     }
 

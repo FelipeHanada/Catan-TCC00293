@@ -178,5 +178,42 @@ namespace Catan.Source.Game.DevelopmentCards
 
             return DevelopmentCardActivationResult.Ok("Monopólio disponível.");
         }
+
+        public DevelopmentCardActivationResult ConfirmKnightUse(
+            GamePlayer player,
+            bool hasUsedDevelopmentCardThisTurn)
+        {
+            DevelopmentCardActivationResult validation = CanUseKnight(player, hasUsedDevelopmentCardThisTurn);
+            if (!validation.Success)
+            {
+                return validation;
+            }
+
+            player.Inventory.DevelopmentCards.Remove(new DevelopmentCard(DevelopmentCardType.Knight));
+            player.Inventory.IncrementPlayedKnights();
+            return DevelopmentCardActivationResult.Ok("Cavaleiro executado.");
+        }
+
+        public DevelopmentCardActivationResult CanUseKnight(
+            GamePlayer player,
+            bool hasUsedDevelopmentCardThisTurn)
+        {
+            if (player == null)
+            {
+                throw new ArgumentNullException(nameof(player));
+            }
+
+            if (hasUsedDevelopmentCardThisTurn)
+            {
+                return DevelopmentCardActivationResult.Fail("Já usou uma carta de desenvolvimento neste turno.");
+            }
+
+            if (player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Knight) <= 0)
+            {
+                return DevelopmentCardActivationResult.Fail("Jogador não possui Cavaleiro jogável.");
+            }
+
+            return DevelopmentCardActivationResult.Ok("Cavaleiro disponível.");
+        }
     }
 }
