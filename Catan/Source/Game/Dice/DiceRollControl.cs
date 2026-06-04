@@ -34,11 +34,11 @@ namespace Catan.Source.Game.Dice
         private double blinkElapsed;
         private int visibleFirst;
         private int visibleSecond;
-        private bool hasUnreadSettledResult;
+        private MouseState _previousMouseState;
 
         public bool IsEnabled { get; set; }
         public bool IsRolling => state == DiceRollControlState.Rolling;
-        public bool HasSettledResult => hasUnreadSettledResult;
+        public bool HasSettledResult => state == DiceRollControlState.Settled;
         public DiceRoll Result => result;
 
         private Rectangle Bounds => new(
@@ -59,6 +59,7 @@ namespace Catan.Source.Game.Dice
             visibleSecond = result.Second;
             IsEnabled = true;
             _gameScene = gameScene;
+            _previousMouseState = Mouse.GetState();
         }
 
         public DiceRollControl(Atlas atlas, GameScene gameScene)
@@ -68,15 +69,6 @@ namespace Catan.Source.Game.Dice
                 atlas,
                 gameScene
             ) {}
-
-        public bool WasClicked(MouseState currentMouse, MouseState previousMouse)
-        {
-            return IsEnabled
-                && state != DiceRollControlState.Rolling
-                && currentMouse.LeftButton == ButtonState.Pressed
-                && previousMouse.LeftButton == ButtonState.Released
-                && Bounds.Contains(currentMouse.Position);
-        }
 
         public void StartRoll(DiceRoll result)
         {
@@ -89,18 +81,29 @@ namespace Catan.Source.Game.Dice
             state = DiceRollControlState.Rolling;
             rollElapsed = 0;
             faceChangeElapsed = FaceChangeInterval;
-            hasUnreadSettledResult = false;
         }
 
         public DiceRoll ConsumeSettledResult()
         {
-            hasUnreadSettledResult = false;
-            return result;
+            var roll = result;
+            state = DiceRollControlState.Idle;
+            return roll;
         }
 
         public override void Update(GameTime gameTime)
         {
             IsEnabled = _gameScene.GetCurrentStateGame() is WaitingForDiceRollGameState;
+
+            MouseState currentMouseState = Mouse.GetState();
+            if (IsEnabled && state == DiceRollControlState.Idle
+                && currentMouseState.LeftButton == ButtonState.Pressed
+                && _previousMouseState.LeftButton == ButtonState.Released
+                && Bounds.Contains(currentMouseState.Position))
+            {
+                StartRoll(new DiceRoll(Random.Shared.Next(1, 7), Random.Shared.Next(1, 7)));
+            }
+
+            _previousMouseState = currentMouseState;
 
             double elapsedSeconds = gameTime.ElapsedGameTime.TotalSeconds;
             blinkElapsed += elapsedSeconds;
@@ -129,7 +132,6 @@ namespace Catan.Source.Game.Dice
                 visibleFirst = result.First;
                 visibleSecond = result.Second;
                 state = DiceRollControlState.Settled;
-                hasUnreadSettledResult = true;
             }
         }
 
