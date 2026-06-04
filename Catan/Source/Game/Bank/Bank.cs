@@ -135,6 +135,36 @@ namespace Catan.Source.Game.Bank
             inventory.Add(receiveFromBank, receiveAmount);
         }
 
+        public void Give(ResourceInventory inventory, IReadOnlyDictionary<ResourceId, int> resources)
+        {
+            ValidateInventory(inventory, nameof(inventory));
+            
+            if (resources == null)
+            {
+                throw new ArgumentNullException(nameof(resources), "Dicionário de recursos não pode ser nulo.");
+            }
+
+            foreach (var kvp in resources)
+            {
+                Give(inventory, kvp.Key, kvp.Value);
+            }
+        }
+
+        public void Receive(ResourceInventory inventory, IReadOnlyDictionary<ResourceId, int> resources)
+        {
+            ValidateInventory(inventory, nameof(inventory));
+            
+            if (resources == null)
+            {
+                throw new ArgumentNullException(nameof(resources), "Dicionário de recursos não pode ser nulo.");
+            }
+
+            foreach (var kvp in resources)
+            {
+                Receive(inventory, kvp.Key, kvp.Value);
+            }
+        }
+
         public IReadOnlyList<ResourceDistributionRequest> DistributeProduction(IEnumerable<ResourceDistributionRequest> productions)
         {
             var requestsByResource = GetValidatedProductionRequests(productions);

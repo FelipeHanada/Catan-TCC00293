@@ -8,12 +8,8 @@ using Catan.Source.Scenes.Game;
 using Microsoft.Xna.Framework;
 using System;
 
-public class DevelopmentCardState : PlayerTurnGameState
+public class DevelopmentCardState : PlayerTurnGameState, PlayerBuildButtonCallback, PlayerTradeButtonCallback, PlayerDevelopmentCardButtonCallback
 {
-    public Button BuildButton { get; private set; }
-    public Button TradeButton { get; private set; }
-    public Button EndTurnButton { get; private set; }
-    public Button DevelopmentCardButton { get; private set; }
     static UISlate BuildUISlate(Atlas atlas, Player player)
     {
         Action doNothing = () => { };
@@ -54,32 +50,23 @@ public class DevelopmentCardState : PlayerTurnGameState
     {
         UISlate = BuildUISlate(gameScene.Atlas, player);
         AddChild(UISlate);
-        // UISlate.setEnabled(false);
+    }
 
-        Action EnableBuildSlate = () =>
-        {
-            gameScene.ExitState();
-            gameScene.AppendState(new BuildingGameState(gameScene, player));
-        };
+    public void OnPlayerBuildButtonClicked()
+    {
+        _gameScene.ExitState();
+        _gameScene.AppendState(new BuildingGameState(_gameScene, Player));
+    }
 
-        Action EnableTradeSlate = () => {
-            gameScene.ExitState();
-            gameScene.AppendState(new TradingGameState(gameScene, player));
-        };
+    public void OnPlayerTradeButtonClicked()
+    {
+        _gameScene.ExitState();
+        _gameScene.AppendState(new TradingGameState(_gameScene, Player));
+    }
 
-        Action EnableDevelopmentCardState = () => {
-            gameScene.ExitState();
-        };
-
-        TradeButton = new ButtonAction(840, 620, gameScene.Atlas, 75, 30, EnableTradeSlate, "Trocar");
-        BuildButton = new ButtonAction(930, 620, gameScene.Atlas, 75, 30, EnableBuildSlate, "Construir");
-        DevelopmentCardButton = new ButtonAction(1020, 620, gameScene.Atlas, 75, 30, EnableDevelopmentCardState, "Usar");
-        EndTurnButton = new ButtonAction(880, 660, gameScene.Atlas, 175, 30, () => { }, "Terminar turno");
-
-        AddChild(BuildButton);
-        AddChild(TradeButton);
-        AddChild(EndTurnButton);
-        AddChild(DevelopmentCardButton);
+    public void OnPlayerDevelopmentCardButtonClicked()
+    {
+        _gameScene.ExitState();
     }
 }
 
