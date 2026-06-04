@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Catan.Source.Content;
 using Catan.Source.Game.Bank;
 using Catan.Source.Scenes;
 using Catan.Source.Game.Dice;
@@ -50,7 +52,29 @@ namespace Catan.Source.Scenes.Game
                     production.Amount));
             }
 
-            _gameScene.Bank.DistributeProduction(distributionRequests);
+            var deliveries = _gameScene.Bank.DistributeProduction(distributionRequests);
+
+            foreach (ResourceDistributionRequest delivery in deliveries)
+            {
+                SfxId sound = GetResourceProductionSound(delivery.Resource);
+                for (int i = 0; i < delivery.Amount; i++)
+                {
+                    SoundManager.Instance.Play(sound);
+                }
+            }
+        }
+
+        private static SfxId GetResourceProductionSound(ResourceId resource)
+        {
+            return resource switch
+            {
+                ResourceId.Wool => SfxId.Ovelha,
+                ResourceId.Brick => SfxId.Tijolo,
+                ResourceId.Ore => SfxId.Pedra,
+                ResourceId.Wood => SfxId.Planta,
+                ResourceId.Wheat => SfxId.Planta,
+                _ => throw new ArgumentOutOfRangeException(nameof(resource), resource, "Recurso de producao desconhecido."),
+            };
         }
     }
 }
