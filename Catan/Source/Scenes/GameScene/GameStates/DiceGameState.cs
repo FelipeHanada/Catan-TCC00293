@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Catan.Source.Game.Dice;
 
@@ -48,12 +47,6 @@ namespace Catan.Source.Scenes.Game
             _previousMouseState = mouseState;
             _previousKeyboardState = keyboardState;
         }
-
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            base.Draw(gameTime, spriteBatch);
-        }
-
         private bool IsJustPressed(KeyboardState currentState, Keys key)
         {
             return currentState.IsKeyDown(key) && !_previousKeyboardState.IsKeyDown(key);
@@ -84,11 +77,5 @@ namespace Catan.Source.Scenes.Game
                 // _turnPhase = TurnPhase.PlayerActions;
             }
         }
-
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            base.Draw(gameTime, spriteBatch);
-        }
-
     }
 }

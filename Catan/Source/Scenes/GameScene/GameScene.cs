@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Catan.Source.Content;
 using Catan.Source.Game.Board;
@@ -17,12 +16,14 @@ namespace Catan.Source.Scenes
     public class GameScene : Scene
     {
         public override MusicId? Music => MusicId.Partida;
-        private Atlas _atlas;
+        public Atlas Atlas { get; private set; }
 
         private Stack<GameState> _stateStack;
 
         public GameBank Bank { get; }
         public Board Board { get; private set; }
+
+        public BoardBackground Background;
         public DiceRoll LastDiceRoll { get; set; }
 
         public List<Player> _players;
@@ -34,7 +35,7 @@ namespace Catan.Source.Scenes
             _players = [];
             for (int i=0; i<4; i++)
             {
-                _players.Add(new Player(i + 1));
+                _players.Add(new Player(i));
             }
         }
 
@@ -48,23 +49,26 @@ namespace Catan.Source.Scenes
             base.LoadContent();
 
             #if DEBUG
-            Subscribe(new SoundBoardDebug());
+            //Subscribe(new SoundBoardDebug());
             Subscribe(new BankDebugPanel(Bank));
             #endif
 
-            _atlas = new Atlas(Game1.ContentManager);
+            Atlas = new Atlas(Game1.ContentManager);
 
-            StandardRandomBoardFactory factory = new(_atlas, 0, 0);
+            
+
+            StandardRandomBoardFactory factory = new(Atlas, 0, 0);
             Board = factory.CreateBoard(this);
+
+
+            Background = new BoardBackground(Board.Tiles[0].X, Board.Tiles[0].Y, Atlas);
+            Subscribe(Background);
             Subscribe(Board);
 
-            DiceRollControl diceRollControl = new(_atlas, this);
+            DiceRollControl diceRollControl = new(Atlas, this);
             Subscribe(diceRollControl);
 
-            // _stateStack.Push(new PositionSettlementGameState(this));
-            // _stateStack.Push(new WaitingForDiceRollGameState(this, diceRollControl));
-            // _stateStack.Push(new ResourceProductionGameState(this, _players[0], diceRollControl));
-            _stateStack.Push(new SetupGameState(this, diceRollControl));
+            AppendState(new SetupGameState(this, diceRollControl));
         }
 
         public override void UnloadContent()
@@ -88,25 +92,31 @@ namespace Catan.Source.Scenes
 
             currentState.Update(gameTime);
         }
-
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public GameState GetCurrentStateGame() => _stateStack.Peek();
+        public Player GetPlayer(int playerNumber)
         {
-            base.Draw(gameTime, spriteBatch);
-
-            GameState currentState = GetCurrentStateGame();
-            currentState.Draw(gameTime, spriteBatch);
+            return _players[playerNumber];
         }
 
-        public GameState GetCurrentStateGame() => _stateStack.Peek();
         public void ExitState()
         {
             GameState currentState = GetCurrentStateGame();
             currentState.Dispose();
             _stateStack.Pop();
+
+            if (_stateStack.Count > 0)
+            {
+                _stateStack.Peek().Initialize();
+            }
         }
 
         public void AppendState(GameState gameState)
         {
+            if (_stateStack.Count > 0)
+            {
+                _stateStack.Peek().Uninitialize();
+            }
+
             _stateStack.Push(gameState);
             gameState.Initialize();
         }
