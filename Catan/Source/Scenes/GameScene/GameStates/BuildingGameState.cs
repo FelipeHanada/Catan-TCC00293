@@ -81,7 +81,7 @@ public class BuildingGameState : PlayerTurnGameState
         TradeButton = new ButtonAction(840, 620, gameScene.Atlas, 75, 30, EnableTradeSlate, "Trocar");
         BuildButton = new ButtonAction(930, 620, gameScene.Atlas, 75, 30, EnableBuildSlate, "Construir");
         DevelopmentCardButton = new ButtonAction(1020, 620, gameScene.Atlas, 75, 30, EnableDevelopmentCardState, "Usar");
-        EndTurnButton = new ButtonAction(880, 660, gameScene.Atlas, 175, 30, () => { }, "Terminar turno");
+        EndTurnButton = new ButtonAction(880, 660, gameScene.Atlas, 175, 30, gameScene.EndCurrentPlayerActions, "Terminar turno");
 
         AddChild(BuildButton);
         AddChild(TradeButton);

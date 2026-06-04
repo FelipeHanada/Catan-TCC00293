@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Catan.Source.Game.Bank;
 using Catan.Source.Scenes;
@@ -46,6 +47,10 @@ namespace Catan.Source.Scenes.Game
 
             DiceRoll roll = _gameScene.LastDiceRoll;
 
+#if DEBUG
+            Console.WriteLine($"Jogador {CurrentPlayer.PlayerNumber} rolou {roll.Total}");
+#endif
+
             if (roll.Total == 7)
             {
                 StartSevenRuleFlow();
@@ -71,6 +76,9 @@ namespace Catan.Source.Scenes.Game
 
         private void StartSevenRuleFlow()
         {
+#if DEBUG
+            Console.WriteLine("Entrando em regra do 7");
+#endif
             _rolled = false;
             StartPlayerActions();
             _gameScene.AppendState(new SevenRuleGameState(_gameScene, CurrentPlayer, _players));
@@ -78,6 +86,9 @@ namespace Catan.Source.Scenes.Game
 
         private void StartPlayerActions()
         {
+#if DEBUG
+            Console.WriteLine($"Entrando em acoes do jogador {CurrentPlayer.PlayerNumber}");
+#endif
             _waitingForPlayerActions = true;
             _gameScene.AppendState(new PlayerActionsGameState(_gameScene, CurrentPlayer));
         }
@@ -85,6 +96,9 @@ namespace Catan.Source.Scenes.Game
         private void AdvanceTurn()
         {
             _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.Count;
+#if DEBUG
+            Console.WriteLine($"Turno do jogador {CurrentPlayer.PlayerNumber}");
+#endif
         }
 
         private Player CurrentPlayer => _players[_currentPlayerIndex];

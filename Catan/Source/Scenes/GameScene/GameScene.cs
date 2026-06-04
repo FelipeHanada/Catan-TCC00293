@@ -87,15 +87,34 @@ namespace Catan.Source.Scenes
             }
 
             GameState currentState = GetCurrentStateGame();
-
-            Console.Out.WriteLine(currentState);
-
             currentState.Update(gameTime);
         }
         public GameState GetCurrentStateGame() => _stateStack.Peek();
         public Player GetPlayer(int playerNumber)
         {
             return _players[playerNumber];
+        }
+
+        public void EndCurrentPlayerActions()
+        {
+            while (_stateStack.Count > 0)
+            {
+                GameState currentState = GetCurrentStateGame();
+
+#if DEBUG
+                if (currentState is PlayerActionsGameState actionsState)
+                {
+                    Console.WriteLine($"Terminando turno do jogador {actionsState.Player.PlayerNumber}");
+                }
+#endif
+
+                ExitState();
+
+                if (currentState is PlayerActionsGameState)
+                {
+                    return;
+                }
+            }
         }
 
         public void ExitState()
