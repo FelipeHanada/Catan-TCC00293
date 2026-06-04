@@ -10,7 +10,9 @@ using System;
 using System.Collections.Generic;
 using Catan.Source.Game.Board;
 
-public class BuildingGameState : PlayerTurnGameState, PlayerBuildButtonCallback, PlayerTradeButtonCallback, PlayerDevelopmentCardButtonCallback
+namespace Catan.Source.Scenes.Game
+{
+    public class BuildingGameState : PlayerTurnGameState, PlayerBuildButtonCallback, PlayerTradeButtonCallback, PlayerDevelopmentCardButtonCallback
 {
     private static readonly Dictionary<ResourceId, int> SETTLEMENT_COST = new Dictionary<ResourceId, int>
     {
@@ -111,4 +113,5 @@ public class BuildingGameState : PlayerTurnGameState, PlayerBuildButtonCallback,
         _gameScene.ExitState();
         _gameScene.AppendState(new DevelopmentCardState(_gameScene, Player));
     }
+}
 }
