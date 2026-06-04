@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -71,7 +71,7 @@ namespace Catan.Source.Scenes
             // AppendState.Push(new ResourceProductionGameState(this, _players[0], diceRollControl));
 
             AppendState(new PlayerTurnManagerGameState(this, _players));
-            // AppendState(new SetupGameState(this));
+            // AppendState(new SetupGameState(this, diceRollControl));
         }
 
         public override void UnloadContent()

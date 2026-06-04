@@ -2,18 +2,20 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Catan.Source.Game.Player;
 using Catan.Source.Game.Board;
-using System.Security.Cryptography.X509Certificates;
+using Catan.Source.Game.Dice;
 
 namespace Catan.Source.Scenes.Game
 {
     public class SetupGameState : GameState
     {
-        private Queue<GameState> _stateQueue; 
+        private readonly Queue<GameState> _stateQueue;
+        private readonly DiceRollControl _diceRollControl;
 
-        public SetupGameState(GameScene gameScene)
+        public SetupGameState(GameScene gameScene, DiceRollControl diceRollControl)
             : base(gameScene)
         {
             _stateQueue = [];
+            _diceRollControl = diceRollControl;
 
             Stack<Player> stk = new();
             foreach (Player player in gameScene._players)
@@ -36,7 +38,8 @@ namespace Catan.Source.Scenes.Game
             if (_stateQueue.Count > 0)
             {
                 _gameScene.AppendState(_stateQueue.Dequeue());
-            } else
+            }
+            else
             {
                 _gameScene.ExitState();
             }
