@@ -1,10 +1,12 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Catan.Source.Content;
 using System.Collections.Generic;
 using Catan.Source.Game.Resources;
 using Catan.Source.Scenes;
+using Catan.Source.Scenes.Game;
 
 namespace Catan.Source.Game.Board
 {
@@ -15,6 +17,9 @@ namespace Catan.Source.Game.Board
 
     public class Tile : GameObject
     {
+        private const int TileWidth = 128;
+        private const int TileHeight = 128;
+
         private static readonly Dictionary<TileType, AtlasSpriteId> _tileSpriteId = new()
         {
             [TileType.Forest] = AtlasSpriteId.TileForest,
@@ -48,12 +53,14 @@ namespace Catan.Source.Game.Board
         private readonly TileType tileType;
         private readonly int diceNumber;
         private readonly TileVertex[] vertices;
-
+        private MouseState _previousMouseState;
         public TileType TileType => tileType;
         public int DiceNumber => diceNumber;
         public IReadOnlyList<TileVertex> Vertices => vertices;
         public ResourceId? ProducedResource =>
             _tileResourceId.TryGetValue(tileType, out ResourceId resource) ? resource : null;
+
+        private readonly GameScene gameScene;
 
         public Tile(float x, float y, Atlas atlas, TileType tileType, int diceNumber, TileVertex[] vertices, GameScene gameScene)
             : base(x, y)
@@ -62,6 +69,7 @@ namespace Catan.Source.Game.Board
             this.tileType = tileType;
             this.diceNumber = diceNumber;
             this.vertices = vertices;
+            this.gameScene = gameScene;
         }
         public Tile(float x, float y, Atlas atlas, TileType tileType, int diceNumber, GameScene gameScene)
             : this(x, y, atlas, tileType, diceNumber, [], gameScene) {}
@@ -93,8 +101,52 @@ namespace Catan.Source.Game.Board
                 Atlas.GetRectangle(Atlas.GetTileDiceNumberSprite(this.diceNumber)),
                 Color.White);
         }
-        public override void Update(GameTime gameTime) { }
+        public override void Update(GameTime gameTime)
+        {
+            MouseState currentMouseState = Mouse.GetState();
+
+            if (gameScene.GetCurrentStateGame() is MoveRobberGameState gameState)
+            {
+                if (currentMouseState.LeftButton == ButtonState.Pressed
+                    && _previousMouseState.LeftButton == ButtonState.Released
+                    && IsHovering(currentMouseState)
+                )
+                {
+                    if (gameScene.Board.CanMoveRobberTo(this))
+                    {
+                        gameScene.Board.MoveRobberTo(this);
+                    }
+
+                    gameScene.ExitState();
+                }
+            }
+
+            _previousMouseState = currentMouseState;
+        }
+
+        private bool IsHovering(MouseState mouseState)
+        {
+            float px = mouseState.X - X;
+            float py = mouseState.Y - Y;
+
+            if (px < 0 || py < 0 || px > TileWidth || py > TileHeight)
+            {
+                return false;
+            }
+
+            if (py <= TileHeight / 2)
+            {
+                float leftBound = 0.5f * (TileHeight / 2 - py);
+                float rightBound = TileWidth - leftBound;
+                return px >= leftBound && px <= rightBound;
+            }
+            else
+            {
+                float bottomY = py - TileHeight / 2;
+                float leftBound = 0.5f * bottomY;
+                float rightBound = TileWidth - leftBound;
+                return px >= leftBound && px <= rightBound;
+            }
+        }
     }
 }
-
-

@@ -32,7 +32,7 @@ namespace Catan.Source.Scenes.Game
             _gameScene.ExitState();
 
             DiceRoll roll = _gameScene.LastDiceRoll;
-            if (roll.Total == 7 || true)
+            if (roll.Total == 7)
             {
                 _gameScene.AppendState(new SevenRuleGameState(_gameScene, Player));
                 return;
