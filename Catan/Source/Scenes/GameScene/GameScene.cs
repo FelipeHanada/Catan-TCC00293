@@ -24,6 +24,7 @@ namespace Catan.Source.Scenes
         public DiceRollControl DiceRollControl { get; private set; }
         public GameBank Bank { get; private set; }
         public DevelopmentCardDeck DevelopmentCardDeck { get; private set; }
+        public bool HasUsedDevelopmentCardThisTurn { get; private set; }
         public Board Board { get; private set; }
 
         public BoardBackground Background;
@@ -102,6 +103,16 @@ namespace Catan.Source.Scenes
         public Player GetPlayer(int playerNumber)
         {
             return _players[playerNumber];
+        }
+
+        public void MarkDevelopmentCardUsed()
+        {
+            HasUsedDevelopmentCardThisTurn = true;
+        }
+
+        public void ResetDevelopmentCardUsageForTurn()
+        {
+            HasUsedDevelopmentCardThisTurn = false;
         }
 
         public void ExitState()

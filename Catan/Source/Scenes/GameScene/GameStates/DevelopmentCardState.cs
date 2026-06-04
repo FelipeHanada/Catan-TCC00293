@@ -1,8 +1,8 @@
 ﻿using Catan.Source.Content;
 using Catan.Source.Game;
+using Catan.Source.Game.DevelopmentCards;
 using Catan.Source.Game.Inventory;
 using Catan.Source.Game.Player;
-using Catan.Source.Game.Resources;
 using Catan.Source.Scenes;
 using Catan.Source.Scenes.Game;
 using Microsoft.Xna.Framework;
@@ -14,45 +14,73 @@ public class DevelopmentCardState : PlayerTurnGameState
     public Button TradeButton { get; private set; }
     public Button EndTurnButton { get; private set; }
     public Button DevelopmentCardButton { get; private set; }
-    static UISlate BuildUISlate(Atlas atlas, Player player)
+    static UISlate BuildUISlate(GameScene gameScene, Player player)
     {
-        Action doNothing = () => { };
+        Atlas atlas = gameScene.Atlas;
         int posX = 760;
         int posY = 350;
-        UISlate buildSlate = new UISlate(posX, posY, atlas, Color.Gray, 360, 220, "Construir");
+        UISlate useSlate = new UISlate(posX, posY, atlas, Color.Gray, 360, 220, "Usar carta");
 
         int i = 0;
-        ButtonAction settlementButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, () => { }, "Monopoly");
-        settlementButton.setEnabled(
-            player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Monopoly) > 0
-        );
-        buildSlate.AddChild(settlementButton);
-        i++;
-        ButtonAction cityButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, () => { }, "Knight");
-        cityButton.setEnabled(
-            player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Knight) > 0
-        );
-        buildSlate.AddChild(cityButton);
-        i++;
-        ButtonAction roadButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, () => { }, "Year of plenty");
-        roadButton.setEnabled(
-            player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.YearOfPlenty) > 0
-        );
-        buildSlate.AddChild(roadButton);
-        i++;
-        ButtonAction developmentCardButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, () => { }, "Road building");
-        developmentCardButton.setEnabled(
-            player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.RoadBuilding) > 0
-        );
-        buildSlate.AddChild(developmentCardButton);
+        foreach (DevelopmentCardType type in DevelopmentCardActivationRules.ActivatableTypes)
+        {
+            int playableCount = player.Inventory.DevelopmentCards.CountPlayableByType(type);
+            string label = $"{GetDisplayName(type)} ({playableCount})";
+            ButtonAction button = new ButtonAction(
+                posX + 30,
+                posY + 30 + i * 45,
+                atlas,
+                300,
+                30,
+                () => ActivateDevelopmentCard(gameScene, player, type),
+                label);
 
-        return buildSlate;
+            button.setEnabled(DevelopmentCardActivationRules.CanActivate(
+                type,
+                player.Inventory.DevelopmentCards,
+                gameScene.HasUsedDevelopmentCardThisTurn));
+
+            useSlate.AddChild(button);
+            i++;
+        }
+
+        return useSlate;
+    }
+
+    private static void ActivateDevelopmentCard(GameScene gameScene, Player player, DevelopmentCardType type)
+    {
+        if (!DevelopmentCardActivationRules.CanActivate(
+            type,
+            player.Inventory.DevelopmentCards,
+            gameScene.HasUsedDevelopmentCardThisTurn))
+        {
+            Console.WriteLine($"{GetDisplayName(type)} nao pode ser usada agora.");
+            return;
+        }
+
+        gameScene.MarkDevelopmentCardUsed();
+        Console.WriteLine($"{GetDisplayName(type)}: efeito ainda pendente.");
+        gameScene.ExitState();
+        gameScene.AppendState(new DevelopmentCardState(gameScene, player));
+    }
+
+    private static string GetDisplayName(DevelopmentCardType type)
+    {
+        return type switch
+        {
+            DevelopmentCardType.Knight => "Knight",
+            DevelopmentCardType.RoadBuilding => "Road building",
+            DevelopmentCardType.YearOfPlenty => "Year of plenty",
+            DevelopmentCardType.Monopoly => "Monopoly",
+            DevelopmentCardType.VictoryPoint => "Victory point",
+            _ => type.ToString(),
+        };
     }
 
     public UISlate UISlate { get; private set; }
     public DevelopmentCardState(GameScene gameScene, Player player) : base(gameScene, player)
     {
-        UISlate = BuildUISlate(gameScene.Atlas, player);
+        UISlate = BuildUISlate(gameScene, player);
         AddChild(UISlate);
         // UISlate.setEnabled(false);
 

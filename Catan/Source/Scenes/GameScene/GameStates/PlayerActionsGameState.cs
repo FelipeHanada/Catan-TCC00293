@@ -68,6 +68,7 @@ namespace Catan.Source.Scenes.Game
         private void EndTurn()
         {
             _player.Inventory.DevelopmentCards.ReleaseNewCards();
+            _gameScene.ResetDevelopmentCardUsageForTurn();
             _gameScene.ExitState();
         }
 
