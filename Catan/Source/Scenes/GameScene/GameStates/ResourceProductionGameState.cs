@@ -12,16 +12,11 @@ namespace Catan.Source.Scenes.Game
     public class ResourceProductionGameState : PlayerTurnGameState
     {
         private bool _rolled;
-        private bool _waitingForPlayerActions;
-        private int _currentPlayerIndex;
-        private readonly DiceRollControl _diceRollControl;
 
         public ResourceProductionGameState(GameScene gameScene, Player player)
             : base(gameScene, player)
         {
             _rolled = false;
-            _waitingForPlayerActions = false;
-            _currentPlayerIndex = 0;
         }
 
         public override void Update(GameTime gameTime)
@@ -37,7 +32,7 @@ namespace Catan.Source.Scenes.Game
             _gameScene.ExitState();
 
             DiceRoll roll = _gameScene.LastDiceRoll;
-            if (roll.Total == 7)
+            if (roll.Total == 7 || true)
             {
                 _gameScene.AppendState(new SevenRuleGameState(_gameScene, Player));
                 return;

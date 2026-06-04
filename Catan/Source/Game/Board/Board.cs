@@ -81,6 +81,7 @@ namespace Catan.Source.Game.Board
             Tiles = tiles;
             Graph = graph;
             Harbors = harbors;
+            InitializeRobber();
         }
 
         public void InitializeRobber()
@@ -132,14 +133,6 @@ namespace Catan.Source.Game.Board
 
             scene.Subscribe(Graph);
             scene.Subscribe(new RobberMarker(this, _atlas));
-        }
-
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            foreach (Tile tile in Tiles)
-            {
-                //tile.Draw(gameTime, spriteBatch);
-            }
         }
 
         public IEnumerable<Tile> GetProducingTiles(int diceNumber)
