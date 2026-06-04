@@ -21,6 +21,9 @@ namespace Catan.Source.Game.Dice
         public const int FaceSpacing = 10;
         private const double RollDuration = 1;
         private const double FaceChangeInterval = 0.08;
+        private const double BlinkDuration = 0.6;
+        private const byte BlinkMinIntensity = 120;
+        private const byte BlinkMaxIntensity = 255;
 
         private readonly Atlas atlas;
 
@@ -28,6 +31,7 @@ namespace Catan.Source.Game.Dice
         private DiceRoll result;
         private double rollElapsed;
         private double faceChangeElapsed;
+        private double blinkElapsed;
         private int visibleFirst;
         private int visibleSecond;
         private bool hasUnreadSettledResult;
@@ -98,12 +102,18 @@ namespace Catan.Source.Game.Dice
         {
             IsEnabled = _gameScene.GetCurrentStateGame() is WaitingForDiceRollGameState;
 
+            double elapsedSeconds = gameTime.ElapsedGameTime.TotalSeconds;
+            blinkElapsed += elapsedSeconds;
+            if (blinkElapsed >= BlinkDuration)
+            {
+                blinkElapsed -= BlinkDuration;
+            }
+
             if (state != DiceRollControlState.Rolling)
             {
                 return;
             }
 
-            double elapsedSeconds = gameTime.ElapsedGameTime.TotalSeconds;
             rollElapsed += elapsedSeconds;
             faceChangeElapsed += elapsedSeconds;
 
@@ -125,11 +135,27 @@ namespace Catan.Source.Game.Dice
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            Color tint = IsEnabled || state != DiceRollControlState.Idle
-                ? Color.White
-                : new Color(170, 170, 170);
-
+            bool shouldBlink = IsEnabled && state == DiceRollControlState.Idle;
+            Color tint;
             int yOffset = IsEnabled && state != DiceRollControlState.Rolling ? -3 : 0;
+
+            if (shouldBlink)
+            {
+                float blink = (float)((Math.Sin((blinkElapsed / BlinkDuration) * Math.PI * 2) + 1) / 2);
+                byte intensity = (byte)(BlinkMinIntensity + (BlinkMaxIntensity - BlinkMinIntensity) * blink);
+                tint = new Color(intensity, intensity, intensity);
+
+                if (blink > 0.5f)
+                {
+                    yOffset -= 2;
+                }
+            }
+            else
+            {
+                tint = IsEnabled || state != DiceRollControlState.Idle
+                    ? Color.White
+                    : new Color(170, 170, 170);
+            }
 
             DrawDice(spriteBatch, visibleFirst, GetFaceRectangle(0, yOffset), tint);
             DrawDice(spriteBatch, visibleSecond, GetFaceRectangle(1, yOffset), tint);
