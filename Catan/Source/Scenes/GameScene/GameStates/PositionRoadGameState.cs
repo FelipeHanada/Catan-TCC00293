@@ -1,6 +1,8 @@
 using Catan.Source.Game.Board;
 using Catan.Source.Game.Player;
+using Catan.Source.Game.Resources;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace Catan.Source.Scenes.Game
 {
@@ -59,6 +61,39 @@ namespace Catan.Source.Scenes.Game
             if (edge.VertexB == Vertex) return true;
 
             return false;
+        }
+    }
+
+    public class BuildPositionRoadGameState : PositionRoadGameState
+    {
+        public IReadOnlyDictionary<ResourceId, int> RoadCost { get; private set; }
+
+        public BuildPositionRoadGameState(GameScene gameScene, Player player, IReadOnlyDictionary<ResourceId, int> roadCost = null)
+            : base(gameScene, player)
+        {
+            RoadCost = roadCost ?? new Dictionary<ResourceId, int>();
+        }
+
+        public override bool CanPlaceRoad(TileEdge edge)
+        {
+            // Check if player has enough resources for the road cost
+            if (!Player.Inventory.Resources.HasEnough(RoadCost))
+            {
+                return false;
+            }
+
+            return base.CanPlaceRoad(edge);
+        }
+
+        public override void OnPlaceRoad(TileEdge edge)
+        {
+            // Send road cost resources to the bank
+            if (RoadCost.Count > 0)
+            {
+                _gameScene.Bank.Receive(Player.Inventory.Resources, RoadCost);
+            }
+
+            base.OnPlaceRoad(edge);
         }
     }
 }

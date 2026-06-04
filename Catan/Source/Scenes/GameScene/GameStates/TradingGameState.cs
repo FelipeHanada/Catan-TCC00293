@@ -9,45 +9,31 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 
-public class TradingGameState : PlayerTurnGameState
+public class TradingGameState : PlayerTurnGameState, PlayerBuildButtonCallback, PlayerTradeButtonCallback, PlayerDevelopmentCardButtonCallback
 {
-    public Button BuildButton { get; private set; }
-    public Button TradeButton { get; private set; }
-    public Button EndTurnButton { get; private set; }
-    public Button DevelopmentCardButton { get; private set; }
     public UISlate UISlate { get; private set; }
 
     public TradingGameState(GameScene gameScene, Player player) : base(gameScene, player)
     {
         UISlate = BuildUISlate(gameScene.Atlas, player);
         AddChild(UISlate);
+    }
 
-        Action EnableBuildSlate = () =>
-        {
-            gameScene.ExitState();
-            gameScene.AppendState(new BuildingGameState(gameScene, player));
-        };
+    public void OnPlayerBuildButtonClicked()
+    {
+        _gameScene.ExitState();
+        _gameScene.AppendState(new BuildingGameState(_gameScene, Player));
+    }
 
-        Action EnableTradeSlate = () =>
-        {
-            gameScene.ExitState();
-        };
+    public void OnPlayerTradeButtonClicked()
+    {
+        _gameScene.ExitState();
+    }
 
-        Action EnableDevelopmentCardState = () =>
-        {
-            gameScene.ExitState();
-            gameScene.AppendState(new DevelopmentCardState(gameScene, player));
-        };
-
-        TradeButton = new ButtonAction(840, 620, gameScene.Atlas, 75, 30, EnableTradeSlate, "Trocar");
-        BuildButton = new ButtonAction(930, 620, gameScene.Atlas, 75, 30, EnableBuildSlate, "Construir");
-        DevelopmentCardButton = new ButtonAction(1020, 620, gameScene.Atlas, 75, 30, EnableDevelopmentCardState, "Usar");
-        EndTurnButton = new ButtonAction(880, 660, gameScene.Atlas, 175, 30, () => { }, "Terminar turno");
-
-        AddChild(BuildButton);
-        AddChild(TradeButton);
-        AddChild(EndTurnButton);
-        AddChild(DevelopmentCardButton);
+    public void OnPlayerDevelopmentCardButtonClicked()
+    {
+        _gameScene.ExitState();
+        _gameScene.AppendState(new DevelopmentCardState(_gameScene, Player));
     }
 
     private UISlate BuildUISlate(Atlas atlas, Player player)

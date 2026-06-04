@@ -2,6 +2,7 @@ using Catan.Source.Game.Board;
 using Catan.Source.Game.Player;
 using Catan.Source.Game.Resources;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace Catan.Source.Scenes.Game
 {
@@ -19,7 +20,7 @@ namespace Catan.Source.Scenes.Game
             base.Update(gameTime);
         }
 
-        public bool CanPlaceBuilding(TileVertex tileVertex)
+        public virtual bool CanPlaceBuilding(TileVertex tileVertex)
         {
             BoardGraph graph = _gameScene.Board.Graph;
 
@@ -100,6 +101,50 @@ namespace Catan.Source.Scenes.Game
             }
 
             return false;
+        }
+    }
+
+    public class BuildPositionSettlementGameState : PositionSettlementGameState
+    {
+        public IReadOnlyDictionary<ResourceId, int> BuildingCost { get; private set; }
+
+        public BuildPositionSettlementGameState(GameScene gameScene, Player player, BuildingType buildingType, IReadOnlyDictionary<ResourceId, int> buildingCost = null)
+            : base(gameScene, player, buildingType)
+        {
+            BuildingCost = buildingCost ?? new Dictionary<ResourceId, int>();
+        }
+
+        public override bool CanPlaceBuilding(TileVertex tileVertex)
+        {
+            // Check if player has enough resources for the building cost
+            if (!Player.Inventory.Resources.HasEnough(BuildingCost))
+            {
+                return false;
+            }
+
+            if (!base.CanPlaceBuilding(tileVertex)) return false;
+
+            BoardGraph graph = _gameScene.Board.Graph;
+
+            foreach (TileEdge edge in graph.Incident[tileVertex])
+            {
+                if (edge.RoadOwner == Player) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public override void OnPlaceBuilding(TileVertex vertex)
+        {
+            // Send building cost resources to the bank
+            if (BuildingCost.Count > 0)
+            {
+                _gameScene.Bank.Receive(Player.Inventory.Resources, BuildingCost);
+            }            
+
+            base.OnPlaceBuilding(vertex);
         }
     }
 }
