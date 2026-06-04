@@ -9,46 +9,32 @@ using Microsoft.Xna.Framework;
 
 namespace Catan.Source.Scenes.Game
 {
-    public class ResourceProductionGameState : GameState
+    public class ResourceProductionGameState : PlayerTurnGameState
     {
         private bool _rolled;
-        private bool _waitingForPlayerActions;
-        private readonly List<Player> _players;
-        private int _currentPlayerIndex;
-        private readonly DiceRollControl _diceRollControl;
 
-        public ResourceProductionGameState(GameScene gameScene, List<Player> players, DiceRollControl diceRollControl)
-            : base(gameScene)
+        public ResourceProductionGameState(GameScene gameScene, Player player)
+            : base(gameScene, player)
         {
-            _players = players;
-            _diceRollControl = diceRollControl;
-
             _rolled = false;
-            _waitingForPlayerActions = false;
-            _currentPlayerIndex = 0;
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
 
-            if (_waitingForPlayerActions)
-            {
-                AdvanceTurn();
-                _waitingForPlayerActions = false;
-            }
-
             if (!_rolled) {
                 _rolled = true;
-                _gameScene.AppendState(new WaitingForDiceRollGameState(_gameScene, _diceRollControl));
+                _gameScene.AppendState(new WaitingForDiceRollGameState(_gameScene, _gameScene.DiceRollControl));
                 return;
             }
 
-            DiceRoll roll = _gameScene.LastDiceRoll;
+            _gameScene.ExitState();
 
+            DiceRoll roll = _gameScene.LastDiceRoll;
             if (roll.Total == 7)
             {
-                StartSevenRuleFlow();
+                _gameScene.AppendState(new SevenRuleGameState(_gameScene, Player));
                 return;
             }
 
@@ -65,28 +51,6 @@ namespace Catan.Source.Scenes.Game
             }
 
             _gameScene.Bank.DistributeProduction(distributionRequests);
-            _rolled = false;
-            StartPlayerActions();
         }
-
-        private void StartSevenRuleFlow()
-        {
-            _rolled = false;
-            StartPlayerActions();
-            _gameScene.AppendState(new SevenRuleGameState(_gameScene, CurrentPlayer, _players));
-        }
-
-        private void StartPlayerActions()
-        {
-            _waitingForPlayerActions = true;
-            _gameScene.AppendState(new PlayerActionsGameState(_gameScene, CurrentPlayer));
-        }
-
-        private void AdvanceTurn()
-        {
-            _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.Count;
-        }
-
-        private Player CurrentPlayer => _players[_currentPlayerIndex];
     }
 }

@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace Catan.Source.Scenes.Game
 {
-    public class SevenRuleGameState : GameState
+    public class SevenRuleGameState : PlayerTurnGameState
     {
         private enum SevenRuleStep
         {
@@ -14,15 +14,11 @@ namespace Catan.Source.Scenes.Game
             Done
         }
 
-        private readonly Player _currentPlayer;
-        private readonly List<Player> _players;
         private SevenRuleStep _currentStep;
 
-        public SevenRuleGameState(GameScene gameScene, Player currentPlayer, List<Player> players)
-            : base(gameScene)
+        public SevenRuleGameState(GameScene gameScene, Player currentPlayer)
+            : base(gameScene, currentPlayer)
         {
-            _currentPlayer = currentPlayer;
-            _players = players;
             _currentStep = SevenRuleStep.DiscardResources;
         }
 
@@ -34,7 +30,7 @@ namespace Catan.Source.Scenes.Game
             {
                 case SevenRuleStep.DiscardResources:
                     _currentStep = SevenRuleStep.MoveRobber;
-                    _gameScene.AppendState(new DiscardResourcesGameState(_gameScene, _players));
+                    _gameScene.AppendState(new DiscardResourcesGameState(_gameScene));
                     break;
                 case SevenRuleStep.MoveRobber:
                     _currentStep = SevenRuleStep.StealResource;
@@ -42,7 +38,7 @@ namespace Catan.Source.Scenes.Game
                     break;
                 case SevenRuleStep.StealResource:
                     _currentStep = SevenRuleStep.Done;
-                    _gameScene.AppendState(new StealResourceGameState(_gameScene, _currentPlayer));
+                    _gameScene.AppendState(new StealResourceGameState(_gameScene, Player));
                     break;
                 case SevenRuleStep.Done:
                     _gameScene.ExitState();

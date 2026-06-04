@@ -22,47 +22,52 @@ namespace Catan.Source.Scenes.Game
             _player = player;
             _previousKeyboardState = Keyboard.GetState();
 
-            Action EnableBuildSlate = () =>
-            {
-                if (gameScene.GetCurrentStateGame() is BuildingGameState gameState)
-                {
-                    gameScene.ExitState();
-                } else
-                {
-                    gameScene.AppendState(new BuildingGameState(gameScene, player));
-                }
-            };
-
-            Action EnableTradeSlate = () => {
-                if (gameScene.GetCurrentStateGame() is TradingGameState gameState)
-                {
-                    gameScene.ExitState();
-                } else
-                {
-                    gameScene.AppendState(new TradingGameState(gameScene, player));
-                }
-            };
-
-            Action EnableDevelopmentCardState = () => {
-                if (gameScene.GetCurrentStateGame() is DevelopmentCardState gameState)
-                {
-                    gameScene.ExitState();
-                }
-                else
-                {
-                    gameScene.AppendState(new DevelopmentCardState(gameScene, player));
-                }
-            };
-
             TradeButton = new ButtonAction(840, 620, gameScene.Atlas, 75, 30, EnableTradeSlate, "Trocar");
             BuildButton = new ButtonAction(930, 620, gameScene.Atlas, 75, 30, EnableBuildSlate, "Construir");
             DevelopmentCardButton = new ButtonAction(1020, 620, gameScene.Atlas, 75, 30, EnableDevelopmentCardState , "Usar");
-            EndTurnButton = new ButtonAction(880, 660, gameScene.Atlas, 175, 30, () => { }, "Terminar turno");
+            EndTurnButton = new ButtonAction(880, 660, gameScene.Atlas, 175, 30, EndTurn, "Terminar turno");
 
             AddChild(BuildButton);
             AddChild(TradeButton);
             AddChild(EndTurnButton);
             AddChild(DevelopmentCardButton);
+        }
+
+        private void EnableBuildSlate()
+        {
+            if (_gameScene.GetCurrentStateGame() is BuildingGameState gameState)
+            {
+                _gameScene.ExitState();
+            } else
+            {
+                _gameScene.AppendState(new BuildingGameState(_gameScene, _player));
+            }
+        }
+
+        private void EnableTradeSlate() {
+            if (_gameScene.GetCurrentStateGame() is TradingGameState gameState)
+            {
+                _gameScene.ExitState();
+            } else
+            {
+                _gameScene.AppendState(new TradingGameState(_gameScene, _player));
+            }
+        }
+
+        private void EnableDevelopmentCardState() {
+            if (_gameScene.GetCurrentStateGame() is DevelopmentCardState gameState)
+            {
+                _gameScene.ExitState();
+            }
+            else
+            {
+                _gameScene.AppendState(new DevelopmentCardState(_gameScene, _player));
+            }
+        }
+
+        private void EndTurn()
+        {
+            _gameScene.ExitState();
         }
 
         public override void Update(GameTime gameTime)

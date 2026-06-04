@@ -9,13 +9,11 @@ namespace Catan.Source.Scenes.Game
 {
     public class DiscardResourcesGameState : GameState
     {
-        private readonly List<Player> _players;
         private readonly SevenRule _sevenRule;
 
-        public DiscardResourcesGameState(GameScene gameScene, List<Player> players)
+        public DiscardResourcesGameState(GameScene gameScene)
             : base(gameScene)
         {
-            _players = players;
             _sevenRule = new SevenRule();
         }
 
@@ -23,7 +21,7 @@ namespace Catan.Source.Scenes.Game
         {
             base.Update(gameTime);
 
-            foreach (Player player in _players)
+            foreach (Player player in _gameScene._players)
             {
                 if (!_sevenRule.ShouldDiscard(player))
                 {
