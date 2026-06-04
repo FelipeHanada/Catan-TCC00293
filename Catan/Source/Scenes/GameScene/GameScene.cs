@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using Catan.Source.Content;
 using Catan.Source.Game;
 using Catan.Source.Game.Board;
+using Catan.Source.Game.DevelopmentCards;
 using Catan.Source.Game.Dice;
 using Catan.Source.Game.Debug;
 using Catan.Source.Game.Player;
@@ -28,6 +29,8 @@ namespace Catan.Source.Scenes
 
         public DiceRollControl DiceRollControl { get; private set; }
         public GameBank Bank { get; private set; }
+        public DevelopmentCardDeck DevelopmentCardDeck { get; private set; }
+        public bool HasUsedDevelopmentCardThisTurn { get; private set; }
         public Board Board { get; private set; }
 
         public ButtonAction TradeButton { get; private set; }
@@ -44,6 +47,7 @@ namespace Catan.Source.Scenes
         {
             _stateStack = new();
             Bank = new GameBank();
+            DevelopmentCardDeck = new DevelopmentCardDeck();
             _players = [];
             for (int i=0; i<4; i++)
             {
@@ -123,6 +127,16 @@ namespace Catan.Source.Scenes
         public Player GetPlayer(int playerNumber)
         {
             return _players[playerNumber];
+        }
+
+        public void MarkDevelopmentCardUsed()
+        {
+            HasUsedDevelopmentCardThisTurn = true;
+        }
+
+        public void ResetDevelopmentCardUsageForTurn()
+        {
+            HasUsedDevelopmentCardThisTurn = false;
         }
 
         private void OnTradeButtonClicked()

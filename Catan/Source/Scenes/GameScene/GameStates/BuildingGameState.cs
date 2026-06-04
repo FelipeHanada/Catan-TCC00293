@@ -1,5 +1,6 @@
 using Catan.Source.Content;
 using Catan.Source.Game;
+using Catan.Source.Game.DevelopmentCards;
 using Catan.Source.Game.Player;
 using Catan.Source.Game.Resources;
 using Catan.Source.Scenes;
@@ -34,7 +35,6 @@ public class BuildingGameState : PlayerTurnGameState, PlayerBuildButtonCallback,
     private UISlate BuildUISlate()
 	{
         Atlas atlas = _gameScene.Atlas;
-
         Action doNothing = () => { };
         int posX = 760;
         int posY = 350;
@@ -53,12 +53,18 @@ public class BuildingGameState : PlayerTurnGameState, PlayerBuildButtonCallback,
         roadButton.setEnabled(Player.Inventory.Resources.HasEnough(ROAD_COST));
         buildSlate.AddChild(roadButton);
         i++;
-        ButtonAction developmentCardButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, () => { }, "Construir Carta de desenvolvimento");
-        developmentCardButton.setEnabled(
-            Player.Inventory.Resources.GetAmount(ResourceId.Wood) > 0 &&
-            Player.Inventory.Resources.GetAmount(ResourceId.Ore) > 0 &&
-            Player.Inventory.Resources.GetAmount(ResourceId.Wheat) > 0
-        );
+        DevelopmentCardPurchaseService purchaseService = new();
+        ButtonAction developmentCardButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, () => {
+            DevelopmentCardPurchaseResult result = purchaseService.Purchase(Player, _gameScene.Bank, _gameScene.DevelopmentCardDeck);
+            Console.WriteLine(result.Message);
+            if (result.Success)
+            {
+                Console.WriteLine($"Carta comprada: {result.Card.Type}");
+                _gameScene.ExitState();
+                _gameScene.AppendState(new BuildingGameState(_gameScene, Player));
+            }
+        }, "Construir Carta de desenvolvimento");
+        developmentCardButton.setEnabled(purchaseService.CanPurchase(Player, _gameScene.Bank, _gameScene.DevelopmentCardDeck).Success);
         buildSlate.AddChild(developmentCardButton);
 
         return buildSlate;
