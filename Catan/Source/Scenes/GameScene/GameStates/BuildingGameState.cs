@@ -6,10 +6,31 @@ using Catan.Source.Scenes;
 using Catan.Source.Scenes.Game;
 using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 using Catan.Source.Game.Board;
 
 public class BuildingGameState : PlayerTurnGameState, PlayerBuildButtonCallback, PlayerTradeButtonCallback, PlayerDevelopmentCardButtonCallback
 {
+    private static readonly Dictionary<ResourceId, int> SETTLEMENT_COST = new Dictionary<ResourceId, int>
+    {
+        { ResourceId.Brick, 1 },
+        { ResourceId.Wood, 1 },
+        { ResourceId.Wool, 1 },
+        { ResourceId.Wheat, 1 }
+    };
+
+    private static readonly Dictionary<ResourceId, int> CITY_COST = new Dictionary<ResourceId, int>
+    {
+        { ResourceId.Ore, 3 },
+        { ResourceId.Wheat, 2 }
+    };
+
+    private static readonly Dictionary<ResourceId, int> ROAD_COST = new Dictionary<ResourceId, int>
+    {
+        { ResourceId.Brick, 1 },
+        { ResourceId.Wood, 1 }
+    };
+
     private UISlate BuildUISlate()
 	{
         Atlas atlas = _gameScene.Atlas;
@@ -21,29 +42,15 @@ public class BuildingGameState : PlayerTurnGameState, PlayerBuildButtonCallback,
 
         int i = 0;
         ButtonAction settlementButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, OnBuildSettlement, "Construir Assentamento");
-        settlementButton.setEnabled(
-            true ||
-            Player.Inventory.Resources.GetAmount(ResourceId.Brick) > 0 &&
-            Player.Inventory.Resources.GetAmount(ResourceId.Wood) > 0 &&
-            Player.Inventory.Resources.GetAmount(ResourceId.Wool) > 0 &&
-            Player.Inventory.Resources.GetAmount(ResourceId.Wheat) > 0
-        );
+        settlementButton.setEnabled(Player.Inventory.Resources.HasEnough(SETTLEMENT_COST));
         buildSlate.AddChild(settlementButton);
         i++;
         ButtonAction cityButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, OnBuildCity, "Construir Cidade");
-        cityButton.setEnabled(
-            true ||
-            Player.Inventory.Resources.GetAmount(ResourceId.Ore) >= 3 &&
-            Player.Inventory.Resources.GetAmount(ResourceId.Wheat) >= 2
-        );
+        cityButton.setEnabled(Player.Inventory.Resources.HasEnough(CITY_COST));
         buildSlate.AddChild(cityButton);
         i++;
         ButtonAction roadButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, OnBuildRoad, "Construir Estrada");
-        roadButton.setEnabled(
-            true ||
-            Player.Inventory.Resources.GetAmount(ResourceId.Brick) > 0 &&
-            Player.Inventory.Resources.GetAmount(ResourceId.Wood) > 0
-        );
+        roadButton.setEnabled(Player.Inventory.Resources.HasEnough(ROAD_COST));
         buildSlate.AddChild(roadButton);
         i++;
         ButtonAction developmentCardButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, () => { }, "Construir Carta de desenvolvimento");
@@ -65,15 +72,21 @@ public class BuildingGameState : PlayerTurnGameState, PlayerBuildButtonCallback,
     }
 
     private void OnBuildSettlement() {
-        _gameScene.AppendState(new PositionSettlementGameState(_gameScene, Player, BuildingType.Settlement));
+        _gameScene.AppendState(new BuildPositionSettlementGameState(
+            _gameScene, Player, BuildingType.Settlement, SETTLEMENT_COST
+        ));
     }
 
     private void OnBuildCity() {
-        _gameScene.AppendState(new PositionSettlementGameState(_gameScene, Player, BuildingType.City));
+        _gameScene.AppendState(new BuildPositionSettlementGameState(
+            _gameScene, Player, BuildingType.City, CITY_COST
+        ));
     }
 
     private void OnBuildRoad() {
-        _gameScene.AppendState(new PositionRoadGameState(_gameScene, Player));
+        _gameScene.AppendState(new BuildPositionRoadGameState(
+            _gameScene, Player, ROAD_COST
+        ));
     }
 
     public void OnPlayerTradeButtonClicked()
