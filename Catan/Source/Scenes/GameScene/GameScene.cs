@@ -71,7 +71,7 @@ namespace Catan.Source.Scenes
             // AppendState.Push(new ResourceProductionGameState(this, _players[0], diceRollControl));
 
             AppendState(new PlayerTurnManagerGameState(this, _players));
-            // AppendState(new SetupGameState(this, diceRollControl));
+            AppendState(new SetupGameState(this));
         }
 
         public override void UnloadContent()

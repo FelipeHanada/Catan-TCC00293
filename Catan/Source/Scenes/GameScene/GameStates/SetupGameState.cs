@@ -9,13 +9,11 @@ namespace Catan.Source.Scenes.Game
     public class SetupGameState : GameState
     {
         private readonly Queue<GameState> _stateQueue;
-        private readonly DiceRollControl _diceRollControl;
 
-        public SetupGameState(GameScene gameScene, DiceRollControl diceRollControl)
+        public SetupGameState(GameScene gameScene)
             : base(gameScene)
         {
             _stateQueue = [];
-            _diceRollControl = diceRollControl;
 
             Stack<Player> stk = new();
             foreach (Player player in gameScene._players)
