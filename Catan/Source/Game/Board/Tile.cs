@@ -114,6 +114,7 @@ namespace Catan.Source.Game.Board
                 {
                     if (_gameScene.Board.MoveRobberTo(this))
                     {
+                        gameState.OnPlaceRobber(this);
                         _gameScene.ExitState();
                     }
                 }

@@ -5,6 +5,7 @@ using Catan.Source.Game.Player;
 using Catan.Source.Game.Resources;
 using Catan.Source.Game.Rules;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace Catan.Source.Scenes.Game
 {
@@ -35,7 +36,8 @@ namespace Catan.Source.Scenes.Game
             if (targets.Count > 0)
             {
                 // Futuramente, o jogador deve escolher qual alvo roubar.
-                StealFromTarget(targets[0]);
+                int randomIndex = Random.Shared.Next(targets.Count);
+                StealFromTarget(targets[randomIndex]);
             }
 
             _gameScene.ExitState();

@@ -37,6 +37,7 @@ namespace Catan.Source.Scenes.Game
             if (roll.Total == 7)
             {
                 _gameScene.AppendState(new SevenRuleGameState(_gameScene, Player));
+                SoundManager.Instance.Play(SfxId.LadraoDado7);
                 return;
             }
 
