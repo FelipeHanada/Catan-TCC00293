@@ -107,11 +107,11 @@ namespace Catan.Source.Game.Board
             StandardTilePositionIterator positionIterator = new(_startX, _startY, _atlas, gameScene);
             foreach (Tuple<Vector2, TileVertex[]> info in positionIterator)
             {
-                Vector2 position = info.Item1;
+                Vector2 tilePosition = info.Item1;
                 TileVertex[] vertices = info.Item2;
                 tiles.Add(new(
-                    position.X,
-                    position.Y,
+                    tilePosition.X,
+                    tilePosition.Y,
                     _atlas,
                     tilesConfig[tileIndex].Key,
                     tilesConfig[tileIndex].Value,
@@ -175,8 +175,8 @@ namespace Catan.Source.Game.Board
                 for (int j = 0; j < 6 - Math.Abs(3 - i); j++)
                 {
                     row.Add(new(
-                        Math.Abs(3 - i) * _width / 2 + _width * j,
-                        (_height - _h) * i,
+                        startX + Math.Abs(3 - i) * _width / 2 + _width * j,
+                        startY + (_height - _h) * i,
                         atlas,
                         gameScene
                     ));
@@ -191,8 +191,8 @@ namespace Catan.Source.Game.Board
                 for (int j = 0; j < 6 - Math.Abs(2 - i); j++)
                 {
                     row.Add(new(
-                        Math.Abs(2 - i) * _width / 2 + _width * j,
-                        (_height - _h) * i + _h,
+                        startX + Math.Abs(2 - i) * _width / 2 + _width * j,
+                        startY + (_height - _h) * i + _h,
                         atlas,
                         gameScene
                     ));

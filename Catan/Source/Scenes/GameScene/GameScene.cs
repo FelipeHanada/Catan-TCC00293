@@ -72,7 +72,7 @@ namespace Catan.Source.Scenes
 
             Atlas = new Atlas(Game1.ContentManager);
 
-            StandardRandomBoardFactory factory = new(Atlas, 0, 0);
+            StandardRandomBoardFactory factory = new(Atlas, 192, 64);
             Board = factory.CreateBoard(this);
 
             Background = new BoardBackground(Board.Tiles[0].X, Board.Tiles[0].Y, Atlas);
