@@ -130,38 +130,4 @@ namespace Catan.Source.Game
         }
 
     }
-    public class PlayerInfo : UISlate
-    {
-        private Game.Player.Player _player = null;
-        private readonly Atlas _atlas;
-        public PlayerInfo(float x, float y, Atlas atlas, Color color, int width, int height, string label) : base(x, y, atlas, color, width, height, label)
-        {
-            _atlas = atlas;
-        }
-
-        public void SetPlayer(Game.Player.Player player)
-        {
-            _player = player;
-        }
-
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            base.Draw(gameTime, spriteBatch);
-            
-            if (_player == null) return;
-            float deltaY = 16;
-
-
-            Game.Player.PlayerHud.DrawString(spriteBatch, "PlayerNumber: " + _player.PlayerNumber, new(X+16, Y + deltaY));
-            deltaY += 16;
-
-            foreach (ResourceId resourceId in ResourceUtils.ResourceIds)
-            {
-                int amount = _player.Inventory.Resources.GetAmount(resourceId);
-                Game.Player.PlayerHud.DrawString(spriteBatch, ResourceUtils.ResourceName[resourceId].ToUpper() + ": " + amount, new(X+16, Y + deltaY));
-                deltaY += 16;
-            }
-            
-        }
-    }
 }

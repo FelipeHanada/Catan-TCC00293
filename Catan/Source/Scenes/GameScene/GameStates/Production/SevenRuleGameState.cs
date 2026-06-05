@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Catan.Source.Game.Player;
 using Microsoft.Xna.Framework;
 

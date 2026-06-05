@@ -33,6 +33,7 @@ namespace Catan.Source.Scenes
         public DevelopmentCardDeck DevelopmentCardDeck { get; private set; }
         public bool HasUsedDevelopmentCardThisTurn { get; private set; }
         public Board Board { get; private set; }
+        public ScoreManager ScoreManager { get; private set; }
 
         public ButtonAction TradeButton { get; private set; }
         public ButtonAction BuildButton { get; private set; }
@@ -71,12 +72,15 @@ namespace Catan.Source.Scenes
 
             Atlas = new Atlas(Game1.ContentManager);
 
-            StandardRandomBoardFactory factory = new(Atlas, 0, 0);
+            StandardRandomBoardFactory factory = new(Atlas, 192, 64);
             Board = factory.CreateBoard(this);
 
             Background = new BoardBackground(Board.Tiles[0].X, Board.Tiles[0].Y, Atlas);
             Subscribe(Background);
             Subscribe(Board);
+
+            ScoreManager = new ScoreManager(this);
+            Subscribe(ScoreManager);
 
             DiceRollControl = new(Atlas, this);
             Subscribe(DiceRollControl);
@@ -85,7 +89,6 @@ namespace Catan.Source.Scenes
             TradeButton = new ButtonAction(840, 620, Atlas, 75, 30, OnTradeButtonClicked, "Trocar");
             DevelopmentCardButton = new ButtonAction(1020, 620, Atlas, 75, 30, OnDevelopmentCardButtonClicked, "Usar");
             EndTurnButton = new ButtonAction(880, 660, Atlas, 175, 30, OnEndTurnButtonClicked, "Terminar turno");
-
             Subscribe(BuildButton);
             Subscribe(TradeButton);
             Subscribe(DevelopmentCardButton);
@@ -109,12 +112,6 @@ namespace Catan.Source.Scenes
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-
-            if (Keyboard.GetState().IsKeyDown(Keys.F1))//atalho temporario para tela de fim
-            {
-                Game1.ChangeScene(new EndGameScene());
-                return;
-            }
 
             GameState currentState = GetCurrentState();
 

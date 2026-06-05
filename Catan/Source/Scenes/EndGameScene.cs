@@ -1,4 +1,5 @@
 using Catan.Source.Content;
+using Catan.Source.Game.Player;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -17,10 +18,13 @@ namespace Catan.Source.Scenes
         private Rectangle _backToMenuButton;
         private Rectangle _exitButton;
 
-        public EndGameScene()
+        private Player _winner;
+
+        public EndGameScene(Player winner)
         {
             _font = null!;
             _pixel = null!;
+            _winner = winner;
         }
 
         public override void LoadContent()
@@ -61,7 +65,7 @@ namespace Catan.Source.Scenes
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.DrawString(_font, "Fim de Jogo", new Vector2(40, 60), Color.White);
-
+            spriteBatch.DrawString(_font, $"Vencedor: {_winner.PlayerNumber}", new Vector2(40, 100), Color.White);
             DrawButton(_backToMenuButton, "Voltar ao Menu", spriteBatch);
             DrawButton(_exitButton, "Sair", spriteBatch);
 

@@ -152,6 +152,14 @@ namespace Catan.Source.Content
             },
         };
 
+        private static readonly Dictionary<int, Color> _playerColorMappings = new()
+        {
+            [0] = new Color(196, 241, 41),
+            [1] = new Color(185, 69, 29),
+            [2] = new Color(255, 233, 227),
+            [3] = new Color(66, 164, 89),
+        };
+
         private static readonly Dictionary<int, AtlasSpriteId> _tileDiceNumberMappings = new()
         {
             [2] = AtlasSpriteId.TileDiceNumber2,
@@ -235,6 +243,15 @@ namespace Catan.Source.Content
                 return spriteId;
             }
             throw new ArgumentOutOfRangeException(nameof(face), "Face do dado deve ser entre 1 e 6.");
+        }
+
+        public static Color GetPlayerColor(int player)
+        {
+            if (_playerColorMappings.TryGetValue(player, out var color))
+            {
+                return color;
+            }
+            throw new ArgumentOutOfRangeException(nameof(player), "Player deve ser entre 0 e 3.");
         }
     }
 }
