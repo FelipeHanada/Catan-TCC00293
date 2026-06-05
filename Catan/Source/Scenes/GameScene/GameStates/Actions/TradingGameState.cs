@@ -10,7 +10,9 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 
-public class TradingGameState : PlayerTurnGameState, PlayerBuildButtonCallback, PlayerTradeButtonCallback, PlayerDevelopmentCardButtonCallback
+namespace Catan.Source.Scenes.Game
+{
+    public class TradingGameState : PlayerTurnGameState, PlayerBuildButtonCallback, PlayerTradeButtonCallback, PlayerDevelopmentCardButtonCallback
 {
     private enum TradeMode
     {
@@ -238,4 +240,5 @@ public class TradingGameState : PlayerTurnGameState, PlayerBuildButtonCallback, 
         Console.WriteLine($"Troca com banco/porto: {message}");
 #endif
     }
+}
 }

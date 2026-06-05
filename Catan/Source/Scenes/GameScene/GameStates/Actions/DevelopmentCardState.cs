@@ -8,7 +8,9 @@ using Catan.Source.Scenes.Game;
 using Microsoft.Xna.Framework;
 using System;
 
-public class DevelopmentCardState : PlayerTurnGameState, PlayerBuildButtonCallback, PlayerTradeButtonCallback, PlayerDevelopmentCardButtonCallback
+namespace Catan.Source.Scenes.Game
+{
+    public class DevelopmentCardState : PlayerTurnGameState, PlayerBuildButtonCallback, PlayerTradeButtonCallback, PlayerDevelopmentCardButtonCallback
 {
     static UISlate BuildUISlate(GameScene gameScene, Player player)
     {
@@ -111,5 +113,6 @@ public class DevelopmentCardState : PlayerTurnGameState, PlayerBuildButtonCallba
     {
         _gameScene.ExitState();
     }
+}
 }
 

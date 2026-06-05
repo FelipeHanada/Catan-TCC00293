@@ -1,3 +1,4 @@
+using Catan.Source.Game;
 using Catan.Source.Game.Board;
 using Catan.Source.Game.Player;
 using Catan.Source.Game.Resources;
@@ -72,6 +73,8 @@ namespace Catan.Source.Scenes.Game
             : base(gameScene, player)
         {
             RoadCost = roadCost ?? new Dictionary<ResourceId, int>();
+
+            AddChild(new ButtonAction(10, 10, gameScene.Atlas, () => { gameScene.ExitState(); }, "Cancelar"));
         }
 
         public override bool CanPlaceRoad(TileEdge edge)

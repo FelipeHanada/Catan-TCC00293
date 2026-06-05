@@ -6,12 +6,9 @@ namespace Catan.Source.Scenes.Game
 {
     public class PlayerActionsGameState : PlayerTurnGameState, PlayerTradeButtonCallback, PlayerBuildButtonCallback, PlayerDevelopmentCardButtonCallback, PlayerEndTurnButtonCallback
     {
-        private readonly Player _player;
-
         public PlayerActionsGameState(GameScene gameScene, Player player)
             : base(gameScene, player)
         {
-            _player = player;
         }
 
         public void OnPlayerBuildButtonClicked()
@@ -22,7 +19,7 @@ namespace Catan.Source.Scenes.Game
             }
             else
             {
-                _gameScene.AppendState(new BuildingGameState(_gameScene, _player));
+                _gameScene.AppendState(new BuildingGameState(_gameScene, Player));
             }
         }
 
@@ -34,7 +31,7 @@ namespace Catan.Source.Scenes.Game
             }
             else
             {
-                _gameScene.AppendState(new TradingGameState(_gameScene, _player));
+                _gameScene.AppendState(new TradingGameState(_gameScene, Player));
             }
         }
 
@@ -46,13 +43,13 @@ namespace Catan.Source.Scenes.Game
             }
             else
             {
-                _gameScene.AppendState(new DevelopmentCardState(_gameScene, _player));
+                _gameScene.AppendState(new DevelopmentCardState(_gameScene, Player));
             }
         }
 
         public void OnPlayerEndTurnButtonClicked()
         {
-            _player.Inventory.DevelopmentCards.ReleaseNewCards();
+            Player.Inventory.DevelopmentCards.ReleaseNewCards();
             _gameScene.ResetDevelopmentCardUsageForTurn();
             _gameScene.ExitState();
         }
