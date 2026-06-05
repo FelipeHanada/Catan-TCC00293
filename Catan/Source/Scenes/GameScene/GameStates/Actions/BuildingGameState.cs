@@ -9,55 +9,90 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using Catan.Source.Game.Board;
+using System.Runtime.CompilerServices;
 
 namespace Catan.Source.Scenes.Game
 {
     public class BuildingGameState : PlayerTurnGameState, PlayerBuildButtonCallback, PlayerTradeButtonCallback, PlayerDevelopmentCardButtonCallback
-{
-    private static readonly Dictionary<ResourceId, int> SETTLEMENT_COST = new Dictionary<ResourceId, int>
     {
-        { ResourceId.Brick, 1 },
-        { ResourceId.Wood, 1 },
-        { ResourceId.Wool, 1 },
-        { ResourceId.Wheat, 1 }
-    };
+        private static readonly Dictionary<ResourceId, int> SETTLEMENT_COST = new Dictionary<ResourceId, int>
+        {
+            { ResourceId.Brick, 1 },
+            { ResourceId.Wood, 1 },
+            { ResourceId.Wool, 1 },
+            { ResourceId.Wheat, 1 }
+        };
 
-    private static readonly Dictionary<ResourceId, int> CITY_COST = new Dictionary<ResourceId, int>
-    {
-        { ResourceId.Ore, 3 },
-        { ResourceId.Wheat, 2 }
-    };
+        private static readonly Dictionary<ResourceId, int> CITY_COST = new Dictionary<ResourceId, int>
+        {
+            { ResourceId.Ore, 3 },
+            { ResourceId.Wheat, 2 }
+        };
 
-    private static readonly Dictionary<ResourceId, int> ROAD_COST = new Dictionary<ResourceId, int>
-    {
-        { ResourceId.Brick, 1 },
-        { ResourceId.Wood, 1 }
-    };
+        private static readonly Dictionary<ResourceId, int> ROAD_COST = new Dictionary<ResourceId, int>
+        {
+            { ResourceId.Brick, 1 },
+            { ResourceId.Wood, 1 }
+        };
 
-    private UISlate BuildUISlate()
-	{
-        Atlas atlas = _gameScene.Atlas;
-        Action doNothing = () => { };
-        int posX = 760;
-        int posY = 350;
-        UISlate buildSlate = new UISlate(posX, posY, atlas, Color.Gray, 360, 220, "Construir");    
+        private ButtonAction _settlementButton, _cityButton, _roadButton, _developmentCardButton;
+        private DevelopmentCardPurchaseService _purchaseService;
 
-        int i = 0;
-        ButtonAction settlementButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, OnBuildSettlement, "Construir Assentamento");
-        settlementButton.setEnabled(Player.Inventory.Resources.HasEnough(SETTLEMENT_COST));
-        buildSlate.AddChild(settlementButton);
-        i++;
-        ButtonAction cityButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, OnBuildCity, "Construir Cidade");
-        cityButton.setEnabled(Player.Inventory.Resources.HasEnough(CITY_COST));
-        buildSlate.AddChild(cityButton);
-        i++;
-        ButtonAction roadButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, OnBuildRoad, "Construir Estrada");
-        roadButton.setEnabled(Player.Inventory.Resources.HasEnough(ROAD_COST));
-        buildSlate.AddChild(roadButton);
-        i++;
-        DevelopmentCardPurchaseService purchaseService = new();
-        ButtonAction developmentCardButton = new ButtonAction(posX + 30, posY + 30 + i * 45, atlas, 300, 30, () => {
-            DevelopmentCardPurchaseResult result = purchaseService.Purchase(Player, _gameScene.Bank, _gameScene.DevelopmentCardDeck);
+        public UISlate UISlate { get; private set; }
+        public BuildingGameState(GameScene gameScene, Player player) : base(gameScene, player)
+        {
+            Atlas atlas = _gameScene.Atlas;
+            int posX = 760, posY = 350;
+            UISlate = new(posX, posY, atlas, Color.Gray, 360, 220, "Construir");    
+
+            int i = 0;
+            _settlementButton = new(posX + 30, posY + 30 + i * 45, atlas, 300, 30, OnBuildSettlement, "Construir Assentamento");
+            UISlate.AddChild(_settlementButton);
+            i++;
+            _cityButton = new(posX + 30, posY + 30 + i * 45, atlas, 300, 30, OnBuildCity, "Construir Cidade");
+            UISlate.AddChild(_cityButton);
+            i++;
+            _roadButton = new(posX + 30, posY + 30 + i * 45, atlas, 300, 30, OnBuildRoad, "Construir Estrada");
+            UISlate.AddChild(_roadButton);
+            i++;
+
+            _purchaseService = new();
+            _developmentCardButton = new(posX + 30, posY + 30 + i * 45, atlas, 300, 30, OnBuildDevelopmentCard, "Construir Carta de desenvolvimento");
+            UISlate.AddChild(_developmentCardButton);
+            
+            AddChild(UISlate);
+        }
+
+        private void OnBuildSettlement() {
+            _gameScene.AppendState(new BuildPositionSettlementGameState(
+                _gameScene, Player, BuildingType.Settlement, SETTLEMENT_COST
+            ));
+        }
+
+        private void OnBuildCity() {
+            _gameScene.AppendState(new BuildPositionSettlementGameState(
+                _gameScene, Player, BuildingType.City, CITY_COST
+            ));
+        }
+
+        private void OnBuildRoad() {
+            _gameScene.AppendState(new BuildPositionRoadGameState(
+                _gameScene, Player, ROAD_COST
+            ));
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            _settlementButton?.setEnabled(Player.Inventory.Resources.HasEnough(SETTLEMENT_COST));
+            _cityButton?.setEnabled(Player.Inventory.Resources.HasEnough(CITY_COST));
+            _roadButton?.setEnabled(Player.Inventory.Resources.HasEnough(ROAD_COST));
+            _developmentCardButton?.setEnabled(_purchaseService.CanPurchase(Player, _gameScene.Bank, _gameScene.DevelopmentCardDeck).Success);
+        }
+
+        private void OnBuildDevelopmentCard() {
+            DevelopmentCardPurchaseResult result = _purchaseService.Purchase(Player, _gameScene.Bank, _gameScene.DevelopmentCardDeck);
             Console.WriteLine(result.Message);
             if (result.Success)
             {
@@ -65,53 +100,23 @@ namespace Catan.Source.Scenes.Game
                 _gameScene.ExitState();
                 _gameScene.AppendState(new BuildingGameState(_gameScene, Player));
             }
-        }, "Construir Carta de desenvolvimento");
-        developmentCardButton.setEnabled(purchaseService.CanPurchase(Player, _gameScene.Bank, _gameScene.DevelopmentCardDeck).Success);
-        buildSlate.AddChild(developmentCardButton);
+        }
 
-        return buildSlate;
-    }
+        public void OnPlayerTradeButtonClicked()
+        {
+            _gameScene.ExitState();
+            _gameScene.AppendState(new TradingGameState(_gameScene, Player));
+        }
 
-	public UISlate UISlate { get; private set; }
-	public BuildingGameState(GameScene gameScene, Player player) : base(gameScene, player)
-	{
-        UISlate = BuildUISlate();
-        AddChild(UISlate);
-    }
+        public void OnPlayerBuildButtonClicked()
+        {
+            _gameScene.ExitState();
+        }
 
-    private void OnBuildSettlement() {
-        _gameScene.AppendState(new BuildPositionSettlementGameState(
-            _gameScene, Player, BuildingType.Settlement, SETTLEMENT_COST
-        ));
+        public void OnPlayerDevelopmentCardButtonClicked()
+        {
+            _gameScene.ExitState();
+            _gameScene.AppendState(new DevelopmentCardState(_gameScene, Player));
+        }
     }
-
-    private void OnBuildCity() {
-        _gameScene.AppendState(new BuildPositionSettlementGameState(
-            _gameScene, Player, BuildingType.City, CITY_COST
-        ));
-    }
-
-    private void OnBuildRoad() {
-        _gameScene.AppendState(new BuildPositionRoadGameState(
-            _gameScene, Player, ROAD_COST
-        ));
-    }
-
-    public void OnPlayerTradeButtonClicked()
-    {
-        _gameScene.ExitState();
-        _gameScene.AppendState(new TradingGameState(_gameScene, Player));
-    }
-
-    public void OnPlayerBuildButtonClicked()
-    {
-        _gameScene.ExitState();
-    }
-
-    public void OnPlayerDevelopmentCardButtonClicked()
-    {
-        _gameScene.ExitState();
-        _gameScene.AppendState(new DevelopmentCardState(_gameScene, Player));
-    }
-}
 }
