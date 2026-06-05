@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Catan.Source.Content;
 using Catan.Source.Game;
+using Catan.Source.Game.AI;
 using Catan.Source.Game.Board;
 using Catan.Source.Game.DevelopmentCards;
 using Catan.Source.Game.Dice;
@@ -32,6 +33,7 @@ namespace Catan.Source.Scenes
         public GameBank Bank { get; private set; }
         public DevelopmentCardDeck DevelopmentCardDeck { get; private set; }
         public bool HasUsedDevelopmentCardThisTurn { get; private set; }
+        public RandomAiStrategy AiStrategy { get; private set; }
         public Board Board { get; private set; }
         public ScoreManager ScoreManager { get; private set; }
 
@@ -44,16 +46,42 @@ namespace Catan.Source.Scenes
         public DiceRoll LastDiceRoll { get; set; }
         public IReadOnlyList<Player> Players => _players;
 
-        public GameScene()
+        public GameScene() : this(CreateDefaultSettings())
+        {
+        }
+
+        internal GameScene(MatchSettings settings)
         {
             _stateStack = new();
             Bank = new GameBank();
             DevelopmentCardDeck = new DevelopmentCardDeck();
+            AiStrategy = new RandomAiStrategy();
             _players = [];
-            for (int i=0; i<4; i++)
+
+            for (int i = 0; i < settings.Players.Count; i++)
             {
-                _players.Add(new Player(i));
+                MatchPlayer matchPlayer = settings.Players[i];
+                _players.Add(new Player(i, matchPlayer.Name, matchPlayer.IsAi));
             }
+        }
+
+        private static MatchSettings CreateDefaultSettings()
+        {
+            MatchSettings settings = new()
+            {
+                TargetScore = 10,
+            };
+
+            for (int i = 0; i < 4; i++)
+            {
+                settings.Players.Add(new MatchPlayer
+                {
+                    Name = $"Jogador {i + 1}",
+                    IsAi = false,
+                });
+            }
+
+            return settings;
         }
 
         public override void Initialize()
