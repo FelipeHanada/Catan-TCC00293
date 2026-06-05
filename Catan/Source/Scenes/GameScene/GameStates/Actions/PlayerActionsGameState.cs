@@ -13,7 +13,7 @@ namespace Catan.Source.Scenes.Game
 
         public void OnPlayerBuildButtonClicked()
         {
-            if (_gameScene.GetCurrentStateGame() is BuildingGameState)
+            if (_gameScene.GetCurrentState() is BuildingGameState)
             {
                 _gameScene.ExitState();
             }
@@ -25,7 +25,7 @@ namespace Catan.Source.Scenes.Game
 
         public void OnPlayerTradeButtonClicked()
         {
-            if (_gameScene.GetCurrentStateGame() is TradingGameState)
+            if (_gameScene.GetCurrentState() is TradingGameState)
             {
                 _gameScene.ExitState();
             }
@@ -37,7 +37,7 @@ namespace Catan.Source.Scenes.Game
 
         public void OnPlayerDevelopmentCardButtonClicked()
         {
-            if (_gameScene.GetCurrentStateGame() is DevelopmentCardState)
+            if (_gameScene.GetCurrentState() is DevelopmentCardState)
             {
                 _gameScene.ExitState();
             }

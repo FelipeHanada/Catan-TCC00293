@@ -19,8 +19,8 @@ namespace Catan.Source.Game.Board
         private const float Gap = 8;
         private MouseState _previousMouseState;
 
-        private readonly Atlas atlas;
-        private readonly GameScene gameScene;
+        private readonly Atlas _atlas;
+        private readonly GameScene _gameScene;
 
         public Player.Player RoadOwner { get; private set; }
 
@@ -29,8 +29,8 @@ namespace Catan.Source.Game.Board
         {
             this.VertexA = vertexA;
             this.VertexB = vertexB;
-            this.atlas = atlas;
-            this.gameScene = gameScene;
+            _atlas = atlas;
+            _gameScene = gameScene;
             RoadOwner = null;
         }
 
@@ -69,7 +69,7 @@ namespace Catan.Source.Game.Board
 
                 Rectangle sourceRect = Atlas.GetRectangle(spriteId, RoadOwner.PlayerNumber);
                 Rectangle destRect = new((int)ax, (int)Math.Min(ay, by), sourceRect.Width, sourceRect.Height);
-                spriteBatch.Draw(atlas.Texture, destRect, sourceRect, Color.White, 0, new(0, 0), SpriteEffects.None, 1);
+                spriteBatch.Draw(_atlas.Texture, destRect, sourceRect, Color.White, 0, new(0, 0), SpriteEffects.None, 1);
             }
         }
 
@@ -77,7 +77,7 @@ namespace Catan.Source.Game.Board
         {
             MouseState currentMouseState = Mouse.GetState();
 
-            if (gameScene.GetCurrentStateGame() is PositionRoadGameState gameState)
+            if (_gameScene.GetCurrentState() is PositionRoadGameState gameState)
             {
                 if (currentMouseState.LeftButton == ButtonState.Pressed
                     && _previousMouseState.LeftButton == ButtonState.Released
@@ -118,11 +118,11 @@ namespace Catan.Source.Game.Board
             float ux = right - left, uy = bottom - top;
             float vx = mx - left, vy = my - top;
 
-            float dot_uv = ux * vx + uy * vy;
-            float dot_uu = ux * ux + uy * uy;
+            float dotUv = ux * vx + uy * vy;
+            float dotUu = ux * ux + uy * uy;
 
-            float projx = ux * dot_uv / dot_uu;
-            float projy = uy * dot_uv / dot_uu;
+            float projx = ux * dotUv / dotUu;
+            float projy = uy * dotUv / dotUu;
 
             float dx = Math.Abs(projx - vx), dy = Math.Abs(projy - vy);
             float dist2 = dx * dx + dy * dy;

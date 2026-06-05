@@ -9,7 +9,7 @@ namespace Catan.Source.Game.DevelopmentCards
 {
     public class DevelopmentCardPurchaseService
     {
-        private static readonly IReadOnlyDictionary<ResourceId, int> Cost = new Dictionary<ResourceId, int>
+        private static readonly IReadOnlyDictionary<ResourceId, int> _cost = new Dictionary<ResourceId, int>
         {
             [ResourceId.Wool] = 1,
             [ResourceId.Wheat] = 1,
@@ -26,7 +26,7 @@ namespace Catan.Source.Game.DevelopmentCards
 
             ResourceInventory resources = player.Inventory.Resources;
 
-            foreach (var entry in Cost)
+            foreach (var entry in _cost)
             {
                 bank.Receive(resources, entry.Key, entry.Value);
             }
@@ -59,12 +59,12 @@ namespace Catan.Source.Game.DevelopmentCards
             }
 
             ResourceInventory resources = player.Inventory.Resources;
-            if (!resources.HasEnough(Cost))
+            if (!resources.HasEnough(_cost))
             {
                 return DevelopmentCardPurchaseResult.Fail("Recursos insuficientes para comprar carta de desenvolvimento.");
             }
 
-            foreach (var entry in Cost)
+            foreach (var entry in _cost)
             {
                 if (!bank.CanReceive(entry.Key, entry.Value))
                 {

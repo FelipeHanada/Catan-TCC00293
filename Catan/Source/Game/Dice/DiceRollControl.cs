@@ -25,21 +25,21 @@ namespace Catan.Source.Game.Dice
         private const byte BlinkMinIntensity = 120;
         private const byte BlinkMaxIntensity = 255;
 
-        private readonly Atlas atlas;
+        private readonly Atlas _atlas;
 
-        private DiceRollControlState state;
-        private DiceRoll result;
-        private double rollElapsed;
-        private double faceChangeElapsed;
-        private double blinkElapsed;
-        private int visibleFirst;
-        private int visibleSecond;
+        private DiceRollControlState _state;
+        private DiceRoll _result;
+        private double _rollElapsed;
+        private double _faceChangeElapsed;
+        private double _blinkElapsed;
+        private int _visibleFirst;
+        private int _visibleSecond;
         private MouseState _previousMouseState;
 
         public bool IsEnabled { get; set; }
-        public bool IsRolling => state == DiceRollControlState.Rolling;
-        public bool HasSettledResult => state == DiceRollControlState.Settled;
-        public DiceRoll Result => result;
+        public bool IsRolling => _state == DiceRollControlState.Rolling;
+        public bool HasSettledResult => _state == DiceRollControlState.Settled;
+        public DiceRoll Result => _result;
 
         private Rectangle Bounds => new(
             (int)X,
@@ -52,11 +52,11 @@ namespace Catan.Source.Game.Dice
         public DiceRollControl(float x, float y, Atlas atlas, GameScene gameScene)
             : base(x, y)
         {
-            this.atlas = atlas;
-            state = DiceRollControlState.Idle;
-            result = new DiceRoll(1, 1);
-            visibleFirst = result.First;
-            visibleSecond = result.Second;
+            _atlas = atlas;
+            _state = DiceRollControlState.Idle;
+            _result = new DiceRoll(1, 1);
+            _visibleFirst = _result.First;
+            _visibleSecond = _result.Second;
             IsEnabled = true;
             _gameScene = gameScene;
             _previousMouseState = Mouse.GetState();
@@ -72,30 +72,30 @@ namespace Catan.Source.Game.Dice
 
         public void StartRoll(DiceRoll result)
         {
-            if (state == DiceRollControlState.Rolling)
+            if (_state == DiceRollControlState.Rolling)
             {
                 return;
             }
 
-            this.result = result;
-            state = DiceRollControlState.Rolling;
-            rollElapsed = 0;
-            faceChangeElapsed = FaceChangeInterval;
+            _result = result;
+            _state = DiceRollControlState.Rolling;
+            _rollElapsed = 0;
+            _faceChangeElapsed = FaceChangeInterval;
         }
 
         public DiceRoll ConsumeSettledResult()
         {
-            var roll = result;
-            state = DiceRollControlState.Idle;
+            var roll = _result;
+            _state = DiceRollControlState.Idle;
             return roll;
         }
 
         public override void Update(GameTime gameTime)
         {
-            IsEnabled = _gameScene.GetCurrentStateGame() is WaitingForDiceRollGameState;
+            IsEnabled = _gameScene.GetCurrentState() is WaitingForDiceRollGameState;
 
             MouseState currentMouseState = Mouse.GetState();
-            if (IsEnabled && state == DiceRollControlState.Idle
+            if (IsEnabled && _state == DiceRollControlState.Idle
                 && currentMouseState.LeftButton == ButtonState.Pressed
                 && _previousMouseState.LeftButton == ButtonState.Released
                 && Bounds.Contains(currentMouseState.Position))
@@ -106,44 +106,44 @@ namespace Catan.Source.Game.Dice
             _previousMouseState = currentMouseState;
 
             double elapsedSeconds = gameTime.ElapsedGameTime.TotalSeconds;
-            blinkElapsed += elapsedSeconds;
-            if (blinkElapsed >= BlinkDuration)
+            _blinkElapsed += elapsedSeconds;
+            if (_blinkElapsed >= BlinkDuration)
             {
-                blinkElapsed -= BlinkDuration;
+                _blinkElapsed -= BlinkDuration;
             }
 
-            if (state != DiceRollControlState.Rolling)
+            if (_state != DiceRollControlState.Rolling)
             {
                 return;
             }
 
-            rollElapsed += elapsedSeconds;
-            faceChangeElapsed += elapsedSeconds;
+            _rollElapsed += elapsedSeconds;
+            _faceChangeElapsed += elapsedSeconds;
 
-            if (faceChangeElapsed >= FaceChangeInterval)
+            if (_faceChangeElapsed >= FaceChangeInterval)
             {
-                faceChangeElapsed = 0;
-                visibleFirst = Random.Shared.Next(1, 7);
-                visibleSecond = Random.Shared.Next(1, 7);
+                _faceChangeElapsed = 0;
+                _visibleFirst = Random.Shared.Next(1, 7);
+                _visibleSecond = Random.Shared.Next(1, 7);
             }
 
-            if (rollElapsed >= RollDuration)
+            if (_rollElapsed >= RollDuration)
             {
-                visibleFirst = result.First;
-                visibleSecond = result.Second;
-                state = DiceRollControlState.Settled;
+                _visibleFirst = _result.First;
+                _visibleSecond = _result.Second;
+                _state = DiceRollControlState.Settled;
             }
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            bool shouldBlink = IsEnabled && state == DiceRollControlState.Idle;
+            bool shouldBlink = IsEnabled && _state == DiceRollControlState.Idle;
             Color tint;
-            int yOffset = IsEnabled && state != DiceRollControlState.Rolling ? -3 : 0;
+            int yOffset = IsEnabled && _state != DiceRollControlState.Rolling ? -3 : 0;
 
             if (shouldBlink)
             {
-                float blink = (float)((Math.Sin((blinkElapsed / BlinkDuration) * Math.PI * 2) + 1) / 2);
+                float blink = (float)((Math.Sin((_blinkElapsed / BlinkDuration) * Math.PI * 2) + 1) / 2);
                 byte intensity = (byte)(BlinkMinIntensity + (BlinkMaxIntensity - BlinkMinIntensity) * blink);
                 tint = new Color(intensity, intensity, intensity);
 
@@ -154,13 +154,13 @@ namespace Catan.Source.Game.Dice
             }
             else
             {
-                tint = IsEnabled || state != DiceRollControlState.Idle
+                tint = IsEnabled || _state != DiceRollControlState.Idle
                     ? Color.White
                     : new Color(170, 170, 170);
             }
 
-            DrawDice(spriteBatch, visibleFirst, GetFaceRectangle(0, yOffset), tint);
-            DrawDice(spriteBatch, visibleSecond, GetFaceRectangle(1, yOffset), tint);
+            DrawDice(spriteBatch, _visibleFirst, GetFaceRectangle(0, yOffset), tint);
+            DrawDice(spriteBatch, _visibleSecond, GetFaceRectangle(1, yOffset), tint);
         }
 
         private Rectangle GetFaceRectangle(int index, int yOffset)
@@ -175,7 +175,7 @@ namespace Catan.Source.Game.Dice
         private void DrawDice(SpriteBatch spriteBatch, int face, Rectangle destination, Color tint)
         {
             spriteBatch.Draw(
-                atlas.Texture,
+                _atlas.Texture,
                 destination,
                 Atlas.GetRectangle(Atlas.GetDiceFaceSprite(face)),
                 tint);

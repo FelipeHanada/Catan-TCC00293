@@ -10,7 +10,7 @@ namespace Catan.Source.Game
     {
         public float X { get; set; }
         public float Y { get; set; }
-        public List<GameObject> Children { get; private set; }
+        public List<GameObject> Children { get; }
 
         public GameObject(float x, float y)
         {
@@ -19,14 +19,14 @@ namespace Catan.Source.Game
             Children = [];
         }
 
-        public GameObject() : this(0, 0) {}
+        public GameObject() : this(0, 0) { }
 
         public void AddChild(GameObject child)
         {
             Children.Add(child);
         }
 
-        public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch) {}
+        public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch) { }
         public virtual void Update(GameTime gameTime) { }
 
         public virtual void OnSubscribe(Scene scene)

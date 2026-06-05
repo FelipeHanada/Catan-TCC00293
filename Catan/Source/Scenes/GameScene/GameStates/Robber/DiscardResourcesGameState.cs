@@ -21,7 +21,7 @@ namespace Catan.Source.Scenes.Game
         {
             base.Update(gameTime);
 
-            foreach (Player player in _gameScene._players)
+            foreach (Player player in _gameScene.Players)
             {
                 if (!_sevenRule.ShouldDiscard(player))
                 {

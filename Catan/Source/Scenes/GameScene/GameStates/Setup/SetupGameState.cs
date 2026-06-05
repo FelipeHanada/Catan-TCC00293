@@ -16,7 +16,7 @@ namespace Catan.Source.Scenes.Game
             _stateQueue = [];
 
             Stack<Player> stk = new();
-            foreach (Player player in gameScene._players)
+            foreach (Player player in gameScene.Players)
             {
                 _stateQueue.Enqueue(new SetupPositionSettlementGameState(gameScene, player, BuildingType.Settlement));
                 stk.Push(player);

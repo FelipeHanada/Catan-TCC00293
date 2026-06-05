@@ -1,4 +1,4 @@
-﻿using Catan.Source.Content;
+using Catan.Source.Content;
 using Catan.Source.Game;
 using Catan.Source.Game.DevelopmentCards;
 using Catan.Source.Game.Inventory;
@@ -19,27 +19,27 @@ namespace Catan.Source.Scenes.Game
         int posY = 350;
         UISlate useSlate = new UISlate(posX, posY, atlas, Color.Gray, 360, 220, "Usar carta");
 
-        int i = 0;
+        int buttonIndex = 0;
         foreach (DevelopmentCardType type in DevelopmentCardActivationRules.ActivatableTypes)
         {
             int playableCount = player.Inventory.DevelopmentCards.CountPlayableByType(type);
             string label = $"{GetDisplayName(type)} ({playableCount})";
             ButtonAction button = new ButtonAction(
                 posX + 30,
-                posY + 30 + i * 45,
+                posY + 30 + buttonIndex * 45,
                 atlas,
                 300,
                 30,
                 () => ActivateDevelopmentCard(gameScene, player, type),
                 label);
 
-            button.setEnabled(DevelopmentCardActivationRules.CanActivate(
+            button.SetEnabled(DevelopmentCardActivationRules.CanActivate(
                 type,
                 player.Inventory.DevelopmentCards,
                 gameScene.HasUsedDevelopmentCardThisTurn));
 
             useSlate.AddChild(button);
-            i++;
+            buttonIndex++;
         }
 
         return useSlate;

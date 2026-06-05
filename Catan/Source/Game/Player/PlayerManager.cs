@@ -6,20 +6,20 @@ namespace Catan.Source.Game.Player
 {
     public class PlayerManager : GameObject
     {
-        public List<Player> players { get; private set; }
+        public List<Player> Players { get; private set; }
 
         public PlayerManager(int numberOfPlayers) : base()
         {
-            players = new();
-            for (int i=0; i<numberOfPlayers; i++)
+            Players = new();
+            for (int i = 0; i < numberOfPlayers; i++)
             {
-                players.Add(new Player(i));
+                Players.Add(new Player(i));
             }
         }
 
         public override void OnSubscribe(Scene scene)
         {
-            foreach (Player player in players)
+            foreach (Player player in Players)
             {
                 scene.Subscribe(player);
             }
