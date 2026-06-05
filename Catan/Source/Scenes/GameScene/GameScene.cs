@@ -113,12 +113,6 @@ namespace Catan.Source.Scenes
         {
             base.Update(gameTime);
 
-            if (Keyboard.GetState().IsKeyDown(Keys.F1))//atalho temporario para tela de fim
-            {
-                Game1.ChangeScene(new EndGameScene());
-                return;
-            }
-
             GameState currentState = GetCurrentState();
 
             Console.Out.WriteLine(currentState);

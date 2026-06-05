@@ -10,6 +10,7 @@ namespace Catan.Source.Game.Player
 {
     public class ScoreManager : GameObject
     {
+        public const int ScoreToWin = 3;
         private GameScene _gameScene;
         private Dictionary<Player, int> _playerScores = new();
         public ScoreManager(GameScene gameScene)
@@ -36,6 +37,11 @@ namespace Catan.Source.Game.Player
             {
                 int score = CalculateScore(player);
                 _playerScores[player] = score;
+
+                if (score >= ScoreToWin)
+                {
+                    Game1.ChangeScene(new EndGameScene(player));
+                }
             }
         }
         private int CalculateScore(Player player)
