@@ -12,25 +12,21 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Catan.Source.Game.Player
 {
-    public class PlayerHud : GameObject
+    public class PlayerHud : UISlate
     {
-        private Atlas _atlas;
-        public Player Player { get; }
+        private Player _player;
+        private GameScene _gameScene;
         private static SpriteFont _font = null;
 
-
-        public PlayerHud(Atlas atlas, Player player) : base(0, 0)
+        public PlayerHud(GameScene gameScene, Player player, float x, float y, Color color, int width, int height)
+            : base(x, y, gameScene.Atlas, color, width, height, "PlayerNumber: " + player.PlayerNumber)
         {
-            _atlas = atlas;
-            Player = player;
+            _gameScene = gameScene;
+            _player = player;
             _font ??= Game1.ContentManager.Load<SpriteFont>("bigFont");
-
-            PlayerInfo playerInfo = new PlayerInfo(1280 - 210, 10, _atlas, Color.White, 200, 170, "");
-            playerInfo.SetPlayer(Player);
-            AddChild(playerInfo);            
         }
 
-        public static void DrawString(SpriteBatch spriteBatch, string text, Vector2 position)
+        public static Vector2 DrawString(SpriteBatch spriteBatch, string text, Vector2 position, Vector2 delta = default)
         {
             spriteBatch.DrawString(
                 _font,
@@ -40,26 +36,27 @@ namespace Catan.Source.Game.Player
                 new Vector2(0, 0),
                 new Vector2(0.1f, 0.1f),
                 SpriteEffects.None,
-                0);   
+                0);
+
+            position += delta;
+            return position;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {   
-            /*
+        {
             base.Draw(gameTime, spriteBatch);
-
-            float deltaY = 0;
-
-            DrawString(spriteBatch, "PlayerNumber: " + Player.PlayerNumber, new(X, Y + deltaY));
-            deltaY += 16;
+            
+            Vector2 delta = new(0, 16);
+            Vector2 position = new(X+16, Y+24);
 
             foreach (ResourceId resourceId in ResourceUtils.ResourceIds)
             {
-                int amount = Player.Inventory.Resources.GetAmount(resourceId);
-                DrawString(spriteBatch, ResourceUtils.ResourceName[resourceId].ToUpper() + ": " + amount, new(X, Y + deltaY));
-                deltaY += 16;
+                int amount = _player.Inventory.Resources.GetAmount(resourceId);
+                position = DrawString(spriteBatch, ResourceUtils.ResourceName[resourceId].ToUpper() + ": " + amount, position, delta);
             }
-            */
+
+            position += new Vector2(0, 8);
+            DrawString(spriteBatch, "Pontuacao: " + _gameScene.ScoreManager.GetScore(_player), position);
         }
     }
 }
