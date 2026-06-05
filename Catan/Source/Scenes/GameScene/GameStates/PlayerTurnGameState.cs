@@ -1,3 +1,4 @@
+using Catan.Source.Content;
 using Catan.Source.Game.Player;
 using Microsoft.Xna.Framework;
 
@@ -12,7 +13,7 @@ namespace Catan.Source.Scenes.Game
             : base(gameScene)
         {
             Player = player;
-            Hud = new PlayerHud(gameScene, player, 1280 - 210, 10, Color.White, 200, 170);
+            Hud = new PlayerHud(gameScene, player, 1280 - 210, 10, Atlas.GetPlayerColor(player.PlayerNumber), 200, 170);
             AddChild(Hud);
         }
     }
