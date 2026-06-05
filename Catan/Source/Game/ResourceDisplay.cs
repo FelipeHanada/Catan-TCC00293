@@ -1,4 +1,4 @@
-﻿using Catan.Source.Content;
+using Catan.Source.Content;
 using Catan.Source.Game.Resources;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,7 +14,7 @@ namespace Catan.Source.Game
 {
     public class ResourceDisplay : GameObject
     {
-        private Dictionary<ResourceId, int> ResourceCounts = new()
+        private Dictionary<ResourceId, int> _resourceCounts = new()
         {
             [ResourceId.Wood] = 0,
             [ResourceId.Wool] = 0,
@@ -22,45 +22,45 @@ namespace Catan.Source.Game
             [ResourceId.Ore] = 0,
             [ResourceId.Wheat] = 0,
         };
-        private SpriteFont Font;
-        private Atlas atlas;
+        private SpriteFont _font;
+        private Atlas _atlas;
         public ResourceDisplay(float x, float y, Atlas atlas) : base(x, y)
         {
-            Font ??= Game1.ContentManager.Load<SpriteFont>("bigFont");
-            this.atlas = atlas;
+            _font ??= Game1.ContentManager.Load<SpriteFont>("bigFont");
+            _atlas = atlas;
 
             //add buttons
             for (int i = 0; i < ResourceUtils.ResourceIds.Length; i++)
             {
                 float buttonX = this.X + 100 * i + 30;
                 ResourceId resourceId = ResourceUtils.ResourceIds[i];
-                Action incrementAction = () => { this.incrementResource(resourceId); };
-                Action decrementAction = () => { this.decrementResource(resourceId); };
+                Action incrementAction = () => { IncrementResource(resourceId); };
+                Action decrementAction = () => { DecrementResource(resourceId); };
                 ButtonAction incrementButton = new ButtonAction(buttonX + 30, this.Y+90, atlas, incrementAction, "+");
-                incrementButton.setFontScale(0.08f);
+                incrementButton.SetFontScale(0.08f);
                 ButtonAction decrementButton = new ButtonAction(buttonX, this.Y+90, atlas, decrementAction, "-");
-                decrementButton.setFontScale(0.08f);
+                decrementButton.SetFontScale(0.08f);
 
                 AddChild(incrementButton);
                 AddChild(decrementButton);
             }
         }
 
-        public void decrementResource(ResourceId resourceId)
+        public void DecrementResource(ResourceId resourceId)
         {
-            if (ResourceCounts[resourceId] == 0) return;
-            ResourceCounts[resourceId]--;
+            if (_resourceCounts[resourceId] == 0) return;
+            _resourceCounts[resourceId]--;
         }
-        public void incrementResource(ResourceId resourceId)
+        public void IncrementResource(ResourceId resourceId)
         {
-            ResourceCounts[resourceId]++;
+            _resourceCounts[resourceId]++;
         }
 
         public Dictionary<ResourceId, int> GetSelectedResources()
         {
             Dictionary<ResourceId, int> selectedResources = new();
 
-            foreach (KeyValuePair<ResourceId, int> resource in ResourceCounts)
+            foreach (KeyValuePair<ResourceId, int> resource in _resourceCounts)
             {
                 if (resource.Value > 0)
                 {
@@ -75,7 +75,7 @@ namespace Catan.Source.Game
         {
             foreach (ResourceId resource in ResourceUtils.ResourceIds)
             {
-                ResourceCounts[resource] = 0;
+                _resourceCounts[resource] = 0;
             }
         }
 
@@ -88,27 +88,27 @@ namespace Catan.Source.Game
             {
                 float resourceX = this.X + 100 * i + 30;
                 ResourceId resourceId = ResourceUtils.ResourceIds[i];
-                spriteBatch.DrawString(Font, ResourceCounts[resourceId].ToString() + "X", new Vector2(resourceX - 25, this.Y + 30), Color.White, 0.0f, new Vector2(0, 0), 0.125f, SpriteEffects.None, 0.0f);
+                spriteBatch.DrawString(_font, _resourceCounts[resourceId].ToString() + "X", new Vector2(resourceX - 25, this.Y + 30), Color.White, 0.0f, new Vector2(0, 0), 0.125f, SpriteEffects.None, 0.0f);
 
                 if (resourceId == ResourceId.Wool)
                 {
-                    spriteBatch.Draw(atlas.Texture, new Vector2(resourceX, this.Y), Atlas.GetRectangle(AtlasSpriteId.WoolResource), Color.White);
+                    spriteBatch.Draw(_atlas.Texture, new Vector2(resourceX, this.Y), Atlas.GetRectangle(AtlasSpriteId.WoolResource), Color.White);
                 }
                 else if (resourceId == ResourceId.Wheat)
                 {
-                    spriteBatch.Draw(atlas.Texture, new Vector2(resourceX, this.Y), Atlas.GetRectangle(AtlasSpriteId.WheatResource), Color.White);
+                    spriteBatch.Draw(_atlas.Texture, new Vector2(resourceX, this.Y), Atlas.GetRectangle(AtlasSpriteId.WheatResource), Color.White);
                 }
                 else if (resourceId == ResourceId.Ore)
                 {
-                    spriteBatch.Draw(atlas.Texture, new Vector2(resourceX, this.Y), Atlas.GetRectangle(AtlasSpriteId.OreResource), Color.White);
+                    spriteBatch.Draw(_atlas.Texture, new Vector2(resourceX, this.Y), Atlas.GetRectangle(AtlasSpriteId.OreResource), Color.White);
                 }
                 else if (resourceId == ResourceId.Brick)
                 {
-                    spriteBatch.Draw(atlas.Texture, new Vector2(resourceX, this.Y), Atlas.GetRectangle(AtlasSpriteId.BrickResource), Color.White);
+                    spriteBatch.Draw(_atlas.Texture, new Vector2(resourceX, this.Y), Atlas.GetRectangle(AtlasSpriteId.BrickResource), Color.White);
                 }
                 else if (resourceId == ResourceId.Wood)
                 {
-                    spriteBatch.Draw(atlas.Texture, new Vector2(resourceX, this.Y), Atlas.GetRectangle(AtlasSpriteId.WoodResource), Color.White);
+                    spriteBatch.Draw(_atlas.Texture, new Vector2(resourceX, this.Y), Atlas.GetRectangle(AtlasSpriteId.WoodResource), Color.White);
                 }
             }
         }

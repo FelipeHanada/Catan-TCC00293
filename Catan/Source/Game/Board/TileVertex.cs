@@ -18,16 +18,16 @@ namespace Catan.Source.Game.Board
         private static readonly GamePlayer _placeholderPlayer = new(0);
         private MouseState _previousMouseState;
 
-        private readonly Atlas atlas;
-        private readonly GameScene gameScene;
+        private readonly Atlas _atlas;
+        private readonly GameScene _gameScene;
         public Building Building { get; private set; }
         public bool HasBuilding => Building != null;
 
         public TileVertex(float x, float y, Atlas atlas, GameScene gameScene) 
             : base(x, y)
         {
-            this.atlas = atlas;
-            this.gameScene = gameScene;
+            _atlas = atlas;
+            _gameScene = gameScene;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -47,7 +47,7 @@ namespace Catan.Source.Game.Board
 
                 Rectangle rectangle = Atlas.GetRectangle(sprite, Building.Owner.PlayerNumber);
                 spriteBatch.Draw(
-                    atlas.Texture,
+                    _atlas.Texture,
                     position - new Vector2(rectangle.Width / 2, rectangle.Height / 2),
                     rectangle,
                     Color.White
@@ -59,7 +59,7 @@ namespace Catan.Source.Game.Board
         {
             MouseState currentMouseState = Mouse.GetState();
             
-            if (gameScene.GetCurrentStateGame() is PositionSettlementGameState gameState)
+            if (_gameScene.GetCurrentState() is PositionSettlementGameState gameState)
             {
                 if (IsHovering(currentMouseState) && (currentMouseState.LeftButton == ButtonState.Pressed && 
                     _previousMouseState.LeftButton == ButtonState.Released))

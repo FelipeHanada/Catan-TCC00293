@@ -31,13 +31,13 @@ namespace Catan.Source.Scenes.Game
             int posY = 350;
             UISlate slate = new UISlate(posX, posY, atlas, Color.Gray, 360, 310, "Invenção");
 
-            int i = 0;
+            int buttonIndex = 0;
             foreach (ResourceId resource in Enum.GetValues<ResourceId>())
             {
                 ResourceId selectedResource = resource;
                 ButtonAction button = new ButtonAction(
                     posX + 30,
-                    posY + 30 + i * 40,
+                    posY + 30 + buttonIndex * 40,
                     atlas,
                     300,
                     30,
@@ -45,12 +45,12 @@ namespace Catan.Source.Scenes.Game
                     GetDisplayName(selectedResource));
 
                 slate.AddChild(button);
-                i++;
+                buttonIndex++;
             }
 
             ButtonAction cancelButton = new ButtonAction(
                 posX + 30,
-                posY + 30 + i * 40,
+                posY + 30 + buttonIndex * 40,
                 atlas,
                 300,
                 30,

@@ -17,15 +17,15 @@ namespace Catan.Source.Game.Board
 
     public class RandomBoardFactory : IBoardFactory
     {
-        private readonly Atlas atlas;
-        private readonly float startX;
-        private readonly float startY;
+        private readonly Atlas _atlas;
+        private readonly float _startX;
+        private readonly float _startY;
 
         public RandomBoardFactory(Atlas atlas, float startX, float startY)
         {
-            this.atlas = atlas;
-            this.startX = startX;
-            this.startY = startY;
+            _atlas = atlas;
+            _startX = startX;
+            _startY = startY;
         }
 
         public Board CreateBoard(GameScene gameScene)
@@ -37,17 +37,17 @@ namespace Catan.Source.Game.Board
             {
                 for (int j = 0; j < 3 + 2 - Math.Abs(i - 2); j++)
                 {
-                    float tileX = startX + 64 * Math.Abs(i - 2) + 128 * j;
-                    float tileY = startY + 96 * i;
+                    float tileX = _startX + 64 * Math.Abs(i - 2) + 128 * j;
+                    float tileY = _startY + 96 * i;
                     TileType randomType = (TileType)rand.Next(0, 6);
                     int diceNum = randomType == TileType.Desert ? 7 : rand.Next(2, 13);
-                    tiles.Add(new Tile(tileX, tileY, atlas, randomType, diceNum, gameScene));
+                    tiles.Add(new Tile(tileX, tileY, _atlas, randomType, diceNum, gameScene));
                 }
             }
 
-            StandardTilePositionIterator positionIterator = new(startX, startY, atlas, gameScene);
+            StandardTilePositionIterator positionIterator = new(_startX, _startY, _atlas, gameScene);
             BoardGraph graph = CreateGraph(positionIterator);
-            Board board = new(startX, startY, atlas, tiles, positionIterator.CreateHarbors(), graph);
+            Board board = new(_startX, _startY, _atlas, tiles, positionIterator.CreateHarbors(), graph);
             return board;
         }
 
@@ -70,15 +70,15 @@ namespace Catan.Source.Game.Board
 
     public class StandardRandomBoardFactory : IBoardFactory
     {
-        private readonly Atlas atlas;
-        private readonly float startX;
-        private readonly float startY;
+        private readonly Atlas _atlas;
+        private readonly float _startX;
+        private readonly float _startY;
 
         public StandardRandomBoardFactory(Atlas atlas, float startX, float startY)
         {
-            this.atlas = atlas;
-            this.startX = startX;
-            this.startY = startY;
+            _atlas = atlas;
+            _startX = startX;
+            _startY = startY;
         }
 
         public Board CreateBoard(GameScene gameScene)
@@ -104,7 +104,7 @@ namespace Catan.Source.Game.Board
 
             List<Tile> tiles = [];
             int tileIndex = 0;
-            StandardTilePositionIterator positionIterator = new(startX, startY, atlas, gameScene);
+            StandardTilePositionIterator positionIterator = new(_startX, _startY, _atlas, gameScene);
             foreach (Tuple<Vector2, TileVertex[]> info in positionIterator)
             {
                 Vector2 position = info.Item1;
@@ -112,7 +112,7 @@ namespace Catan.Source.Game.Board
                 tiles.Add(new(
                     position.X,
                     position.Y,
-                    atlas,
+                    _atlas,
                     tilesConfig[tileIndex].Key,
                     tilesConfig[tileIndex].Value,
                     vertices,
@@ -122,7 +122,7 @@ namespace Catan.Source.Game.Board
             }
 
             BoardGraph graph = CreateGraph(positionIterator);
-            Board board = new(startX, startY, atlas, tiles, positionIterator.CreateHarbors(), graph);
+            Board board = new(_startX, _startY, _atlas, tiles, positionIterator.CreateHarbors(), graph);
             return board;
         }
 
@@ -145,86 +145,86 @@ namespace Catan.Source.Game.Board
 
     public class StandardTilePositionIterator : IEnumerable<Tuple<Vector2, TileVertex[]>>
     {
-        private readonly float startX;
-        private readonly float startY;
-        private readonly float width;
-        private readonly float height;
-        private readonly float h;
+        private readonly float _startX;
+        private readonly float _startY;
+        private readonly float _width;
+        private readonly float _height;
+        private readonly float _h;
         public List<TileVertex> Vertices { get; set; }
         public List<TileEdge> Edges { get; set; }
 
-        private List<List<TileVertex>> vertexTableA;
-        private List<List<TileVertex>> vertexTableB;
+        private List<List<TileVertex>> _vertexTableA;
+        private List<List<TileVertex>> _vertexTableB;
 
         public StandardTilePositionIterator(float startX, float startY, Atlas atlas, GameScene gameScene, float width = 128, float height = 128, float h = 32)
         {
-            this.startX = startX;
-            this.startY = startY;
+            _startX = startX;
+            _startY = startY;
 
-            this.width = width;
-            this.height = height;
-            this.h = h;
+            _width = width;
+            _height = height;
+            _h = h;
 
             Vertices = [];
             Edges = [];
 
-            vertexTableA = [];
+            _vertexTableA = [];
             for (int i = 0; i < 6; i++)
             {
                 List<TileVertex> row = [];
                 for (int j = 0; j < 6 - Math.Abs(3 - i); j++)
                 {
                     row.Add(new(
-                        Math.Abs(3 - i) * width / 2 + width * j,
-                        (height - h) * i,
+                        Math.Abs(3 - i) * _width / 2 + _width * j,
+                        (_height - _h) * i,
                         atlas,
                         gameScene
                     ));
                 }
-                vertexTableA.Add(row);
+                _vertexTableA.Add(row);
                 Vertices.AddRange(row);
             }
-            vertexTableB = [];
+            _vertexTableB = [];
             for (int i = 0; i < 6; i++)
             {
                 List<TileVertex> row = [];
                 for (int j = 0; j < 6 - Math.Abs(2 - i); j++)
                 {
                     row.Add(new(
-                        Math.Abs(2 - i) * width / 2 + width * j,
-                        (height - h) * i + h,
+                        Math.Abs(2 - i) * _width / 2 + _width * j,
+                        (_height - _h) * i + _h,
                         atlas,
                         gameScene
                     ));
                 }
-                vertexTableB.Add(row);
+                _vertexTableB.Add(row);
                 Vertices.AddRange(row);
             }
 
-            for (int i = 0; i < vertexTableB.Count - 1; i++)
+            for (int i = 0; i < _vertexTableB.Count - 1; i++)
             {
-                for (int j = 0; j < vertexTableB[i].Count; j++)
+                for (int j = 0; j < _vertexTableB[i].Count; j++)
                 {
-                    Edges.Add(new(vertexTableA[i + 1][j], vertexTableB[i][j], atlas, gameScene));
+                    Edges.Add(new(_vertexTableA[i + 1][j], _vertexTableB[i][j], atlas, gameScene));
                 }
             }
 
-            for (int i = 0; i < vertexTableA.Count; i++)
+            for (int i = 0; i < _vertexTableA.Count; i++)
             {
-                if (vertexTableA[i].Count < vertexTableB[i].Count)
+                if (_vertexTableA[i].Count < _vertexTableB[i].Count)
                 {
-                    for (int j = 0; j < vertexTableA[i].Count; j++)
+                    for (int j = 0; j < _vertexTableA[i].Count; j++)
                     {
-                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j], atlas, gameScene));
-                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j + 1], atlas, gameScene));
+                        Edges.Add(new(_vertexTableA[i][j], _vertexTableB[i][j], atlas, gameScene));
+                        Edges.Add(new(_vertexTableA[i][j], _vertexTableB[i][j + 1], atlas, gameScene));
                     }
                 }
                 else
                 {
-                    for (int j = 0; j < vertexTableB[i].Count; j++)
+                    for (int j = 0; j < _vertexTableB[i].Count; j++)
                     {
-                        Edges.Add(new(vertexTableA[i][j], vertexTableB[i][j], atlas, gameScene));
-                        Edges.Add(new(vertexTableA[i][j + 1], vertexTableB[i][j], atlas, gameScene));
+                        Edges.Add(new(_vertexTableA[i][j], _vertexTableB[i][j], atlas, gameScene));
+                        Edges.Add(new(_vertexTableA[i][j + 1], _vertexTableB[i][j], atlas, gameScene));
                     }
                 }
             }
@@ -241,8 +241,8 @@ namespace Catan.Source.Game.Board
                 int rowCount = 3 + 2 - Math.Abs(i - 2);
                 for (int j = 0; j < rowCount; j++)
                 {
-                    float x = startX + width / 2 * Math.Abs(i - 2) + width * j;
-                    float y = startY + (height - h) * i;
+                    float x = _startX + _width / 2 * Math.Abs(i - 2) + _width * j;
+                    float y = _startY + (_height - _h) * i;
                     yield return new(new Vector2(x, y), GetTileVertices(i, j));
                 }
             }
@@ -254,27 +254,27 @@ namespace Catan.Source.Game.Board
             int bottomOffset = row < 2 ? 1 : 0;
 
             return [
-                vertexTableA[row][column + topOffset],
-                vertexTableB[row][column],
-                vertexTableB[row][column + 1],
-                vertexTableA[row + 1][column],
-                vertexTableA[row + 1][column + 1],
-                vertexTableB[row + 1][column + bottomOffset],
+                _vertexTableA[row][column + topOffset],
+                _vertexTableB[row][column],
+                _vertexTableB[row][column + 1],
+                _vertexTableA[row + 1][column],
+                _vertexTableA[row + 1][column + 1],
+                _vertexTableB[row + 1][column + bottomOffset],
             ];
         }
 
         public List<HarborModel> CreateHarbors()
         {
             return [
-                HarborModel.CreateGeneric([vertexTableA[0][0], vertexTableA[0][1]]),
-                HarborModel.CreateSpecific(ResourceId.Ore, [vertexTableB[0][0], vertexTableA[1][0]]),
-                HarborModel.CreateSpecific(ResourceId.Wood, [vertexTableA[0][2], vertexTableB[0][3]]),
-                HarborModel.CreateGeneric([vertexTableB[1][4], vertexTableA[2][4]]),
-                HarborModel.CreateSpecific(ResourceId.Brick, [vertexTableA[3][5], vertexTableB[3][4]]),
-                HarborModel.CreateGeneric([vertexTableA[5][3], vertexTableB[5][2]]),
-                HarborModel.CreateSpecific(ResourceId.Wheat, [vertexTableB[5][0], vertexTableB[5][1]]),
-                HarborModel.CreateSpecific(ResourceId.Wool, [vertexTableA[5][0], vertexTableB[4][0]]),
-                HarborModel.CreateGeneric([vertexTableB[2][0], vertexTableA[3][0]]),
+                HarborModel.CreateGeneric([_vertexTableA[0][0], _vertexTableA[0][1]]),
+                HarborModel.CreateSpecific(ResourceId.Ore, [_vertexTableB[0][0], _vertexTableA[1][0]]),
+                HarborModel.CreateSpecific(ResourceId.Wood, [_vertexTableA[0][2], _vertexTableB[0][3]]),
+                HarborModel.CreateGeneric([_vertexTableB[1][4], _vertexTableA[2][4]]),
+                HarborModel.CreateSpecific(ResourceId.Brick, [_vertexTableA[3][5], _vertexTableB[3][4]]),
+                HarborModel.CreateGeneric([_vertexTableA[5][3], _vertexTableB[5][2]]),
+                HarborModel.CreateSpecific(ResourceId.Wheat, [_vertexTableB[5][0], _vertexTableB[5][1]]),
+                HarborModel.CreateSpecific(ResourceId.Wool, [_vertexTableA[5][0], _vertexTableB[4][0]]),
+                HarborModel.CreateGeneric([_vertexTableB[2][0], _vertexTableA[3][0]]),
             ];
         }
     }

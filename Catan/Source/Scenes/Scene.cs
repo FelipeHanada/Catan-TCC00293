@@ -13,8 +13,8 @@ namespace Catan.Source.Scenes
         public virtual MusicId? Music => null;
 
         protected List<GameObject> GameObjects { get; } = [];
-        private Queue<GameObject> ToSubscribe { get; set; } = [];
-        private Queue<GameObject> ToUnsubscribe { get; set; } = [];
+        private readonly Queue<GameObject> _toSubscribe = [];
+        private readonly Queue<GameObject> _toUnsubscribe = [];
 
         public Scene()
         {
@@ -22,13 +22,13 @@ namespace Catan.Source.Scenes
 
         public void Subscribe(GameObject obj)
         {
-            ToSubscribe.Enqueue(obj);
+            _toSubscribe.Enqueue(obj);
 
         }
 
         public void Unsubscribe(GameObject obj)
         {
-            ToUnsubscribe.Enqueue(obj);
+            _toUnsubscribe.Enqueue(obj);
         }
 
         ~Scene() => Dispose(false);
@@ -49,9 +49,9 @@ namespace Catan.Source.Scenes
                 obj.Update(gameTime);
             }
 
-            while (ToSubscribe.Count > 0)
+            while (_toSubscribe.Count > 0)
             {
-                var obj = ToSubscribe.Dequeue();
+                var obj = _toSubscribe.Dequeue();
                 if (!GameObjects.Contains(obj))
                 {
                     GameObjects.Add(obj);
@@ -59,9 +59,9 @@ namespace Catan.Source.Scenes
                 }
             }
 
-            while (ToUnsubscribe.Count > 0)
+            while (_toUnsubscribe.Count > 0)
             {
-                var obj = ToUnsubscribe.Dequeue();
+                var obj = _toUnsubscribe.Dequeue();
                 if (GameObjects.Remove(obj))
                 {
                     obj.OnUnsubscribe(this);

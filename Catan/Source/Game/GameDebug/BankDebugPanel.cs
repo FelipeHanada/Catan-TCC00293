@@ -45,24 +45,24 @@ namespace Catan.Source.Game.Debug
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            const int width = 136;
-            const int padding = 8;
-            const int lineHeight = 17;
-            const float textScale = 0.65f;
-            int height = padding * 2 + lineHeight * (_resources.Length + 1);
+            const int Width = 136;
+            const int Padding = 8;
+            const int LineHeight = 17;
+            const float TextScale = 0.65f;
+            int height = Padding * 2 + LineHeight * (_resources.Length + 1);
             var viewport = Game1.GraphicsDeviceInstance.Viewport;
-            var panel = new Rectangle(12, viewport.Height - height - 12, width, height);
+            var panel = new Rectangle(12, viewport.Height - height - 12, Width, height);
 
             spriteBatch.Draw(_pixel, panel, new Color(20, 26, 34, 210));
-            DrawText(spriteBatch, "Banco", panel.X + padding, panel.Y + padding, Color.White, textScale);
+            DrawText(spriteBatch, "Banco", panel.X + Padding, panel.Y + Padding, Color.White, TextScale);
 
             for (int i = 0; i < _resources.Length; i++)
             {
                 var resource = _resources[i];
                 string text = $"{resource.Label}: {_bank.GetAmount(resource.Resource)}";
-                int y = panel.Y + padding + lineHeight * (i + 1);
+                int y = panel.Y + Padding + LineHeight * (i + 1);
 
-                DrawText(spriteBatch, text, panel.X + padding, y, Color.LightGray, textScale);
+                DrawText(spriteBatch, text, panel.X + Padding, y, Color.LightGray, TextScale);
             }
         }
 

@@ -1,4 +1,4 @@
-﻿using Catan.Source.Content;
+using Catan.Source.Content;
 using Catan.Source.Game.Resources;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,126 +15,116 @@ namespace Catan.Source.Game
 {
     public class UISlate : GameObject
     {
-        private readonly Atlas atlas;
-        private int width, height;
-        private string label = "";
+        private readonly Atlas _atlas;
+        private int _width, _height;
+        private string _label = "";
         private SpriteFont _font;
-        private float fontScale = 0.1f;
-        private int padding = 2;
-        private Color color;
+        private float _fontScale = 0.1f;
+        private Color _color;
 
-        private bool enabled = true;
-        private MouseState previousMouseState;
+        private bool _enabled = true;
 
-        private int cornerHeight = Atlas.GetRectangle(AtlasSpriteId.ButtonBotLeft).Height,
-                cornerWidth = Atlas.GetRectangle(AtlasSpriteId.ButtonBotLeft).Width;
+        private int _cornerHeight = Atlas.GetRectangle(AtlasSpriteId.ButtonBotLeft).Height,
+                _cornerWidth = Atlas.GetRectangle(AtlasSpriteId.ButtonBotLeft).Width;
 
         public UISlate(float x, float y, Atlas atlas, Color color, int width, int height, string label) : base(x, y)
         {
             _font = Game1.ContentManager.Load<SpriteFont>("bigFont");
             
-            this.atlas = atlas;
-            this.width = width;
-            this.height = height;
-            this.label = label;
-            this.color = color;
+            _atlas = atlas;
+            _width = width;
+            _height = height;
+            _label = label;
+            _color = color;
         }
         public UISlate(float x, float y, Atlas atlas, Color color, string label) : base(x, y)
         {
             _font = Game1.ContentManager.Load<SpriteFont>("bigFont");
-            this.atlas = atlas;
-            this.width = 0;
-            this.height = 0;
-            this.label = label;
-            this.color = color;
+            _atlas = atlas;
+            _width = 0;
+            _height = 0;
+            _label = label;
+            _color = color;
         }
-        public void setFontScale(float scale)
+        public void SetFontScale(float scale)
         {
-            this.fontScale = scale;
+            _fontScale = scale;
         }
-        public void setEnabled(bool isEnabled)
+        public void SetEnabled(bool isEnabled)
         {
-            this.enabled = isEnabled;
+            _enabled = isEnabled;
         }
-        public Boolean getEnabled()
+        public Boolean GetEnabled()
         {
-            return this.enabled;
+            return _enabled;
         }
 
-        public void addButton(Button button, float x, float y)
+        public void AddButton(Button button, float x, float y)
         {
-            button.X = this.X + x + cornerWidth;
-            button.Y = this.Y + y + _font.MeasureString(label).Y*fontScale;
+            button.X = this.X + x + _cornerWidth;
+            button.Y = this.Y + y + _font.MeasureString(_label).Y*_fontScale;
 
             AddChild(button);
         }
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            if (!this.enabled) return;
-            Vector2 size = _font.MeasureString(label);
-            /*
-            if (isDynamicSize)
-            {
-                width =  (int)(size.X*fontScale) + padding*cornerWidth;
-                height = (int)(size.Y*fontScale) + padding*cornerHeight/2;
-            }
-            */
+            if (!_enabled) return;
+            Vector2 size = _font.MeasureString(_label);
             spriteBatch.Draw(
-                atlas.Texture,
+                _atlas.Texture,
                 new Vector2(this.X, this.Y),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonUpLeft),
-                color);
+                _color);
 
             spriteBatch.Draw(
-                atlas.Texture,
-                new Vector2(this.X + width + cornerWidth, this.Y),
+                _atlas.Texture,
+                new Vector2(this.X + _width + _cornerWidth, this.Y),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonUpRight),
-                color);
+                _color);
 
             spriteBatch.Draw(
-                atlas.Texture,
-                new Vector2(this.X, this.Y + height + cornerHeight),
+                _atlas.Texture,
+                new Vector2(this.X, this.Y + _height + _cornerHeight),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonBotLeft),
-                color);
+                _color);
 
             spriteBatch.Draw(
-                atlas.Texture,
-                new Vector2(this.X + width + cornerWidth, this.Y + height + cornerHeight),
+                _atlas.Texture,
+                new Vector2(this.X + _width + _cornerWidth, this.Y + _height + _cornerHeight),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonBotRight),
-                color);
+                _color);
 
             spriteBatch.Draw(
-                atlas.Texture,
-                new Rectangle((int) this.X, (int) this.Y + cornerHeight, cornerWidth, height),
+                _atlas.Texture,
+                new Rectangle((int) this.X, (int) this.Y + _cornerHeight, _cornerWidth, _height),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonEdgeLeft),
-                color);
+                _color);
 
             spriteBatch.Draw(
-                atlas.Texture,
-                new Rectangle((int) this.X + width + cornerWidth, (int) this.Y + cornerHeight, cornerWidth, height),
+                _atlas.Texture,
+                new Rectangle((int) this.X + _width + _cornerWidth, (int) this.Y + _cornerHeight, _cornerWidth, _height),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonEdgeRight),
-                color);
+                _color);
 
             spriteBatch.Draw(
-                atlas.Texture,
-                new Rectangle((int) this.X + cornerWidth, (int) this.Y, width, cornerHeight),
+                _atlas.Texture,
+                new Rectangle((int) this.X + _cornerWidth, (int) this.Y, _width, _cornerHeight),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonEdgeTop),
-                color);
+                _color);
 
             spriteBatch.Draw(
-                atlas.Texture,
-                new Rectangle((int) this.X + cornerWidth, (int) this.Y + height + cornerHeight, width, cornerHeight),
+                _atlas.Texture,
+                new Rectangle((int) this.X + _cornerWidth, (int) this.Y + _height + _cornerHeight, _width, _cornerHeight),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonEdgeBot),
-                color);
+                _color);
 
             spriteBatch.Draw(
-                atlas.Texture,
-                new Rectangle((int)this.X + cornerWidth, (int)this.Y + cornerHeight, width, height),
+                _atlas.Texture,
+                new Rectangle((int)this.X + _cornerWidth, (int)this.Y + _cornerHeight, _width, _height),
                 Atlas.GetRectangle(AtlasSpriteId.ButtonFill),
-                color);
+                _color);
             
-//            spriteBatch.DrawString(_font, label, new Vector2(this.X + padding * cornerWidth + 1, this.Y + padding * cornerHeight + 1), new Color(0, 0, 0, 120), 0.0f, new Vector2(0, 0), fontScale, SpriteEffects.None, 0.0f);
-            spriteBatch.DrawString(_font, label, new Vector2(this.X + cornerWidth, this.Y + cornerWidth), Color.White, 0.0f, new Vector2(0, 0), fontScale, SpriteEffects.None, 0.0f);
+            spriteBatch.DrawString(_font, _label, new Vector2(this.X + _cornerWidth, this.Y + _cornerWidth), Color.White, 0.0f, new Vector2(0, 0), _fontScale, SpriteEffects.None, 0.0f);
         }
         public override void Update(GameTime gameTime) {
         }
@@ -142,32 +132,32 @@ namespace Catan.Source.Game
     }
     public class PlayerInfo : UISlate
     {
-        private Game.Player.Player Player = null;
-        private readonly Atlas atlas;
+        private Game.Player.Player _player = null;
+        private readonly Atlas _atlas;
         public PlayerInfo(float x, float y, Atlas atlas, Color color, int width, int height, string label) : base(x, y, atlas, color, width, height, label)
         {
-            this.atlas = atlas;
+            _atlas = atlas;
         }
 
-        public void setPlayer(Game.Player.Player player)
+        public void SetPlayer(Game.Player.Player player)
         {
-            this.Player = player;
+            _player = player;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             base.Draw(gameTime, spriteBatch);
             
-            if (Player == null) return;
+            if (_player == null) return;
             float deltaY = 16;
 
 
-            Game.Player.PlayerHud.DrawString(spriteBatch, "PlayerNumber: " + Player.PlayerNumber, new(X+16, Y + deltaY));
+            Game.Player.PlayerHud.DrawString(spriteBatch, "PlayerNumber: " + _player.PlayerNumber, new(X+16, Y + deltaY));
             deltaY += 16;
 
             foreach (ResourceId resourceId in ResourceUtils.ResourceIds)
             {
-                int amount = Player.Inventory.Resources.GetAmount(resourceId);
+                int amount = _player.Inventory.Resources.GetAmount(resourceId);
                 Game.Player.PlayerHud.DrawString(spriteBatch, ResourceUtils.ResourceName[resourceId].ToUpper() + ": " + amount, new(X+16, Y + deltaY));
                 deltaY += 16;
             }

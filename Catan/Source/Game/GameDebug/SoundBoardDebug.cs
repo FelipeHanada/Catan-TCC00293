@@ -68,19 +68,19 @@ namespace Catan.Source.Game.Debug
         {
             const int x = 880;
             const int y = 24;
-            const int width = 360;
-            const int padding = 16;
-            const int lineHeight = 26;
+            const int Width = 360;
+            const int Padding = 16;
+            const int LineHeight = 26;
 
-            var height = padding * 2 + lineHeight * (_soundHotkeys.Length + 1);
-            var panel = new Rectangle(x, y, width, height);
+            var height = Padding * 2 + LineHeight * (_soundHotkeys.Length + 1);
+            var panel = new Rectangle(x, y, Width, height);
 
             spriteBatch.Draw(_pixel, panel, new Color(20, 26, 34, 210));
-            spriteBatch.DrawString(_font, "Teste de som", new Vector2(x + padding, y + padding), Color.White);
+            spriteBatch.DrawString(_font, "Teste de som", new Vector2(x + Padding, y + Padding), Color.White);
 
             for (var i = 0; i < _soundHotkeys.Length; i++)
             {
-                var position = new Vector2(x + padding, y + padding + lineHeight * (i + 1));
+                var position = new Vector2(x + Padding, y + Padding + LineHeight * (i + 1));
                 spriteBatch.DrawString(_font, _soundHotkeys[i].Label, position, Color.LightGray);
             }
         }

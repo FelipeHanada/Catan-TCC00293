@@ -20,7 +20,7 @@ namespace Catan.Source.Game.Board
         private const int TileWidth = 128;
         private const int TileHeight = 128;
 
-        private static readonly Dictionary<TileType, AtlasSpriteId> _tileSpriteId = new()
+        private static readonly Dictionary<TileType, AtlasSpriteId> _tileSpriteIds = new()
         {
             [TileType.Forest] = AtlasSpriteId.TileForest,
             [TileType.Sheep] = AtlasSpriteId.TileSheep,
@@ -30,7 +30,7 @@ namespace Catan.Source.Game.Board
             [TileType.Farm] = AtlasSpriteId.TileFarm,
         };
 
-        private static readonly Dictionary<TileType, ResourceId> _tileResourceId = new()
+        private static readonly Dictionary<TileType, ResourceId> _tileResourceIds = new()
         {
             [TileType.Forest] = ResourceId.Wood,
             [TileType.Sheep] = ResourceId.Wool,
@@ -39,7 +39,7 @@ namespace Catan.Source.Game.Board
             [TileType.Farm] = ResourceId.Wheat,
         };
 
-        public static readonly Dictionary<TileType, Vector2> _tileDiceNumberOffset = new()
+        public static readonly Dictionary<TileType, Vector2> TileDiceNumberOffsets = new()
         {
             [TileType.Forest] = new(48, 73),
             [TileType.Sheep] = new(48, 48),
@@ -49,34 +49,34 @@ namespace Catan.Source.Game.Board
             [TileType.Farm] = new(48, 48),
         };
 
-        private readonly Atlas atlas;
-        private readonly TileType tileType;
-        private readonly int diceNumber;
-        private readonly TileVertex[] vertices;
+        private readonly Atlas _atlas;
+        private readonly TileType _tileType;
+        private readonly int _diceNumber;
+        private readonly TileVertex[] _vertices;
         private MouseState _previousMouseState;
-        public TileType TileType => tileType;
-        public int DiceNumber => diceNumber;
-        public IReadOnlyList<TileVertex> Vertices => vertices;
+        public TileType TileType => _tileType;
+        public int DiceNumber => _diceNumber;
+        public IReadOnlyList<TileVertex> Vertices => _vertices;
         public ResourceId? ProducedResource =>
-            _tileResourceId.TryGetValue(tileType, out ResourceId resource) ? resource : null;
+            _tileResourceIds.TryGetValue(_tileType, out ResourceId resource) ? resource : null;
 
-        private readonly GameScene gameScene;
+        private readonly GameScene _gameScene;
 
         public Tile(float x, float y, Atlas atlas, TileType tileType, int diceNumber, TileVertex[] vertices, GameScene gameScene)
             : base(x, y)
         {
-            this.atlas = atlas;
-            this.tileType = tileType;
-            this.diceNumber = diceNumber;
-            this.vertices = vertices;
-            this.gameScene = gameScene;
+            _atlas = atlas;
+            _tileType = tileType;
+            _diceNumber = diceNumber;
+            _vertices = vertices;
+            _gameScene = gameScene;
         }
         public Tile(float x, float y, Atlas atlas, TileType tileType, int diceNumber, GameScene gameScene)
             : this(x, y, atlas, tileType, diceNumber, [], gameScene) {}
 
         public IEnumerable<Building> GetAdjacentBuildings()
         {
-            foreach (TileVertex vertex in vertices)
+            foreach (TileVertex vertex in _vertices)
             {
                 if (vertex.HasBuilding)
                 {
@@ -88,33 +88,33 @@ namespace Catan.Source.Game.Board
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(
-                atlas.Texture,
+                _atlas.Texture,
                 new Vector2(this.X, this.Y),
-                Atlas.GetRectangle(_tileSpriteId[this.tileType]),
+                Atlas.GetRectangle(_tileSpriteIds[_tileType]),
                 Color.White);
 
-            _tileDiceNumberOffset.TryGetValue(this.tileType, out Vector2 offset);
+            TileDiceNumberOffsets.TryGetValue(_tileType, out Vector2 offset);
 
             spriteBatch.Draw(
-                atlas.Texture,
+                _atlas.Texture,
                 new Vector2(this.X, this.Y) + offset,
-                Atlas.GetRectangle(Atlas.GetTileDiceNumberSprite(this.diceNumber)),
+                Atlas.GetRectangle(Atlas.GetTileDiceNumberSprite(_diceNumber)),
                 Color.White);
         }
         public override void Update(GameTime gameTime)
         {
             MouseState currentMouseState = Mouse.GetState();
 
-            if (gameScene.GetCurrentStateGame() is MoveRobberGameState gameState)
+            if (_gameScene.GetCurrentState() is MoveRobberGameState gameState)
             {
                 if (currentMouseState.LeftButton == ButtonState.Pressed
                     && _previousMouseState.LeftButton == ButtonState.Released
                     && IsHovering(currentMouseState)
                 )
                 {
-                    if (gameScene.Board.MoveRobberTo(this))
+                    if (_gameScene.Board.MoveRobberTo(this))
                     {
-                        gameScene.ExitState();
+                        _gameScene.ExitState();
                     }
                 }
             }

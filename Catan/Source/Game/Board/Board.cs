@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Catan.Source.Scenes;
 using HarborModel = Catan.Source.Game.Harbor.Harbor;
-using Catan.Source.Content;
 
 namespace Catan.Source.Game.Board
 {
@@ -153,12 +152,12 @@ namespace Catan.Source.Game.Board
 
     public class BoardBackground : GameObject
     {
-        private Atlas atlas;
+        private Atlas _atlas;
 
         public BoardBackground(float x, float y, Atlas atlas)
             : base(x, y)
         {
-            this.atlas = atlas;
+            _atlas = atlas;
         }
 
         public override void OnSubscribe(Scene scene)
@@ -169,7 +168,7 @@ namespace Catan.Source.Game.Board
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(
-                atlas.Texture,
+                _atlas.Texture,
                 new Vector2(this.X, this.Y),
                 Atlas.GetRectangle(AtlasSpriteId.Background),
                 Color.White, 0.0f,

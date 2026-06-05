@@ -15,7 +15,7 @@ namespace Catan.Source.Scenes.Game
 {
     public class BuildingGameState : PlayerTurnGameState, PlayerBuildButtonCallback, PlayerTradeButtonCallback, PlayerDevelopmentCardButtonCallback
     {
-        private static readonly Dictionary<ResourceId, int> SETTLEMENT_COST = new Dictionary<ResourceId, int>
+        private static readonly Dictionary<ResourceId, int> _settlementCost = new Dictionary<ResourceId, int>
         {
             { ResourceId.Brick, 1 },
             { ResourceId.Wood, 1 },
@@ -23,13 +23,13 @@ namespace Catan.Source.Scenes.Game
             { ResourceId.Wheat, 1 }
         };
 
-        private static readonly Dictionary<ResourceId, int> CITY_COST = new Dictionary<ResourceId, int>
+        private static readonly Dictionary<ResourceId, int> _cityCost = new Dictionary<ResourceId, int>
         {
             { ResourceId.Ore, 3 },
             { ResourceId.Wheat, 2 }
         };
 
-        private static readonly Dictionary<ResourceId, int> ROAD_COST = new Dictionary<ResourceId, int>
+        private static readonly Dictionary<ResourceId, int> _roadCost = new Dictionary<ResourceId, int>
         {
             { ResourceId.Brick, 1 },
             { ResourceId.Wood, 1 }
@@ -45,19 +45,19 @@ namespace Catan.Source.Scenes.Game
             int posX = 760, posY = 350;
             UISlate = new(posX, posY, atlas, Color.Gray, 360, 220, "Construir");    
 
-            int i = 0;
-            _settlementButton = new(posX + 30, posY + 30 + i * 45, atlas, 300, 30, OnBuildSettlement, "Construir Assentamento");
+            int buttonIndex = 0;
+            _settlementButton = new(posX + 30, posY + 30 + buttonIndex * 45, atlas, 300, 30, OnBuildSettlement, "Construir Assentamento");
             UISlate.AddChild(_settlementButton);
-            i++;
-            _cityButton = new(posX + 30, posY + 30 + i * 45, atlas, 300, 30, OnBuildCity, "Construir Cidade");
+            buttonIndex++;
+            _cityButton = new(posX + 30, posY + 30 + buttonIndex * 45, atlas, 300, 30, OnBuildCity, "Construir Cidade");
             UISlate.AddChild(_cityButton);
-            i++;
-            _roadButton = new(posX + 30, posY + 30 + i * 45, atlas, 300, 30, OnBuildRoad, "Construir Estrada");
+            buttonIndex++;
+            _roadButton = new(posX + 30, posY + 30 + buttonIndex * 45, atlas, 300, 30, OnBuildRoad, "Construir Estrada");
             UISlate.AddChild(_roadButton);
-            i++;
+            buttonIndex++;
 
             _purchaseService = new();
-            _developmentCardButton = new(posX + 30, posY + 30 + i * 45, atlas, 300, 30, OnBuildDevelopmentCard, "Construir Carta de desenvolvimento");
+            _developmentCardButton = new(posX + 30, posY + 30 + buttonIndex * 45, atlas, 300, 30, OnBuildDevelopmentCard, "Construir Carta de desenvolvimento");
             UISlate.AddChild(_developmentCardButton);
             
             AddChild(UISlate);
@@ -65,19 +65,19 @@ namespace Catan.Source.Scenes.Game
 
         private void OnBuildSettlement() {
             _gameScene.AppendState(new BuildPositionSettlementGameState(
-                _gameScene, Player, BuildingType.Settlement, SETTLEMENT_COST
+                _gameScene, Player, BuildingType.Settlement, _settlementCost
             ));
         }
 
         private void OnBuildCity() {
             _gameScene.AppendState(new BuildPositionSettlementGameState(
-                _gameScene, Player, BuildingType.City, CITY_COST
+                _gameScene, Player, BuildingType.City, _cityCost
             ));
         }
 
         private void OnBuildRoad() {
             _gameScene.AppendState(new BuildPositionRoadGameState(
-                _gameScene, Player, ROAD_COST
+                _gameScene, Player, _roadCost
             ));
         }
 
@@ -85,10 +85,10 @@ namespace Catan.Source.Scenes.Game
         {
             base.Initialize();
 
-            _settlementButton?.setEnabled(Player.Inventory.Resources.HasEnough(SETTLEMENT_COST));
-            _cityButton?.setEnabled(Player.Inventory.Resources.HasEnough(CITY_COST));
-            _roadButton?.setEnabled(Player.Inventory.Resources.HasEnough(ROAD_COST));
-            _developmentCardButton?.setEnabled(_purchaseService.CanPurchase(Player, _gameScene.Bank, _gameScene.DevelopmentCardDeck).Success);
+            _settlementButton?.SetEnabled(Player.Inventory.Resources.HasEnough(_settlementCost));
+            _cityButton?.SetEnabled(Player.Inventory.Resources.HasEnough(_cityCost));
+            _roadButton?.SetEnabled(Player.Inventory.Resources.HasEnough(_roadCost));
+            _developmentCardButton?.SetEnabled(_purchaseService.CanPurchase(Player, _gameScene.Bank, _gameScene.DevelopmentCardDeck).Success);
         }
 
         private void OnBuildDevelopmentCard() {

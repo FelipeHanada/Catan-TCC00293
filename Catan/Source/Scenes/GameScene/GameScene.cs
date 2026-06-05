@@ -26,6 +26,7 @@ namespace Catan.Source.Scenes
         public Atlas Atlas { get; private set; }
 
         private Stack<GameState> _stateStack;
+        private List<Player> _players;
 
         public DiceRollControl DiceRollControl { get; private set; }
         public GameBank Bank { get; private set; }
@@ -38,10 +39,9 @@ namespace Catan.Source.Scenes
         public ButtonAction DevelopmentCardButton { get; private set; }
         public ButtonAction EndTurnButton { get; private set; }
 
-        public BoardBackground Background;
+        public BoardBackground Background { get; private set; }
         public DiceRoll LastDiceRoll { get; set; }
-
-        public List<Player> _players;
+        public IReadOnlyList<Player> Players => _players;
 
         public GameScene()
         {
@@ -116,14 +116,14 @@ namespace Catan.Source.Scenes
                 return;
             }
 
-            GameState currentState = GetCurrentStateGame();
+            GameState currentState = GetCurrentState();
 
             Console.Out.WriteLine(currentState);
 
             currentState.Update(gameTime);
             UpdateActionButtons();
         }
-        public GameState GetCurrentStateGame() => _stateStack.Count > 0 ? _stateStack.Peek() : null;
+        public GameState GetCurrentState() => _stateStack.Count > 0 ? _stateStack.Peek() : null;
         public Player GetPlayer(int playerNumber)
         {
             return _players[playerNumber];
@@ -141,7 +141,7 @@ namespace Catan.Source.Scenes
 
         private void OnTradeButtonClicked()
         {
-            if (GetCurrentStateGame() is PlayerTradeButtonCallback callback)
+            if (GetCurrentState() is PlayerTradeButtonCallback callback)
             {
                 callback.OnPlayerTradeButtonClicked();
             }
@@ -149,7 +149,7 @@ namespace Catan.Source.Scenes
 
         private void OnBuildButtonClicked()
         {
-            if (GetCurrentStateGame() is PlayerBuildButtonCallback callback)
+            if (GetCurrentState() is PlayerBuildButtonCallback callback)
             {
                 callback.OnPlayerBuildButtonClicked();
             }
@@ -157,7 +157,7 @@ namespace Catan.Source.Scenes
 
         private void OnDevelopmentCardButtonClicked()
         {
-            if (GetCurrentStateGame() is PlayerDevelopmentCardButtonCallback callback)
+            if (GetCurrentState() is PlayerDevelopmentCardButtonCallback callback)
             {
                 callback.OnPlayerDevelopmentCardButtonClicked();
             }
@@ -165,7 +165,7 @@ namespace Catan.Source.Scenes
 
         private void OnEndTurnButtonClicked()
         {
-            if (GetCurrentStateGame() is PlayerEndTurnButtonCallback callback)
+            if (GetCurrentState() is PlayerEndTurnButtonCallback callback)
             {
                 callback.OnPlayerEndTurnButtonClicked();
             }
@@ -173,16 +173,16 @@ namespace Catan.Source.Scenes
 
         private void UpdateActionButtons()
         {
-            GameState currentState = GetCurrentStateGame();
-            TradeButton?.setEnabled(currentState is PlayerTradeButtonCallback);
-            BuildButton?.setEnabled(currentState is PlayerBuildButtonCallback);
-            DevelopmentCardButton?.setEnabled(currentState is PlayerDevelopmentCardButtonCallback);
-            EndTurnButton?.setEnabled(currentState is PlayerEndTurnButtonCallback);
+            GameState currentState = GetCurrentState();
+            TradeButton?.SetEnabled(currentState is PlayerTradeButtonCallback);
+            BuildButton?.SetEnabled(currentState is PlayerBuildButtonCallback);
+            DevelopmentCardButton?.SetEnabled(currentState is PlayerDevelopmentCardButtonCallback);
+            EndTurnButton?.SetEnabled(currentState is PlayerEndTurnButtonCallback);
         }
 
         public void ExitState()
         {
-            GameState currentState = GetCurrentStateGame();
+            GameState currentState = GetCurrentState();
             currentState.Dispose();
             _stateStack.Pop();
 

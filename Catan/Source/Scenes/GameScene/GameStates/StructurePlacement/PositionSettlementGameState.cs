@@ -27,9 +27,9 @@ namespace Catan.Source.Scenes.Game
 
             foreach (TileEdge edge in graph.Incident[tileVertex])
             {
-                TileVertex a = edge.VertexA, b = edge.VertexB;
-                if (a != tileVertex && a.HasBuilding) return false;
-                if (b != tileVertex && b.HasBuilding) return false;
+                TileVertex vertexA = edge.VertexA, vertexB = edge.VertexB;
+                if (vertexA != tileVertex && vertexA.HasBuilding) return false;
+                if (vertexB != tileVertex && vertexB.HasBuilding) return false;
             }
 
             if (BuildingType == BuildingType.Settlement)

@@ -16,24 +16,24 @@ namespace Catan.Source.Game.Player
     {
         private Atlas _atlas;
         public Player Player { get; }
-        private static SpriteFont Font = null;
+        private static SpriteFont _font = null;
 
 
         public PlayerHud(Atlas atlas, Player player) : base(0, 0)
         {
             _atlas = atlas;
             Player = player;
-            Font ??= Game1.ContentManager.Load<SpriteFont>("bigFont");
+            _font ??= Game1.ContentManager.Load<SpriteFont>("bigFont");
 
-            PlayerInfo PlayerInfo = new PlayerInfo(1280 - 210, 10, _atlas, Color.White, 200, 170, "");
-            PlayerInfo.setPlayer(Player);
-            AddChild(PlayerInfo);            
+            PlayerInfo playerInfo = new PlayerInfo(1280 - 210, 10, _atlas, Color.White, 200, 170, "");
+            playerInfo.SetPlayer(Player);
+            AddChild(playerInfo);            
         }
 
         public static void DrawString(SpriteBatch spriteBatch, string text, Vector2 position)
         {
             spriteBatch.DrawString(
-                Font,
+                _font,
                 text,
                 position,
                 Color.White, 0,
