@@ -57,25 +57,9 @@ namespace Catan.Source.Scenes.Game
 
             foreach (ResourceDistributionRequest delivery in deliveries)
             {
-                SfxId sound = GetResourceProductionSound(delivery.Resource);
-                for (int i = 0; i < delivery.Amount; i++)
-                {
-                    SoundManager.Instance.Play(sound);
-                }
+                SfxId sound = SoundManager.GetResourceProductionSound(delivery.Resource);
+                SoundManager.Instance.Play(sound);
             }
-        }
-
-        private static SfxId GetResourceProductionSound(ResourceId resource)
-        {
-            return resource switch
-            {
-                ResourceId.Wool => SfxId.Ovelha,
-                ResourceId.Brick => SfxId.Tijolo,
-                ResourceId.Ore => SfxId.Pedra,
-                ResourceId.Wood => SfxId.Planta,
-                ResourceId.Wheat => SfxId.Planta,
-                _ => throw new ArgumentOutOfRangeException(nameof(resource), resource, "Recurso de producao desconhecido."),
-            };
         }
     }
 }
