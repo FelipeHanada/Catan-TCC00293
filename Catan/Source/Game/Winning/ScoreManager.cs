@@ -14,7 +14,6 @@ namespace Catan.Source.Game.Player
         public const int ScoreToWin = 10;
         private GameScene _gameScene;
         private Dictionary<Player, int> _playerScores;
-        private Player _hasLongestRoad;
         public ScoreManager(GameScene gameScene)
             : base(0, 0)
         {
@@ -35,11 +34,12 @@ namespace Catan.Source.Game.Player
         {
             base.Update(gameTime);
 
-            Player hasLongestRoad = UpdateLongestRoads();
+            Player hasLongestRoad = UpdateLongestRoad();
+            Player hasLargestArmy = UpdateLargestArmy();
 
             foreach (Player player in _gameScene.Players)
             {
-                int score = CalculateScore(player, hasLongestRoad == player);
+                int score = CalculateScore(player, hasLongestRoad == player, hasLargestArmy == player);
                 _playerScores[player] = score;
 
                 if (score >= ScoreToWin)
@@ -48,14 +48,14 @@ namespace Catan.Source.Game.Player
                 }
             }
         }
-        private int CalculateScore(Player player, bool hasLongestRoad)
+        private int CalculateScore(Player player, bool hasLongestRoad, bool hasLargestArmy)
         {
             int score = 0;
 
             score += CalculateBuildingPoints(player);
             score += CalculateVictoryPointCards(player);
             score += hasLongestRoad ? 2 : 0;
-            // score += HasLargestArmy(player) ? 2 : 0; // [not implemented]
+            score += hasLargestArmy ? 2 : 0;
 
             return score;
         }
@@ -73,7 +73,7 @@ namespace Catan.Source.Game.Player
             return player.Inventory.DevelopmentCards.CountByType(DevelopmentCardType.VictoryPoint);
         }
 
-        private Player UpdateLongestRoads()
+        private Player UpdateLongestRoad()
         {
             BoardGraph graph = _gameScene.Board.Graph;
 
@@ -88,8 +88,8 @@ namespace Catan.Source.Game.Player
                         List<TileEdge> roads = [.. graph.Incident[vertex].Where(edge => edge.RoadOwner != null)];
                         List<TileEdge> own_roads = [.. roads.Where(road => road.RoadOwner == player)];
                         if (own_roads.Count == 0) return false;
-                        if (own_roads.Count == roads.Count) return false;
-                        return true;
+                        if (own_roads.Count == 1) return true;
+                        return own_roads.Count < roads.Count;
                     }
                 )];
 
@@ -150,6 +150,26 @@ namespace Catan.Source.Game.Player
             }
 
             return hasLongestRoad;
+        }
+
+        private Player UpdateLargestArmy()
+        {
+            Player hasLargestArmy = null;
+            int largestArmy = 0;
+            foreach (Player player in _gameScene.Players)
+            {
+                int playedKnightsCount = player.Inventory.PlayedKnightsCount;
+                if (playedKnightsCount == largestArmy)
+                {
+                    hasLargestArmy = null;
+                } else if (playedKnightsCount > largestArmy)
+                {
+                    hasLargestArmy = player;
+                    largestArmy = playedKnightsCount;
+                }
+            }
+
+            return hasLargestArmy;
         }
     }
 }

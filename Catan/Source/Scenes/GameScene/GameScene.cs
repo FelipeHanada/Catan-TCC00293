@@ -96,10 +96,6 @@ namespace Catan.Source.Scenes
 
             UpdateActionButtons();
 
-            // AppendState.Push(new PositionSettlementGameState(this));
-            // AppendState.Push(new WaitingForDiceRollGameState(this, diceRollControl));
-            // AppendState.Push(new ResourceProductionGameState(this, _players[0], diceRollControl));
-
             AppendState(new PlayerTurnManagerGameState(this, _players));
             AppendState(new SetupGameState(this));
         }
