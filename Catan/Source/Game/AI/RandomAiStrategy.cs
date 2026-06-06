@@ -12,6 +12,7 @@ namespace Catan.Source.Game.AI
 {
     public class RandomAiStrategy
     {
+        private const int DefaultBankTradeRate = 4;
         private const double TradeAcceptanceChance = 0.25;
         private const double BuildSettlementWhenPossibleChance = 0.90;
         private const double BuildRoadWhileWaitingForSettlementChance = 0.03;
@@ -52,6 +53,15 @@ namespace Catan.Source.Game.AI
         public TileVertex ChooseSettlement(Board.Board board, IEnumerable<TileVertex> validVertices)
         {
             return ChooseSetupSettlement(board, validVertices);
+        }
+
+        public TileVertex ChooseCity(Board.Board board, IEnumerable<TileVertex> validVertices)
+        {
+            List<WeightedCandidate<TileVertex>> candidates = validVertices
+                .Select(vertex => new WeightedCandidate<TileVertex>(vertex, GetCityVertexWeight(board, vertex)))
+                .ToList();
+
+            return WeightedRandomPicker.Pick(candidates, _random);
         }
 
         public TileEdge ChooseRoad(IEnumerable<TileEdge> validEdges)
@@ -186,6 +196,19 @@ namespace Catan.Source.Game.AI
             return _random.NextDouble() < BuildSettlementWhenPossibleChance;
         }
 
+        public bool ShouldBuildCityWhenPossible(int settlementCount)
+        {
+            double chance = settlementCount switch
+            {
+                <= 2 => 0.15,
+                3 => 0.25,
+                4 => 0.40,
+                _ => 0.50,
+            };
+
+            return _random.NextDouble() < chance;
+        }
+
         public bool ShouldBuildRoadWhileWaitingForSettlement(int missingSettlementResourceCount)
         {
             if (missingSettlementResourceCount <= 1)
@@ -242,16 +265,53 @@ namespace Catan.Source.Game.AI
                     ? roadAmount
                     : 0;
 
-                int protectedAmount = Math.Max(neededForSettlement, neededForRoad);
-                int excess = Math.Max(0, amount - protectedAmount);
-                int weight = 1 + amount + excess * 3;
+                candidates.Add(new WeightedCandidate<ResourceId>(
+                    resource,
+                    GetTradeOfferedResourceWeight(amount, neededForSettlement, neededForRoad)));
+            }
 
-                if (amount <= protectedAmount)
+            if (candidates.Count == 0)
+            {
+                return null;
+            }
+
+            return WeightedRandomPicker.Pick(candidates, _random);
+        }
+
+        public ResourceId? ChooseBankTradeOfferedResource(
+            GamePlayer player,
+            ResourceId requestedResource,
+            IReadOnlyDictionary<ResourceId, int> settlementCost,
+            IReadOnlyDictionary<ResourceId, int> roadCost,
+            IReadOnlyDictionary<ResourceId, int> tradeRates)
+        {
+            List<WeightedCandidate<ResourceId>> candidates = new();
+
+            foreach (ResourceId resource in ResourceUtils.ResourceIds)
+            {
+                int tradeRate = tradeRates != null && tradeRates.TryGetValue(resource, out int rate)
+                    ? rate
+                    : DefaultBankTradeRate;
+
+                if (resource == requestedResource ||
+                    player.Inventory.Resources.GetAmount(resource) < tradeRate)
                 {
-                    weight = 1;
+                    continue;
                 }
 
-                candidates.Add(new WeightedCandidate<ResourceId>(resource, weight));
+                int amount = player.Inventory.Resources.GetAmount(resource);
+                int neededForSettlement = settlementCost.TryGetValue(resource, out int settlementAmount)
+                    ? settlementAmount
+                    : 0;
+                int neededForRoad = roadCost.TryGetValue(resource, out int roadAmount)
+                    ? roadAmount
+                    : 0;
+
+                int tradeRateBonus = Math.Max(0, DefaultBankTradeRate - tradeRate) * 5;
+
+                candidates.Add(new WeightedCandidate<ResourceId>(
+                    resource,
+                    GetTradeOfferedResourceWeight(amount, neededForSettlement, neededForRoad) + tradeRateBonus));
             }
 
             if (candidates.Count == 0)
@@ -353,6 +413,11 @@ namespace Catan.Source.Game.AI
                 * resourceTypes.Count * resourceTypes.Count;
         }
 
+        public static int GetCityVertexWeight(Board.Board board, TileVertex vertex)
+        {
+            return GetSettlementVertexWeight(board, vertex);
+        }
+
         public static int GetRoadWeight(Board.Board board, TileEdge edge)
         {
             int vertexAWeight = edge.VertexA.HasBuilding
@@ -433,6 +498,22 @@ namespace Catan.Source.Game.AI
             {
                 needsByResource[need.Resource] = need;
             }
+        }
+
+        private static int GetTradeOfferedResourceWeight(
+            int amount,
+            int neededForSettlement,
+            int neededForRoad)
+        {
+            int protectedAmount = Math.Max(neededForSettlement, neededForRoad);
+            int excess = Math.Max(0, amount - protectedAmount);
+
+            if (amount <= protectedAmount)
+            {
+                return 1;
+            }
+
+            return 1 + amount + excess * 3;
         }
 
         public static Dictionary<ResourceId, int> GetResourceProductionCounts(Board.Board board, GamePlayer player)

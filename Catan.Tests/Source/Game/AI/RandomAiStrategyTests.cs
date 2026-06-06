@@ -88,6 +88,20 @@ namespace Catan.Tests.Source.Game.AI
         }
 
         [Fact]
+        public void GetCityVertexWeight_UsesSettlementWeightForExistingSettlement()
+        {
+            TileVertex vertex = Vertex();
+            BoardModel board = BoardWith(
+                Tile(TileType.Forest, 6, vertex),
+                Tile(TileType.Brick, 8, vertex),
+                Tile(TileType.Farm, 5, vertex));
+
+            int cityWeight = RandomAiStrategy.GetCityVertexWeight(board, vertex);
+
+            Assert.Equal(RandomAiStrategy.GetSettlementVertexWeight(board, vertex), cityWeight);
+        }
+
+        [Fact]
         public void GetFutureSettlementRoadWeight_IgnoresEndpointsBlockedByDistanceRule()
         {
             Player player = new(0);
@@ -360,6 +374,53 @@ namespace Catan.Tests.Source.Game.AI
         }
 
         [Fact]
+        public void ChooseBankTradeOfferedResource_UsesResourceSpecificTradeRate()
+        {
+            Player player = new(0);
+            player.Inventory.Resources.Add(ResourceId.Wood, 2);
+            RandomAiStrategy strategy = new(new FixedRandom(0));
+            Dictionary<ResourceId, int> tradeRates = TradeRates(
+                (ResourceId.Wood, 2),
+                (ResourceId.Wool, 4),
+                (ResourceId.Brick, 4),
+                (ResourceId.Ore, 4),
+                (ResourceId.Wheat, 4));
+
+            ResourceId? offeredResource = strategy.ChooseBankTradeOfferedResource(
+                player,
+                ResourceId.Brick,
+                SettlementCost(),
+                RoadCost(),
+                tradeRates);
+
+            Assert.Equal(ResourceId.Wood, offeredResource);
+        }
+
+        [Fact]
+        public void ChooseBankTradeOfferedResource_ReturnsNullWhenNoResourceMeetsItsTradeRate()
+        {
+            Player player = new(0);
+            player.Inventory.Resources.Add(ResourceId.Wood, 2);
+            player.Inventory.Resources.Add(ResourceId.Ore, 3);
+            RandomAiStrategy strategy = new(new FixedRandom(0));
+            Dictionary<ResourceId, int> tradeRates = TradeRates(
+                (ResourceId.Wood, 3),
+                (ResourceId.Wool, 4),
+                (ResourceId.Brick, 4),
+                (ResourceId.Ore, 4),
+                (ResourceId.Wheat, 4));
+
+            ResourceId? offeredResource = strategy.ChooseBankTradeOfferedResource(
+                player,
+                ResourceId.Brick,
+                SettlementCost(),
+                RoadCost(),
+                tradeRates);
+
+            Assert.Null(offeredResource);
+        }
+
+        [Fact]
         public void CountMissingResources_ReturnsHowManyCostEntriesAreStillMissing()
         {
             Player player = new(0);
@@ -407,6 +468,23 @@ namespace Catan.Tests.Source.Game.AI
 
             Assert.True(accepts.ShouldBuildSettlementWhenPossible());
             Assert.False(rejects.ShouldBuildSettlementWhenPossible());
+        }
+
+        [Theory]
+        [InlineData(2, 0.14, 0.16)]
+        [InlineData(3, 0.24, 0.26)]
+        [InlineData(4, 0.39, 0.41)]
+        [InlineData(5, 0.49, 0.51)]
+        public void ShouldBuildCityWhenPossible_UsesChanceBySettlementCount(
+            int settlementCount,
+            double acceptedRoll,
+            double rejectedRoll)
+        {
+            RandomAiStrategy accepts = new(new FixedRandom(acceptedRoll));
+            RandomAiStrategy rejects = new(new FixedRandom(rejectedRoll));
+
+            Assert.True(accepts.ShouldBuildCityWhenPossible(settlementCount));
+            Assert.False(rejects.ShouldBuildCityWhenPossible(settlementCount));
         }
 
         private static TileVertex Vertex()
@@ -461,6 +539,18 @@ namespace Catan.Tests.Source.Game.AI
                 { ResourceId.Brick, 1 },
                 { ResourceId.Wood, 1 },
             };
+        }
+
+        private static Dictionary<ResourceId, int> TradeRates(params (ResourceId Resource, int Rate)[] rates)
+        {
+            Dictionary<ResourceId, int> tradeRates = new();
+
+            foreach ((ResourceId resource, int rate) in rates)
+            {
+                tradeRates[resource] = rate;
+            }
+
+            return tradeRates;
         }
 
         private static Player PlayerWithResources(int playerNumber)

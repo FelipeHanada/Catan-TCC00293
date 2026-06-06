@@ -211,7 +211,9 @@ namespace Catan.Source.Scenes.Game
                 return;
             }
 
-            TileVertex chosenVertex = _gameScene.AiStrategy.ChooseSettlement(_gameScene.Board, validVertices);
+            TileVertex chosenVertex = BuildingType == BuildingType.City
+                ? _gameScene.AiStrategy.ChooseCity(_gameScene.Board, validVertices)
+                : _gameScene.AiStrategy.ChooseSettlement(_gameScene.Board, validVertices);
             TryPlaceBuilding(chosenVertex);
         }
 

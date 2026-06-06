@@ -1,6 +1,7 @@
 using Catan.Source.Game;
 using Catan.Source.Game.AI;
 using Catan.Source.Game.Board;
+using Catan.Source.Game.Harbor;
 using Catan.Source.Game.Player;
 using Catan.Source.Game.Resources;
 using Catan.Source.Game.Trading;
@@ -14,7 +15,6 @@ namespace Catan.Source.Scenes.Game
     public class PlayerActionsGameState : PlayerTurnGameState, PlayerTradeButtonCallback, PlayerBuildButtonCallback, PlayerDevelopmentCardButtonCallback, PlayerEndTurnButtonCallback
     {
         private const double AiActionDelaySeconds = 0.35;
-        private const int AiBankTradeRate = 4;
         private double _aiElapsedSeconds;
         private bool _aiActed;
         private bool _aiWaitingForBuildAction;
@@ -68,8 +68,17 @@ namespace Catan.Source.Scenes.Game
 
         private bool TryStartAiBuildAction()
         {
+            bool hasCityPosition = HasValidAiCityPosition();
+            bool canAffordCity = Player.Inventory.Resources.HasEnough(BuildingGameState.CityCost);
             bool hasSettlementPosition = HasValidAiSettlementPosition();
             bool canAffordSettlement = Player.Inventory.Resources.HasEnough(BuildingGameState.SettlementCost);
+            int settlementCount = CountAiSettlements();
+
+            if (hasCityPosition && canAffordCity &&
+                (!hasSettlementPosition || !canAffordSettlement || _gameScene.AiStrategy.ShouldBuildCityWhenPossible(settlementCount)))
+            {
+                return TryStartAiCityBuild();
+            }
 
             if (hasSettlementPosition && canAffordSettlement)
             {
@@ -102,6 +111,46 @@ namespace Catan.Source.Scenes.Game
                 BuildingType.Settlement);
 
             return _gameScene.Board.Graph.Vertices.Any(settlementState.CanPlaceBuilding);
+        }
+
+        private bool HasValidAiCityPosition()
+        {
+            BuildPositionSettlementGameState cityState = new BuildPositionSettlementGameState(
+                _gameScene,
+                Player,
+                BuildingType.City);
+
+            return _gameScene.Board.Graph.Vertices.Any(cityState.CanPlaceBuilding);
+        }
+
+        private int CountAiSettlements()
+        {
+            return _gameScene.Board.Graph.Vertices.Count(vertex =>
+                vertex.HasBuilding &&
+                vertex.Building.Owner == Player &&
+                vertex.Building.Type == BuildingType.Settlement);
+        }
+
+        private bool TryStartAiCityBuild()
+        {
+            if (!Player.Inventory.Resources.HasEnough(BuildingGameState.CityCost))
+            {
+                return false;
+            }
+
+            BuildPositionSettlementGameState cityState = new BuildPositionSettlementGameState(
+                _gameScene,
+                Player,
+                BuildingType.City,
+                BuildingGameState.CityCost);
+
+            if (!_gameScene.Board.Graph.Vertices.Any(cityState.CanPlaceBuilding))
+            {
+                return false;
+            }
+
+            _gameScene.AppendState(cityState);
+            return true;
         }
 
         private bool TryStartAiSettlementBuild()
@@ -182,22 +231,26 @@ namespace Catan.Source.Scenes.Game
 
         private bool TryExecuteAiBankTrade(AiTradeNeed tradeNeed)
         {
-            ResourceId? offeredResource = _gameScene.AiStrategy.ChooseTradeOfferedResource(
+            HarborService harborService = new(_gameScene.Board);
+            Dictionary<ResourceId, int> tradeRates = GetAiBankTradeRates(harborService);
+
+            ResourceId? offeredResource = _gameScene.AiStrategy.ChooseBankTradeOfferedResource(
                 Player,
                 tradeNeed.Resource,
                 BuildingGameState.SettlementCost,
                 BuildingGameState.RoadCost,
-                AiBankTradeRate);
+                tradeRates);
 
             if (offeredResource is not ResourceId paidResource)
             {
                 return false;
             }
 
+            int tradeRate = tradeRates[paidResource];
             if (!_gameScene.Bank.CanTrade(
                 Player.Inventory.Resources,
                 paidResource,
-                AiBankTradeRate,
+                tradeRate,
                 tradeNeed.Resource,
                 1))
             {
@@ -207,12 +260,24 @@ namespace Catan.Source.Scenes.Game
             _gameScene.Bank.Trade(
                 Player.Inventory.Resources,
                 paidResource,
-                AiBankTradeRate,
+                tradeRate,
                 tradeNeed.Resource,
                 1);
 
-            _gameScene.Log.Add($"{Player.DisplayName} trocou com o banco");
+            _gameScene.Log.Add($"{Player.DisplayName} trocou com banco/porto {tradeRate}:1");
             return true;
+        }
+
+        private Dictionary<ResourceId, int> GetAiBankTradeRates(HarborService harborService)
+        {
+            Dictionary<ResourceId, int> tradeRates = new();
+
+            foreach (ResourceId resource in ResourceUtils.ResourceIds)
+            {
+                tradeRates[resource] = harborService.GetBestTradeRate(Player, resource);
+            }
+
+            return tradeRates;
         }
 
         private bool TryExecuteAiPlayerTrade(AiTradeNeed tradeNeed)
