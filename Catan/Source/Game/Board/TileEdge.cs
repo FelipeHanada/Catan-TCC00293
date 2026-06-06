@@ -84,13 +84,7 @@ namespace Catan.Source.Game.Board
                     && IsHovering(currentMouseState)
                 )
                 {
-                    if (gameState.CanPlaceRoad(this))
-                    {
-                        PlaceRoad(gameState.Player);
-                        gameState.OnPlaceRoad(this);
-
-                        SoundManager.Instance.Play(SfxId.ConstrucaoEstrada);
-                    } else
+                    if (!gameState.TryPlaceRoad(this))
                     {
                         SoundManager.Instance.Play(SfxId.TijoloCaindo);
                     }

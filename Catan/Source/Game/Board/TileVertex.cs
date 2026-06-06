@@ -64,13 +64,7 @@ namespace Catan.Source.Game.Board
                 if (IsHovering(currentMouseState) && (currentMouseState.LeftButton == ButtonState.Pressed && 
                     _previousMouseState.LeftButton == ButtonState.Released))
                 {
-                    if (gameState.CanPlaceBuilding(this))
-                    {
-                        PlaceBuilding(new Building(gameState.Player, gameState.BuildingType));
-                        gameState.OnPlaceBuilding(this);
-
-                        SoundManager.Instance.Play(SfxId.ConstrucaoCasa);
-                    } else
+                    if (!gameState.TryPlaceBuilding(this))
                     {
                         SoundManager.Instance.Play(SfxId.TijoloCaindo);
                     }

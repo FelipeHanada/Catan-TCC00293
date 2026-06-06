@@ -27,7 +27,7 @@ namespace Catan.Source.Scenes.Game
 
             if (!_rolled) {
                 _rolled = true;
-                _gameScene.AppendState(new WaitingForDiceRollGameState(_gameScene, _gameScene.DiceRollControl));
+                _gameScene.AppendState(new WaitingForDiceRollGameState(_gameScene, _gameScene.DiceRollControl, Player));
                 return;
             }
 

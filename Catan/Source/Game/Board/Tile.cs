@@ -112,11 +112,7 @@ namespace Catan.Source.Game.Board
                     && IsHovering(currentMouseState)
                 )
                 {
-                    if (_gameScene.Board.MoveRobberTo(this))
-                    {
-                        gameState.OnPlaceRobber(this);
-                        _gameScene.ExitState();
-                    }
+                    gameState.TryMoveRobber(this);
                 }
             }
 

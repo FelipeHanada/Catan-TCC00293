@@ -35,9 +35,14 @@ namespace Catan.Source.Scenes.Game
             List<Player> targets = _robberRule.GetRobberyTargets(_currentPlayer, robberTile);
             if (targets.Count > 0)
             {
-                // Futuramente, o jogador deve escolher qual alvo roubar.
-                int randomIndex = Random.Shared.Next(targets.Count);
-                StealFromTarget(targets[randomIndex]);
+                Player target = _currentPlayer.IsAi
+                    ? _gameScene.AiStrategy.ChooseRobberyTarget(_currentPlayer, robberTile, _gameScene.ScoreManager)
+                    : targets[Random.Shared.Next(targets.Count)];
+
+                if (target != null)
+                {
+                    StealFromTarget(target);
+                }
             }
 
             _gameScene.ExitState();

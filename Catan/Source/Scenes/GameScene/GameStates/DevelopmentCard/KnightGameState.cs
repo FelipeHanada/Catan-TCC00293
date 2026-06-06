@@ -33,7 +33,7 @@ namespace Catan.Source.Scenes.Game
             {
                 case KnightStep.MoveRobber:
                     _currentStep = KnightStep.StealResource;
-                    _gameScene.AppendState(new MoveRobberGameState(_gameScene));
+                    _gameScene.AppendState(new MoveRobberGameState(_gameScene, Player));
                     break;
                 case KnightStep.StealResource:
                     _currentStep = KnightStep.ConfirmUse;

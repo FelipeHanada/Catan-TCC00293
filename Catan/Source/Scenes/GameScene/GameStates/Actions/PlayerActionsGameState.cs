@@ -1,14 +1,41 @@
 using Catan.Source.Game;
 using Catan.Source.Game.Player;
 using Catan.Source.Scenes;
+using Microsoft.Xna.Framework;
 
 namespace Catan.Source.Scenes.Game
 {
     public class PlayerActionsGameState : PlayerTurnGameState, PlayerTradeButtonCallback, PlayerBuildButtonCallback, PlayerDevelopmentCardButtonCallback, PlayerEndTurnButtonCallback
     {
+        private const double AiActionDelaySeconds = 0.35;
+        private double _aiElapsedSeconds;
+        private bool _aiActed;
+
         public PlayerActionsGameState(GameScene gameScene, Player player)
             : base(gameScene, player)
         {
+            _aiElapsedSeconds = 0;
+            _aiActed = false;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            if (!Player.IsAi || _aiActed)
+            {
+                return;
+            }
+
+            _aiElapsedSeconds += gameTime.ElapsedGameTime.TotalSeconds;
+            if (_aiElapsedSeconds < AiActionDelaySeconds)
+            {
+                return;
+            }
+
+            _aiActed = true;
+
+            OnPlayerEndTurnButtonClicked();
         }
 
         public void OnPlayerBuildButtonClicked()

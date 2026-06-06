@@ -9,6 +9,7 @@ using Catan.Source.Scenes.Game;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Catan.Source.Scenes.Game
 {
@@ -23,14 +24,16 @@ namespace Catan.Source.Scenes.Game
     public UISlate UISlate { get; private set; }
 
     private readonly TradeMode _mode;
+    private readonly PlayerTradeOffer _closedOffer;
 
     public TradingGameState(GameScene gameScene, Player player) : this(gameScene, player, TradeMode.Players)
     {
     }
 
-    private TradingGameState(GameScene gameScene, Player player, TradeMode mode) : base(gameScene, player)
+    private TradingGameState(GameScene gameScene, Player player, TradeMode mode, PlayerTradeOffer closedOffer = null) : base(gameScene, player)
     {
         _mode = mode;
+        _closedOffer = closedOffer;
         UISlate = BuildUISlate(gameScene.Atlas, player);
         AddChild(UISlate);
     }
@@ -83,17 +86,42 @@ namespace Catan.Source.Scenes.Game
 
         if (_mode == TradeMode.Players)
         {
-            for (int i = 0; i < 4; i++)
+            if (_closedOffer == null)
             {
-                int acceptingPlayerNumber = i;
-                bool enabled = player.PlayerNumber != acceptingPlayerNumber;
                 tradeSlate.AddChild(new ButtonAction(
-                    660 + i * 90,
+                    660,
                     520,
                     atlas,
-                    () => TryAcceptTrade(player, acceptingPlayerNumber, offeredResourceDisplay, requestedResourceDisplay),
-                    "  Aceitar\n(player " + i + ")",
-                    enabled));
+                    160,
+                    30,
+                    () => TryClosePlayerTradeOffer(player, offeredResourceDisplay, requestedResourceDisplay),
+                    "Fechar proposta"));
+            }
+            else
+            {
+                offeredResourceDisplay.SetSelectedResources(_closedOffer.OfferedResources);
+                requestedResourceDisplay.SetSelectedResources(_closedOffer.RequestedResources);
+                offeredResourceDisplay.SetSelectionEnabled(false);
+                requestedResourceDisplay.SetSelectionEnabled(false);
+
+                for (int i = 0; i < 4; i++)
+                {
+                    int acceptingPlayerNumber = i;
+                    Player acceptingPlayer = _gameScene.GetPlayer(acceptingPlayerNumber);
+                    bool enabled = CanShowAcceptButtonAsEnabled(_closedOffer, acceptingPlayer);
+
+                    ButtonAction acceptButton = new ButtonAction(
+                        660 + i * 115,
+                        520,
+                        atlas,
+                        100,
+                        35,
+                        () => TryAcceptClosedTrade(acceptingPlayerNumber, offeredResourceDisplay, requestedResourceDisplay),
+                        "Aceitar\n(" + acceptingPlayer.DisplayName + ")");
+
+                    acceptButton.SetEnabled(enabled);
+                    tradeSlate.AddChild(acceptButton);
+                }
             }
         }
         else
@@ -118,6 +146,67 @@ namespace Catan.Source.Scenes.Game
 
         _gameScene.ExitState();
         _gameScene.AppendState(new TradingGameState(_gameScene, Player, mode));
+    }
+
+    private void TryClosePlayerTradeOffer(
+        Player offeringPlayer,
+        ResourceDisplay offeredResourceDisplay,
+        ResourceDisplay requestedResourceDisplay)
+    {
+        PlayerTradeService service = new();
+        Dictionary<ResourceId, int> offeredResources = offeredResourceDisplay.GetSelectedResources();
+        Dictionary<ResourceId, int> requestedResources = requestedResourceDisplay.GetSelectedResources();
+
+        PlayerTradeResult createResult = service.CreateOffer(
+            offeringPlayer,
+            offeredResources,
+            requestedResources,
+            out PlayerTradeOffer offer);
+
+        LogTradeResult(createResult);
+        if (!createResult.Success)
+        {
+            return;
+        }
+
+        _gameScene.ExitState();
+        _gameScene.AppendState(new TradingGameState(_gameScene, Player, TradeMode.Players, offer));
+    }
+
+    private bool CanShowAcceptButtonAsEnabled(PlayerTradeOffer offer, Player acceptingPlayer)
+    {
+        PlayerTradeService service = new();
+        PlayerTradeResult acceptResult = service.CanAccept(offer, acceptingPlayer);
+        if (!acceptResult.Success)
+        {
+            return false;
+        }
+
+        return !acceptingPlayer.IsAi || _gameScene.AiStrategy.ShouldAcceptTrade();
+    }
+
+    private void TryAcceptClosedTrade(
+        int acceptingPlayerNumber,
+        ResourceDisplay offeredResourceDisplay,
+        ResourceDisplay requestedResourceDisplay)
+    {
+        if (_closedOffer == null)
+        {
+            return;
+        }
+
+        Player acceptingPlayer = _gameScene.GetPlayer(acceptingPlayerNumber);
+        PlayerTradeService service = new();
+        PlayerTradeResult executeResult = service.Execute(_closedOffer, acceptingPlayer);
+        LogTradeResult(executeResult);
+
+        if (executeResult.Success)
+        {
+            offeredResourceDisplay.Clear();
+            requestedResourceDisplay.Clear();
+            _gameScene.ExitState();
+            _gameScene.AppendState(new TradingGameState(_gameScene, Player, TradeMode.Players));
+        }
     }
 
     private void TryAcceptTrade(

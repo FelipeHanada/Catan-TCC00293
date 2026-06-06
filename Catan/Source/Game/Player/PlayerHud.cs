@@ -19,7 +19,7 @@ namespace Catan.Source.Game.Player
         private static SpriteFont _font = null;
 
         public PlayerHud(GameScene gameScene, Player player, float x, float y, Color color, int width, int height)
-            : base(x, y, gameScene.Atlas, color, width, height, "PlayerNumber: " + player.PlayerNumber)
+            : base(x, y, gameScene.Atlas, color, width, height, player.DisplayName)
         {
             _gameScene = gameScene;
             _player = player;
