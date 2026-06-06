@@ -17,7 +17,7 @@ namespace Catan.Source.Scenes.Game
         Atlas atlas = gameScene.Atlas;
         int posX = 760;
         int posY = 350;
-        UISlate useSlate = new UISlate(posX, posY, atlas, Color.Gray, 360, 270, "Usar carta");
+        UISlate useSlate = new UISlate(posX, posY, atlas, Color.Gray, 360, 270, "Cartas");
         DevelopmentCardType[] displayTypes =
         {
             DevelopmentCardType.Knight,
