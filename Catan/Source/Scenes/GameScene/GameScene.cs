@@ -8,6 +8,7 @@ using Catan.Source.Game.Board;
 using Catan.Source.Game.DevelopmentCards;
 using Catan.Source.Game.Dice;
 using Catan.Source.Game.Debug;
+using Catan.Source.Game.Logging;
 using Catan.Source.Game.Player;
 using Catan.Source.Scenes.Game;
 using GameBank = Catan.Source.Game.Bank.Bank;
@@ -31,6 +32,7 @@ namespace Catan.Source.Scenes
         public DiceRollControl DiceRollControl { get; private set; }
         public GameBank Bank { get; private set; }
         public DevelopmentCardDeck DevelopmentCardDeck { get; private set; }
+        public GameLog Log { get; private set; }
         public bool HasUsedDevelopmentCardThisTurn { get; private set; }
         public Board Board { get; private set; }
         public ScoreManager ScoreManager { get; private set; }
@@ -49,6 +51,7 @@ namespace Catan.Source.Scenes
             _stateStack = new();
             Bank = new GameBank();
             DevelopmentCardDeck = new DevelopmentCardDeck();
+            Log = new GameLog();
             _players = [];
             for (int i=0; i<4; i++)
             {
@@ -71,6 +74,8 @@ namespace Catan.Source.Scenes
             #endif
 
             Atlas = new Atlas(Game1.ContentManager);
+
+            Subscribe(new GameLogPanel(1000, 345, Atlas, Log));
 
             StandardRandomBoardFactory factory = new(Atlas, 192, 64);
             Board = factory.CreateBoard(this);
@@ -114,8 +119,6 @@ namespace Catan.Source.Scenes
             base.Update(gameTime);
 
             GameState currentState = GetCurrentState();
-
-            Console.Out.WriteLine(currentState);
 
             currentState.Update(gameTime);
             UpdateActionButtons();

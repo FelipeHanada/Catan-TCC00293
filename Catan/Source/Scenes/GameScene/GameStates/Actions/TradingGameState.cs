@@ -139,12 +139,16 @@ namespace Catan.Source.Scenes.Game
         if (!createResult.Success)
         {
             LogTradeResult(createResult);
+            _gameScene.Log.Add($"Troca invalida: {createResult.Message}");
             return;
         }
 
         Player acceptingPlayer = _gameScene.GetPlayer(acceptingPlayerNumber);
         PlayerTradeResult executeResult = service.Execute(offer, acceptingPlayer);
         LogTradeResult(executeResult);
+        _gameScene.Log.Add(executeResult.Success
+            ? $"Jogador {acceptingPlayerNumber} aceitou troca"
+            : $"Troca invalida: {executeResult.Message}");
 
         if (executeResult.Success)
         {
@@ -164,6 +168,7 @@ namespace Catan.Source.Scenes.Game
         if (!TryGetSinglePaidResource(offeredResources, out ResourceId paidResource))
         {
             LogBankTradeResult("Selecione exatamente um recurso para pagar ao banco.");
+            _gameScene.Log.Add("Troca invalida: selecione um recurso para pagar");
             return;
         }
 
@@ -178,6 +183,7 @@ namespace Catan.Source.Scenes.Game
             out string message))
         {
             LogBankTradeResult(message);
+            _gameScene.Log.Add($"Troca invalida: {message}");
             return;
         }
 
@@ -189,6 +195,7 @@ namespace Catan.Source.Scenes.Game
             1))
         {
             LogBankTradeResult("Troca com banco inválida: recursos insuficientes do jogador ou do banco.");
+            _gameScene.Log.Add("Troca invalida: recursos insuficientes");
             return;
         }
 
@@ -202,6 +209,7 @@ namespace Catan.Source.Scenes.Game
         offeredResourceDisplay.Clear();
         requestedResourceDisplay.Clear();
         LogBankTradeResult("Troca com banco realizada.");
+        _gameScene.Log.Add("Troca com banco realizada");
     }
 
     private static bool TryGetSinglePaidResource(Dictionary<ResourceId, int> resources, out ResourceId paidResource)

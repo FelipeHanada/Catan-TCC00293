@@ -41,6 +41,7 @@ namespace Catan.Source.Scenes.Game
 
         public virtual void OnPlaceRoad(TileEdge edge)
         {
+            _gameScene.Log.Add($"Jogador {Player.PlayerNumber} construiu estrada");
             _gameScene.ExitState();
         }
     }

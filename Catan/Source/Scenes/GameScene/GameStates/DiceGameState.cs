@@ -21,6 +21,7 @@ namespace Catan.Source.Scenes.Game
             {
                 DiceRoll roll = _diceRollControl.ConsumeSettledResult();
                 _gameScene.LastDiceRoll = roll;
+                _gameScene.Log.Add($"Dado: {roll.First} + {roll.Second} = {roll.Total}");
                 _gameScene.ExitState();
             }
         }
