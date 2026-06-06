@@ -2,8 +2,11 @@ using Catan.Source.Game;
 using Catan.Source.Game.AI;
 using Catan.Source.Game.Board;
 using Catan.Source.Game.Player;
+using Catan.Source.Game.Resources;
+using Catan.Source.Game.Trading;
 using Catan.Source.Scenes;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Catan.Source.Scenes.Game
@@ -11,6 +14,7 @@ namespace Catan.Source.Scenes.Game
     public class PlayerActionsGameState : PlayerTurnGameState, PlayerTradeButtonCallback, PlayerBuildButtonCallback, PlayerDevelopmentCardButtonCallback, PlayerEndTurnButtonCallback
     {
         private const double AiActionDelaySeconds = 0.35;
+        private const int AiBankTradeRate = 4;
         private double _aiElapsedSeconds;
         private bool _aiActed;
         private bool _aiWaitingForBuildAction;
@@ -48,6 +52,13 @@ namespace Catan.Source.Scenes.Game
             if (TryStartAiBuildAction())
             {
                 _aiWaitingForBuildAction = true;
+                return;
+            }
+
+            if (TryExecuteAiTradeAction())
+            {
+                _aiActed = true;
+                OnPlayerEndTurnButtonClicked();
                 return;
             }
 
@@ -141,6 +152,123 @@ namespace Catan.Source.Scenes.Game
 
             _gameScene.AppendState(roadState);
             return true;
+        }
+
+        private bool TryExecuteAiTradeAction()
+        {
+            AiTradeNeed tradeNeed = _gameScene.AiStrategy.ChooseTradeNeed(
+                _gameScene.Board,
+                Player,
+                BuildingGameState.SettlementCost,
+                BuildingGameState.RoadCost);
+
+            if (tradeNeed == null)
+            {
+                return false;
+            }
+
+            if (tradeNeed.PreferBank && TryExecuteAiBankTrade(tradeNeed))
+            {
+                return true;
+            }
+
+            if (TryExecuteAiPlayerTrade(tradeNeed))
+            {
+                return true;
+            }
+
+            return !tradeNeed.PreferBank && TryExecuteAiBankTrade(tradeNeed);
+        }
+
+        private bool TryExecuteAiBankTrade(AiTradeNeed tradeNeed)
+        {
+            ResourceId? offeredResource = _gameScene.AiStrategy.ChooseTradeOfferedResource(
+                Player,
+                tradeNeed.Resource,
+                BuildingGameState.SettlementCost,
+                BuildingGameState.RoadCost,
+                AiBankTradeRate);
+
+            if (offeredResource is not ResourceId paidResource)
+            {
+                return false;
+            }
+
+            if (!_gameScene.Bank.CanTrade(
+                Player.Inventory.Resources,
+                paidResource,
+                AiBankTradeRate,
+                tradeNeed.Resource,
+                1))
+            {
+                return false;
+            }
+
+            _gameScene.Bank.Trade(
+                Player.Inventory.Resources,
+                paidResource,
+                AiBankTradeRate,
+                tradeNeed.Resource,
+                1);
+
+            _gameScene.Log.Add($"{Player.DisplayName} trocou com o banco");
+            return true;
+        }
+
+        private bool TryExecuteAiPlayerTrade(AiTradeNeed tradeNeed)
+        {
+            ResourceId? offeredResource = _gameScene.AiStrategy.ChooseTradeOfferedResource(
+                Player,
+                tradeNeed.Resource,
+                BuildingGameState.SettlementCost,
+                BuildingGameState.RoadCost,
+                tradeNeed.PlayerOfferAmount);
+
+            if (offeredResource is not ResourceId paidResource)
+            {
+                return false;
+            }
+
+            Dictionary<ResourceId, int> offeredResources = new()
+            {
+                { paidResource, tradeNeed.PlayerOfferAmount },
+            };
+            Dictionary<ResourceId, int> requestedResources = new()
+            {
+                { tradeNeed.Resource, 1 },
+            };
+
+            PlayerTradeService service = new();
+            PlayerTradeResult createResult = service.CreateOffer(
+                Player,
+                offeredResources,
+                requestedResources,
+                out PlayerTradeOffer offer);
+
+            if (!createResult.Success)
+            {
+                return false;
+            }
+
+            foreach (Player acceptingPlayer in _gameScene.Players.Where(player => player != Player && player.IsAi))
+            {
+                PlayerTradeResult acceptResult = service.CanAccept(offer, acceptingPlayer);
+                if (!acceptResult.Success || !_gameScene.AiStrategy.ShouldAcceptTrade())
+                {
+                    continue;
+                }
+
+                PlayerTradeResult executeResult = service.Execute(offer, acceptingPlayer);
+                if (!executeResult.Success)
+                {
+                    continue;
+                }
+
+                _gameScene.Log.Add($"{acceptingPlayer.DisplayName} aceitou troca da {Player.DisplayName}");
+                return true;
+            }
+
+            return false;
         }
 
         public void OnPlayerBuildButtonClicked()

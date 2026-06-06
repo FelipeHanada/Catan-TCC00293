@@ -247,6 +247,119 @@ namespace Catan.Tests.Source.Game.AI
         }
 
         [Fact]
+        public void GetTradeNeeds_WhenMissingOneResourceForSettlement_MarksHighPriorityPlayerTrade()
+        {
+            Player player = new(0);
+            player.Inventory.Resources.Add(ResourceId.Wood, 1);
+            player.Inventory.Resources.Add(ResourceId.Wool, 1);
+            player.Inventory.Resources.Add(ResourceId.Wheat, 1);
+            BoardModel board = BoardWith(TileWithBuilding(TileType.Forest, player));
+
+            List<AiTradeNeed> needs = RandomAiStrategy.GetTradeNeeds(
+                board,
+                player,
+                SettlementCost(),
+                RoadCost()).ToList();
+
+            AiTradeNeed brickNeed = Assert.Single(needs, need => need.Resource == ResourceId.Brick);
+            Assert.Equal(100, brickNeed.Weight);
+            Assert.Equal(0.90, brickNeed.AttemptChance);
+            Assert.False(brickNeed.PreferBank);
+            Assert.Equal(2, brickNeed.PlayerOfferAmount);
+        }
+
+        [Fact]
+        public void GetTradeNeeds_WhenMissingOneResourceForRoad_UsesLowerPriorityPlayerTrade()
+        {
+            Player player = new(0);
+            player.Inventory.Resources.Add(ResourceId.Brick, 1);
+            player.Inventory.Resources.Add(ResourceId.Wood, 1);
+            player.Inventory.Resources.Add(ResourceId.Wool, 1);
+            player.Inventory.Resources.Add(ResourceId.Wheat, 1);
+            Dictionary<ResourceId, int> roadCost = new()
+            {
+                { ResourceId.Ore, 1 },
+            };
+            BoardModel board = BoardWith(
+                TileWithBuilding(TileType.Forest, player),
+                TileWithBuilding(TileType.Sheep, player),
+                TileWithBuilding(TileType.Farm, player));
+
+            List<AiTradeNeed> needs = RandomAiStrategy.GetTradeNeeds(
+                board,
+                player,
+                SettlementCost(),
+                roadCost).ToList();
+
+            AiTradeNeed oreNeed = Assert.Single(needs, need => need.Resource == ResourceId.Ore);
+            Assert.Equal(70, oreNeed.Weight);
+            Assert.Equal(0.75, oreNeed.AttemptChance);
+            Assert.False(oreNeed.PreferBank);
+            Assert.Equal(2, oreNeed.PlayerOfferAmount);
+        }
+
+        [Fact]
+        public void GetTradeNeeds_WhenMissingTwoOfUnproducedSettlementResource_UsesStrongCriticalPriority()
+        {
+            Player player = new(0);
+            player.Inventory.Resources.Add(ResourceId.Wood, 1);
+            player.Inventory.Resources.Add(ResourceId.Wool, 1);
+            Dictionary<ResourceId, int> settlementCost = SettlementCost();
+            settlementCost[ResourceId.Brick] = 2;
+            BoardModel board = BoardWith(
+                TileWithBuilding(TileType.Forest, player),
+                TileWithBuilding(TileType.Sheep, player));
+
+            List<AiTradeNeed> needs = RandomAiStrategy.GetTradeNeeds(
+                board,
+                player,
+                settlementCost,
+                RoadCost()).ToList();
+
+            AiTradeNeed brickNeed = Assert.Single(needs, need => need.Resource == ResourceId.Brick);
+            Assert.Equal(75, brickNeed.Weight);
+            Assert.Equal(0.75, brickNeed.AttemptChance);
+            Assert.False(brickNeed.PreferBank);
+        }
+
+        [Fact]
+        public void ChooseTradeOfferedResource_PrefersResourceWithExcessOverResourceNeededForSettlement()
+        {
+            Player player = new(0);
+            player.Inventory.Resources.Add(ResourceId.Ore, 4);
+            player.Inventory.Resources.Add(ResourceId.Wood, 1);
+            player.Inventory.Resources.Add(ResourceId.Wool, 1);
+            player.Inventory.Resources.Add(ResourceId.Wheat, 1);
+            RandomAiStrategy strategy = new(new FixedRandom(0));
+
+            ResourceId? offeredResource = strategy.ChooseTradeOfferedResource(
+                player,
+                ResourceId.Brick,
+                SettlementCost(),
+                RoadCost(),
+                4);
+
+            Assert.Equal(ResourceId.Ore, offeredResource);
+        }
+
+        [Fact]
+        public void ChooseTradeOfferedResource_ReturnsNullWhenOnlyRequestedResourceHasEnoughCards()
+        {
+            Player player = new(0);
+            player.Inventory.Resources.Add(ResourceId.Brick, 4);
+            RandomAiStrategy strategy = new(new FixedRandom(0));
+
+            ResourceId? offeredResource = strategy.ChooseTradeOfferedResource(
+                player,
+                ResourceId.Brick,
+                SettlementCost(),
+                RoadCost(),
+                4);
+
+            Assert.Null(offeredResource);
+        }
+
+        [Fact]
         public void CountMissingResources_ReturnsHowManyCostEntriesAreStillMissing()
         {
             Player player = new(0);
@@ -328,6 +441,26 @@ namespace Catan.Tests.Source.Game.AI
             }
 
             return new Tile(0, 0, null, type, 6, vertices.ToArray(), null);
+        }
+
+        private static Dictionary<ResourceId, int> SettlementCost()
+        {
+            return new Dictionary<ResourceId, int>
+            {
+                { ResourceId.Brick, 1 },
+                { ResourceId.Wood, 1 },
+                { ResourceId.Wool, 1 },
+                { ResourceId.Wheat, 1 },
+            };
+        }
+
+        private static Dictionary<ResourceId, int> RoadCost()
+        {
+            return new Dictionary<ResourceId, int>
+            {
+                { ResourceId.Brick, 1 },
+                { ResourceId.Wood, 1 },
+            };
         }
 
         private static Player PlayerWithResources(int playerNumber)

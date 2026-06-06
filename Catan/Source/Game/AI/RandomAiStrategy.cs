@@ -196,6 +196,134 @@ namespace Catan.Source.Game.AI
             return _random.NextDouble() < BuildRoadWhileWaitingForSettlementChance;
         }
 
+        public AiTradeNeed ChooseTradeNeed(
+            Board.Board board,
+            GamePlayer player,
+            IReadOnlyDictionary<ResourceId, int> settlementCost,
+            IReadOnlyDictionary<ResourceId, int> roadCost)
+        {
+            List<AiTradeNeed> needs = GetTradeNeeds(board, player, settlementCost, roadCost).ToList();
+            if (needs.Count == 0)
+            {
+                return null;
+            }
+
+            AiTradeNeed chosenNeed = WeightedRandomPicker.Pick(
+                needs.Select(need => new WeightedCandidate<AiTradeNeed>(need, need.Weight)).ToList(),
+                _random);
+
+            return _random.NextDouble() < chosenNeed.AttemptChance
+                ? chosenNeed
+                : null;
+        }
+
+        public ResourceId? ChooseTradeOfferedResource(
+            GamePlayer player,
+            ResourceId requestedResource,
+            IReadOnlyDictionary<ResourceId, int> settlementCost,
+            IReadOnlyDictionary<ResourceId, int> roadCost,
+            int minimumAmount)
+        {
+            List<WeightedCandidate<ResourceId>> candidates = new();
+
+            foreach (ResourceId resource in ResourceUtils.ResourceIds)
+            {
+                if (resource == requestedResource ||
+                    player.Inventory.Resources.GetAmount(resource) < minimumAmount)
+                {
+                    continue;
+                }
+
+                int amount = player.Inventory.Resources.GetAmount(resource);
+                int neededForSettlement = settlementCost.TryGetValue(resource, out int settlementAmount)
+                    ? settlementAmount
+                    : 0;
+                int neededForRoad = roadCost.TryGetValue(resource, out int roadAmount)
+                    ? roadAmount
+                    : 0;
+
+                int protectedAmount = Math.Max(neededForSettlement, neededForRoad);
+                int excess = Math.Max(0, amount - protectedAmount);
+                int weight = 1 + amount + excess * 3;
+
+                if (amount <= protectedAmount)
+                {
+                    weight = 1;
+                }
+
+                candidates.Add(new WeightedCandidate<ResourceId>(resource, weight));
+            }
+
+            if (candidates.Count == 0)
+            {
+                return null;
+            }
+
+            return WeightedRandomPicker.Pick(candidates, _random);
+        }
+
+        public static IEnumerable<AiTradeNeed> GetTradeNeeds(
+            Board.Board board,
+            GamePlayer player,
+            IReadOnlyDictionary<ResourceId, int> settlementCost,
+            IReadOnlyDictionary<ResourceId, int> roadCost)
+        {
+            Dictionary<ResourceId, AiTradeNeed> needsByResource = new();
+            Dictionary<ResourceId, int> productionCounts = GetResourceProductionCounts(board, player);
+            Dictionary<ResourceId, int> missingSettlementResources = GetMissingResources(player, settlementCost);
+            int totalMissingSettlementResources = missingSettlementResources.Values.Sum();
+
+            if (totalMissingSettlementResources == 1)
+            {
+                ResourceId resource = missingSettlementResources.First().Key;
+                AddOrImproveNeed(needsByResource, new AiTradeNeed(resource, 100, 0.90, false, 2));
+            }
+            else
+            {
+                foreach (KeyValuePair<ResourceId, int> missingResource in missingSettlementResources)
+                {
+                    if (productionCounts[missingResource.Key] > 0)
+                    {
+                        continue;
+                    }
+
+                    if (missingResource.Value >= 2)
+                    {
+                        AddOrImproveNeed(needsByResource, new AiTradeNeed(missingResource.Key, 75, 0.75, false));
+                    }
+                    else
+                    {
+                        AddOrImproveNeed(needsByResource, new AiTradeNeed(missingResource.Key, 60, 0.60, false));
+                    }
+                }
+            }
+
+            Dictionary<ResourceId, int> missingRoadResources = GetMissingResources(player, roadCost);
+            if (missingRoadResources.Values.Sum() == 1)
+            {
+                ResourceId resource = missingRoadResources.First().Key;
+                AddOrImproveNeed(needsByResource, new AiTradeNeed(resource, 70, 0.75, false, 2));
+            }
+
+            foreach (ResourceId resource in ResourceUtils.ResourceIds)
+            {
+                if (productionCounts[resource] == 0 &&
+                    player.Inventory.Resources.GetAmount(resource) <= 1)
+                {
+                    AddOrImproveNeed(needsByResource, new AiTradeNeed(resource, 60, 0.45, false));
+                    continue;
+                }
+
+                if (productionCounts[resource] == 1 &&
+                    player.Inventory.Resources.GetAmount(resource) == 0)
+                {
+                    AddOrImproveNeed(needsByResource, new AiTradeNeed(resource, 35, 0.25, false));
+                }
+            }
+
+            return needsByResource.Values;
+        }
+
         public static int GetSettlementVertexWeight(Board.Board board, TileVertex vertex)
         {
             int diceWeightSum = 0;
@@ -278,6 +406,33 @@ namespace Catan.Source.Game.AI
             }
 
             return missingCount;
+        }
+
+        private static Dictionary<ResourceId, int> GetMissingResources(
+            GamePlayer player,
+            IReadOnlyDictionary<ResourceId, int> cost)
+        {
+            Dictionary<ResourceId, int> missingResources = new();
+
+            foreach (KeyValuePair<ResourceId, int> requiredResource in cost)
+            {
+                int missingAmount = requiredResource.Value - player.Inventory.Resources.GetAmount(requiredResource.Key);
+                if (missingAmount > 0)
+                {
+                    missingResources[requiredResource.Key] = missingAmount;
+                }
+            }
+
+            return missingResources;
+        }
+
+        private static void AddOrImproveNeed(Dictionary<ResourceId, AiTradeNeed> needsByResource, AiTradeNeed need)
+        {
+            if (!needsByResource.TryGetValue(need.Resource, out AiTradeNeed existingNeed) ||
+                need.Weight > existingNeed.Weight)
+            {
+                needsByResource[need.Resource] = need;
+            }
         }
 
         public static Dictionary<ResourceId, int> GetResourceProductionCounts(Board.Board board, GamePlayer player)
