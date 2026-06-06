@@ -169,14 +169,50 @@ namespace Catan.Source.Scenes.Game
 
     public class BuildPositionSettlementGameState : PositionSettlementGameState
     {
+        private const double AiActionDelaySeconds = 0.35;
+        private double _aiElapsedSeconds;
+        private bool _aiActed;
         public IReadOnlyDictionary<ResourceId, int> BuildingCost { get; private set; }
 
         public BuildPositionSettlementGameState(GameScene gameScene, Player player, BuildingType buildingType, IReadOnlyDictionary<ResourceId, int> buildingCost = null)
             : base(gameScene, player, buildingType)
         {
             BuildingCost = buildingCost ?? new Dictionary<ResourceId, int>();
+            _aiElapsedSeconds = 0;
+            _aiActed = false;
 
             AddChild(new ButtonAction(10, 10, gameScene.Atlas, () => { gameScene.ExitState(); }, "Cancelar"));
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            if (!Player.IsAi || _aiActed)
+            {
+                return;
+            }
+
+            _aiElapsedSeconds += gameTime.ElapsedGameTime.TotalSeconds;
+            if (_aiElapsedSeconds < AiActionDelaySeconds)
+            {
+                return;
+            }
+
+            _aiActed = true;
+
+            List<TileVertex> validVertices = _gameScene.Board.Graph.Vertices
+                .Where(CanPlaceBuilding)
+                .ToList();
+
+            if (validVertices.Count == 0)
+            {
+                _gameScene.ExitState();
+                return;
+            }
+
+            TileVertex chosenVertex = _gameScene.AiStrategy.ChooseSettlement(_gameScene.Board, validVertices);
+            TryPlaceBuilding(chosenVertex);
         }
 
         public override bool CanPlaceBuilding(TileVertex tileVertex)

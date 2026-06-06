@@ -37,6 +37,8 @@ namespace Catan.Source.Scenes.Game
 
         private ButtonAction _settlementButton, _cityButton, _roadButton, _developmentCardButton;
         private DevelopmentCardPurchaseService _purchaseService;
+        public static IReadOnlyDictionary<ResourceId, int> SettlementCost => _settlementCost;
+        public static IReadOnlyDictionary<ResourceId, int> RoadCost => _roadCost;
 
         public UISlate UISlate { get; private set; }
         public BuildingGameState(GameScene gameScene, Player player) : base(gameScene, player)

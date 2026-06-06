@@ -38,6 +38,7 @@ namespace Catan.Source.Scenes
         public RandomAiStrategy AiStrategy { get; private set; }
         public Board Board { get; private set; }
         public ScoreManager ScoreManager { get; private set; }
+        public int TargetScore { get; }
 
         public ButtonAction TradeButton { get; private set; }
         public ButtonAction BuildButton { get; private set; }
@@ -60,6 +61,7 @@ namespace Catan.Source.Scenes
             AiStrategy = new RandomAiStrategy();
             Log = new GameLog();
             _players = [];
+            TargetScore = settings.TargetScore;
 
             for (int i = 0; i < settings.Players.Count; i++)
             {
