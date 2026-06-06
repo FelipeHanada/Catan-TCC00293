@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <ExcludeByAttribute>ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
+          <ExcludeByFile>
+            **/Program.cs,
+            **/Game1.cs,
+            **/Source/Scenes/MainMenuScene.cs,
+            **/Source/Scenes/ConfigScene.cs,
+            **/Source/Scenes/EndGameScene.cs,
+            **/Source/Scenes/Scene.cs,
+            **/Source/Scenes/GameScene/GameScene.cs,
+            **/Source/Scenes/GameScene/GameState.cs,
+            **/Source/Scenes/GameScene/GameStates/**/*.cs,
+            **/Source/Content/**/*.cs,
+            **/Source/Game/Button.cs,
+            **/Source/Game/UISlate.cs,
+            **/Source/Game/ResourceDisplay.cs,
+            **/Source/Game/GameDebug/**/*.cs,
+            **/Source/Game/Player/PlayerHud.cs,
+            **/Source/Game/Player/PlayerManager.cs,
+            **/Source/Game/Logging/GameLogPanel.cs,
+            **/Source/Game/Board/Tile.cs,
+            **/Source/Game/Board/TileVertex.cs,
+            **/Source/Game/Board/TileEdge.cs,
+            **/Source/Game/Board/HarborHoverPreview.cs,
+            **/Source/Game/Board/RobberMarker.cs,
+            **/Source/Game/Dice/DiceRollControl.cs,
+            **/Source/Game/Resources/ResourceBankPlaceholder.cs,
+            **/Source/Game/Winning/ScoreManager.cs
+          </ExcludeByFile>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

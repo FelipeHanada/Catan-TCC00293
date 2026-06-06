@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Catan.Source.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -150,6 +151,7 @@ namespace Catan.Source.Game.Board
         public override void Update(GameTime gameTime) { }
     }
 
+    [ExcludeFromCodeCoverage]
     public class BoardBackground : GameObject
     {
         private Atlas _atlas;
