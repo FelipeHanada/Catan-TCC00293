@@ -44,6 +44,10 @@ namespace Catan.Source.Scenes.Game
                     StealFromTarget(target);
                 }
             }
+            else
+            {
+                _gameScene.Log.Add("Ladrao nao encontrou alvo");
+            }
 
             _gameScene.ExitState();
         }
@@ -52,8 +56,11 @@ namespace Catan.Source.Scenes.Game
         {
             if (!_robberRule.TryStealRandomResource(_currentPlayer, target, out ResourceId stolenResource))
             {
+                _gameScene.Log.Add($"{target.DisplayName} nao tinha recurso para roubar");
                 return;
             }
+
+            _gameScene.Log.Add($"{_currentPlayer.DisplayName} roubou de {target.DisplayName}");
 
             #if DEBUG
             DiagnosticsDebug.WriteLine(

@@ -52,29 +52,32 @@ namespace Catan.Source.Scenes.Game
             player.Inventory.DevelopmentCards,
             gameScene.HasUsedDevelopmentCardThisTurn))
         {
-            Console.WriteLine($"{GetDisplayName(type)} nao pode ser usada agora.");
+            gameScene.Log.Add($"{GetDisplayName(type)} nao pode ser usada agora");
             return;
         }
 
         if (type == DevelopmentCardType.YearOfPlenty)
         {
+            gameScene.Log.Add($"{player.DisplayName} usou Year of plenty");
             gameScene.AppendState(new YearOfPlentySelectionGameState(gameScene, player));
             return;
         }
 
         if (type == DevelopmentCardType.Monopoly)
         {
+            gameScene.Log.Add($"{player.DisplayName} usou Monopoly");
             gameScene.AppendState(new MonopolySelectionGameState(gameScene, player));
             return;
         }
 
         if (type == DevelopmentCardType.Knight)
         {
+            gameScene.Log.Add($"{player.DisplayName} usou Knight");
             gameScene.AppendState(new KnightGameState(gameScene, player));
             return;
         }
 
-        Console.WriteLine($"{GetDisplayName(type)}: efeito ainda pendente.");
+        gameScene.Log.Add($"{GetDisplayName(type)}: efeito pendente");
     }
 
     private static string GetDisplayName(DevelopmentCardType type)

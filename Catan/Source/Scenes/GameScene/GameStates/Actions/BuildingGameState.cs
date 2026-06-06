@@ -97,9 +97,23 @@ namespace Catan.Source.Scenes.Game
             if (result.Success)
             {
                 Console.WriteLine($"Carta comprada: {result.Card.Type}");
+                _gameScene.Log.Add($"{Player.DisplayName} comprou {GetDevelopmentCardLogName(result.Card.Type)}");
                 _gameScene.ExitState();
                 _gameScene.AppendState(new BuildingGameState(_gameScene, Player));
             }
+        }
+
+        private static string GetDevelopmentCardLogName(Catan.Source.Game.Inventory.DevelopmentCardType type)
+        {
+            return type switch
+            {
+                Catan.Source.Game.Inventory.DevelopmentCardType.Knight => "Knight",
+                Catan.Source.Game.Inventory.DevelopmentCardType.RoadBuilding => "Road building",
+                Catan.Source.Game.Inventory.DevelopmentCardType.YearOfPlenty => "Year of plenty",
+                Catan.Source.Game.Inventory.DevelopmentCardType.Monopoly => "Monopoly",
+                Catan.Source.Game.Inventory.DevelopmentCardType.VictoryPoint => "Victory point",
+                _ => type.ToString(),
+            };
         }
 
         public void OnPlayerTradeButtonClicked()
