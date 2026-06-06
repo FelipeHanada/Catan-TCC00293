@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 
 namespace Catan.Source.Scenes.Game
 {
-    public class YearOfPlentySelectionGameState : PlayerTurnGameState
+    public class InventionSelectionGameState : PlayerTurnGameState
     {
         private readonly Player _player;
         private ResourceId? _firstResource;
@@ -16,7 +16,7 @@ namespace Catan.Source.Scenes.Game
 
         public UISlate UISlate { get; private set; }
 
-        public YearOfPlentySelectionGameState(GameScene gameScene, Player player)
+        public InventionSelectionGameState(GameScene gameScene, Player player)
             : base(gameScene, player)
         {
             _player = player;
@@ -70,7 +70,7 @@ namespace Catan.Source.Scenes.Game
                 return;
             }
 
-            DevelopmentCardActivationResult result = _activationService.UseYearOfPlenty(
+            DevelopmentCardActivationResult result = _activationService.UseInvention(
                 _player,
                 _gameScene.Bank,
                 _gameScene.HasUsedDevelopmentCardThisTurn,

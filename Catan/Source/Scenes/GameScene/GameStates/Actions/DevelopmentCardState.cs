@@ -17,26 +17,39 @@ namespace Catan.Source.Scenes.Game
         Atlas atlas = gameScene.Atlas;
         int posX = 760;
         int posY = 350;
-        UISlate useSlate = new UISlate(posX, posY, atlas, Color.Gray, 360, 220, "Usar carta");
+        UISlate useSlate = new UISlate(posX, posY, atlas, Color.Gray, 360, 270, "Usar carta");
+        DevelopmentCardType[] displayTypes =
+        {
+            DevelopmentCardType.Knight,
+            DevelopmentCardType.RoadBuilding,
+            DevelopmentCardType.Invention,
+            DevelopmentCardType.Monopoly,
+            DevelopmentCardType.VictoryPoint,
+        };
 
         int buttonIndex = 0;
-        foreach (DevelopmentCardType type in DevelopmentCardActivationRules.ActivatableTypes)
+        foreach (DevelopmentCardType type in displayTypes)
         {
-            int playableCount = player.Inventory.DevelopmentCards.CountPlayableByType(type);
-            string label = $"{GetDisplayName(type)} ({playableCount})";
+            bool isPassive = type == DevelopmentCardType.VictoryPoint;
+            int count = isPassive
+                ? player.Inventory.DevelopmentCards.CountByType(type)
+                : player.Inventory.DevelopmentCards.CountPlayableByType(type);
+            string label = isPassive
+                ? $"{GetDisplayName(type)} ({count}) [Passiva]"
+                : $"{GetDisplayName(type)} ({count})";
             ButtonAction button = new ButtonAction(
                 posX + 30,
                 posY + 30 + buttonIndex * 45,
                 atlas,
                 300,
                 30,
-                () => ActivateDevelopmentCard(gameScene, player, type),
+                isPassive ? () => { } : () => ActivateDevelopmentCard(gameScene, player, type),
                 label);
 
-            button.SetEnabled(DevelopmentCardActivationRules.CanActivate(
-                type,
-                player.Inventory.DevelopmentCards,
-                gameScene.HasUsedDevelopmentCardThisTurn));
+            button.SetEnabled(!isPassive && DevelopmentCardActivationRules.CanActivate(
+                    type,
+                    player.Inventory.DevelopmentCards,
+                    gameScene.HasUsedDevelopmentCardThisTurn));
 
             useSlate.AddChild(button);
             buttonIndex++;
@@ -56,10 +69,10 @@ namespace Catan.Source.Scenes.Game
             return;
         }
 
-        if (type == DevelopmentCardType.YearOfPlenty)
+        if (type == DevelopmentCardType.Invention)
         {
-            gameScene.Log.Add($"Jogador {player.PlayerNumber} usou Year of plenty");
-            gameScene.AppendState(new YearOfPlentySelectionGameState(gameScene, player));
+            gameScene.Log.Add($"Jogador {player.PlayerNumber} usou Invention");
+            gameScene.AppendState(new InventionSelectionGameState(gameScene, player));
             return;
         }
 
@@ -86,7 +99,7 @@ namespace Catan.Source.Scenes.Game
         {
             DevelopmentCardType.Knight => "Knight",
             DevelopmentCardType.RoadBuilding => "Road building",
-            DevelopmentCardType.YearOfPlenty => "Year of plenty",
+            DevelopmentCardType.Invention => "Invention",
             DevelopmentCardType.Monopoly => "Monopoly",
             DevelopmentCardType.VictoryPoint => "Victory point",
             _ => type.ToString(),
