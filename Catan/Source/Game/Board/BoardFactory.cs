@@ -266,14 +266,14 @@ namespace Catan.Source.Game.Board
         public List<HarborModel> CreateHarbors()
         {
             return [
-                HarborModel.CreateGeneric([_vertexTableA[0][0], _vertexTableA[0][1]]),
-                HarborModel.CreateSpecific(ResourceId.Ore, [_vertexTableB[0][0], _vertexTableA[1][0]]),
+                HarborModel.CreateGeneric([_vertexTableB[0][1], _vertexTableA[0][1]]),
+                HarborModel.CreateSpecific(ResourceId.Ore, [_vertexTableB[1][0], _vertexTableA[1][0]]),
                 HarborModel.CreateSpecific(ResourceId.Wood, [_vertexTableA[0][2], _vertexTableB[0][3]]),
                 HarborModel.CreateGeneric([_vertexTableB[1][4], _vertexTableA[2][4]]),
-                HarborModel.CreateSpecific(ResourceId.Brick, [_vertexTableA[3][5], _vertexTableB[3][4]]),
+                HarborModel.CreateSpecific(ResourceId.Brick, [_vertexTableB[3][4], _vertexTableA[4][4]]),
                 HarborModel.CreateGeneric([_vertexTableA[5][3], _vertexTableB[5][2]]),
-                HarborModel.CreateSpecific(ResourceId.Wheat, [_vertexTableB[5][0], _vertexTableB[5][1]]),
-                HarborModel.CreateSpecific(ResourceId.Wool, [_vertexTableA[5][0], _vertexTableB[4][0]]),
+                HarborModel.CreateSpecific(ResourceId.Wheat, [_vertexTableB[5][1], _vertexTableA[5][1]]),
+                HarborModel.CreateSpecific(ResourceId.Wool, [_vertexTableB[4][0], _vertexTableA[4][0]]),
                 HarborModel.CreateGeneric([_vertexTableB[2][0], _vertexTableA[3][0]]),
             ];
         }
