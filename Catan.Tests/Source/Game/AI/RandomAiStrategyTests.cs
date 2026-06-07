@@ -487,6 +487,60 @@ namespace Catan.Tests.Source.Game.AI
             Assert.False(rejects.ShouldBuildCityWhenPossible(settlementCount));
         }
 
+        [Fact]
+        public void ShouldBuyDevelopmentCard_UsesModerateChance()
+        {
+            RandomAiStrategy accepts = new(new FixedRandom(0.34));
+            RandomAiStrategy rejects = new(new FixedRandom(0.36));
+
+            Assert.True(accepts.ShouldBuyDevelopmentCard());
+            Assert.False(rejects.ShouldBuyDevelopmentCard());
+        }
+
+        [Fact]
+        public void ShouldUseKnight_UsesModerateChance()
+        {
+            RandomAiStrategy accepts = new(new FixedRandom(0.34));
+            RandomAiStrategy rejects = new(new FixedRandom(0.36));
+
+            Assert.True(accepts.ShouldUseKnight());
+            Assert.False(rejects.ShouldUseKnight());
+        }
+
+        [Fact]
+        public void ChooseYearOfPlentyResources_WhenMissingTwoForSettlement_ReturnsNeededResources()
+        {
+            Player player = new(0);
+            player.Inventory.Resources.Add(ResourceId.Wood, 1);
+            player.Inventory.Resources.Add(ResourceId.Wool, 1);
+            RandomAiStrategy strategy = new(new FixedRandom(0));
+
+            IReadOnlyList<ResourceId> resources = strategy.ChooseYearOfPlentyResources(
+                player,
+                SettlementCost(),
+                RoadCost(),
+                CityCost());
+
+            Assert.Equal(new[] { ResourceId.Brick, ResourceId.Wheat }, resources);
+        }
+
+        [Fact]
+        public void ChooseMonopolyResource_WhenMissingSettlementResource_PrioritizesNeededResource()
+        {
+            Player player = new(0);
+            player.Inventory.Resources.Add(ResourceId.Wood, 1);
+            player.Inventory.Resources.Add(ResourceId.Wool, 1);
+            RandomAiStrategy strategy = new(new FixedRandom(0));
+
+            ResourceId resource = strategy.ChooseMonopolyResource(
+                player,
+                SettlementCost(),
+                RoadCost(),
+                CityCost());
+
+            Assert.Equal(ResourceId.Brick, resource);
+        }
+
         private static TileVertex Vertex()
         {
             return new TileVertex(0, 0, null, null);
@@ -538,6 +592,15 @@ namespace Catan.Tests.Source.Game.AI
             {
                 { ResourceId.Brick, 1 },
                 { ResourceId.Wood, 1 },
+            };
+        }
+
+        private static Dictionary<ResourceId, int> CityCost()
+        {
+            return new Dictionary<ResourceId, int>
+            {
+                { ResourceId.Ore, 3 },
+                { ResourceId.Wheat, 2 },
             };
         }
 

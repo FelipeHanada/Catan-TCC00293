@@ -16,12 +16,14 @@ namespace Catan.Source.Scenes.Game
         }
 
         private readonly DevelopmentCardActivationService _activationService;
+        private readonly bool _exitDevelopmentCardStateWhenDone;
         private KnightStep _currentStep;
 
-        public KnightGameState(GameScene gameScene, Player player)
+        public KnightGameState(GameScene gameScene, Player player, bool exitDevelopmentCardStateWhenDone = true)
             : base(gameScene, player)
         {
             _activationService = new DevelopmentCardActivationService();
+            _exitDevelopmentCardStateWhenDone = exitDevelopmentCardStateWhenDone;
             _currentStep = KnightStep.MoveRobber;
         }
 
@@ -44,7 +46,10 @@ namespace Catan.Source.Scenes.Game
                     break;
                 case KnightStep.Done:
                     _gameScene.ExitState();
-                    _gameScene.ExitState();
+                    if (_exitDevelopmentCardStateWhenDone)
+                    {
+                        _gameScene.ExitState();
+                    }
                     break;
             }
         }

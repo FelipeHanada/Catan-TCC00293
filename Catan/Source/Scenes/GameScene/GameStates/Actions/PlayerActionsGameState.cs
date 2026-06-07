@@ -1,7 +1,9 @@
 using Catan.Source.Game;
 using Catan.Source.Game.AI;
 using Catan.Source.Game.Board;
+using Catan.Source.Game.DevelopmentCards;
 using Catan.Source.Game.Harbor;
+using Catan.Source.Game.Inventory;
 using Catan.Source.Game.Player;
 using Catan.Source.Game.Resources;
 using Catan.Source.Game.Trading;
@@ -18,6 +20,7 @@ namespace Catan.Source.Scenes.Game
         private double _aiElapsedSeconds;
         private bool _aiActed;
         private bool _aiWaitingForBuildAction;
+        private bool _aiWaitingForDevelopmentCardAction;
 
         public PlayerActionsGameState(GameScene gameScene, Player player)
             : base(gameScene, player)
@@ -25,6 +28,7 @@ namespace Catan.Source.Scenes.Game
             _aiElapsedSeconds = 0;
             _aiActed = false;
             _aiWaitingForBuildAction = false;
+            _aiWaitingForDevelopmentCardAction = false;
         }
 
         public override void Update(GameTime gameTime)
@@ -36,10 +40,9 @@ namespace Catan.Source.Scenes.Game
                 return;
             }
 
-            if (_aiWaitingForBuildAction)
+            if (_aiWaitingForBuildAction || _aiWaitingForDevelopmentCardAction)
             {
-                _aiActed = true;
-                OnPlayerEndTurnButtonClicked();
+                FinishAiAction();
                 return;
             }
 
@@ -55,15 +58,42 @@ namespace Catan.Source.Scenes.Game
                 return;
             }
 
-            if (TryExecuteAiTradeAction())
+            if (TryExecuteAiDevelopmentCardAction())
             {
-                _aiActed = true;
-                OnPlayerEndTurnButtonClicked();
+                if (_aiWaitingForDevelopmentCardAction)
+                {
+                    return;
+                }
+
+                FinishAiAction();
                 return;
             }
 
+            if (TryExecuteAiDevelopmentCardPurchase())
+            {
+                FinishAiAction();
+                return;
+            }
+
+            if (TryExecuteAiTradeAction())
+            {
+                FinishAiAction();
+                return;
+            }
+
+            FinishAiAction();
+        }
+
+        private void FinishAiAction()
+        {
             _aiActed = true;
-            OnPlayerEndTurnButtonClicked();
+            _aiWaitingForBuildAction = false;
+            _aiWaitingForDevelopmentCardAction = false;
+
+            if (_gameScene.AiTurnMode.ShouldAutoEndTurn())
+            {
+                OnPlayerEndTurnButtonClicked();
+            }
         }
 
         private bool TryStartAiBuildAction()
@@ -101,6 +131,121 @@ namespace Catan.Source.Scenes.Game
             }
 
             return TryStartAiRoadBuild();
+        }
+
+        private bool TryExecuteAiDevelopmentCardAction()
+        {
+            if (_gameScene.HasUsedDevelopmentCardThisTurn)
+            {
+                return false;
+            }
+
+            return TryExecuteAiYearOfPlenty()
+                || TryExecuteAiMonopoly()
+                || TryStartAiKnight();
+        }
+
+        private bool TryExecuteAiYearOfPlenty()
+        {
+            if (Player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.YearOfPlenty) <= 0)
+            {
+                return false;
+            }
+
+            IReadOnlyList<ResourceId> resources = _gameScene.AiStrategy.ChooseYearOfPlentyResources(
+                Player,
+                BuildingGameState.SettlementCost,
+                BuildingGameState.RoadCost,
+                BuildingGameState.CityCost);
+
+            if (resources.Count < 2)
+            {
+                return false;
+            }
+
+            DevelopmentCardActivationService service = new();
+            DevelopmentCardActivationResult result = service.UseYearOfPlenty(
+                Player,
+                _gameScene.Bank,
+                _gameScene.HasUsedDevelopmentCardThisTurn,
+                resources[0],
+                resources[1]);
+
+            if (!result.Success)
+            {
+                return false;
+            }
+
+            _gameScene.MarkDevelopmentCardUsed();
+            _gameScene.Log.Add($"{Player.DisplayName} usou Year of plenty");
+            return true;
+        }
+
+        private bool TryExecuteAiMonopoly()
+        {
+            if (Player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Monopoly) <= 0)
+            {
+                return false;
+            }
+
+            ResourceId resource = _gameScene.AiStrategy.ChooseMonopolyResource(
+                Player,
+                BuildingGameState.SettlementCost,
+                BuildingGameState.RoadCost,
+                BuildingGameState.CityCost);
+
+            DevelopmentCardActivationService service = new();
+            DevelopmentCardActivationResult result = service.UseMonopoly(
+                Player,
+                _gameScene.Players,
+                _gameScene.HasUsedDevelopmentCardThisTurn,
+                resource);
+
+            if (!result.Success)
+            {
+                return false;
+            }
+
+            _gameScene.MarkDevelopmentCardUsed();
+            _gameScene.Log.Add($"{Player.DisplayName} usou Monopoly em {resource}");
+            return true;
+        }
+
+        private bool TryStartAiKnight()
+        {
+            if (Player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Knight) <= 0 ||
+                !_gameScene.AiStrategy.ShouldUseKnight())
+            {
+                return false;
+            }
+
+            _gameScene.Log.Add($"{Player.DisplayName} usou Knight");
+            _aiWaitingForDevelopmentCardAction = true;
+            _gameScene.AppendState(new KnightGameState(_gameScene, Player, false));
+            return true;
+        }
+
+        private bool TryExecuteAiDevelopmentCardPurchase()
+        {
+            DevelopmentCardPurchaseService service = new();
+            if (!service.CanPurchase(Player, _gameScene.Bank, _gameScene.DevelopmentCardDeck).Success ||
+                !_gameScene.AiStrategy.ShouldBuyDevelopmentCard())
+            {
+                return false;
+            }
+
+            DevelopmentCardPurchaseResult result = service.Purchase(
+                Player,
+                _gameScene.Bank,
+                _gameScene.DevelopmentCardDeck);
+
+            if (!result.Success)
+            {
+                return false;
+            }
+
+            _gameScene.Log.Add($"{Player.DisplayName} comprou {GetDevelopmentCardLogName(result.Card.Type)}");
+            return true;
         }
 
         private bool HasValidAiSettlementPosition()
@@ -334,6 +479,19 @@ namespace Catan.Source.Scenes.Game
             }
 
             return false;
+        }
+
+        private static string GetDevelopmentCardLogName(DevelopmentCardType type)
+        {
+            return type switch
+            {
+                DevelopmentCardType.Knight => "Knight",
+                DevelopmentCardType.RoadBuilding => "Road building",
+                DevelopmentCardType.YearOfPlenty => "Year of plenty",
+                DevelopmentCardType.Monopoly => "Monopoly",
+                DevelopmentCardType.VictoryPoint => "Victory point",
+                _ => type.ToString(),
+            };
         }
 
         public void OnPlayerBuildButtonClicked()

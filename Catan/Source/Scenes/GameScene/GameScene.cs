@@ -35,6 +35,7 @@ namespace Catan.Source.Scenes
         public DevelopmentCardDeck DevelopmentCardDeck { get; private set; }
         public GameLog Log { get; private set; }
         public bool HasUsedDevelopmentCardThisTurn { get; private set; }
+        public AiTurnMode AiTurnMode { get; private set; }
         public RandomAiStrategy AiStrategy { get; private set; }
         public Board Board { get; private set; }
         public ScoreManager ScoreManager { get; private set; }
@@ -44,6 +45,8 @@ namespace Catan.Source.Scenes
         public ButtonAction BuildButton { get; private set; }
         public ButtonAction DevelopmentCardButton { get; private set; }
         public ButtonAction EndTurnButton { get; private set; }
+        public ButtonAction AiAutoModeButton { get; private set; }
+        public ButtonAction AiManualModeButton { get; private set; }
 
         public BoardBackground Background { get; private set; }
         public DiceRoll LastDiceRoll { get; set; }
@@ -58,6 +61,7 @@ namespace Catan.Source.Scenes
             _stateStack = new();
             Bank = new GameBank();
             DevelopmentCardDeck = new DevelopmentCardDeck();
+            AiTurnMode = AiTurnMode.Auto;
             AiStrategy = new RandomAiStrategy();
             Log = new GameLog();
             _players = [];
@@ -124,10 +128,14 @@ namespace Catan.Source.Scenes
             TradeButton = new ButtonAction(840, 620, Atlas, 75, 30, OnTradeButtonClicked, "Trocar");
             DevelopmentCardButton = new ButtonAction(1020, 620, Atlas, 75, 30, OnDevelopmentCardButtonClicked, "Usar");
             EndTurnButton = new ButtonAction(880, 660, Atlas, 175, 30, OnEndTurnButtonClicked, "Terminar turno");
+            AiAutoModeButton = new ButtonAction(10, 70, Atlas, 75, 24, () => SetAiTurnMode(AiTurnMode.Auto), "IA Auto");
+            AiManualModeButton = new ButtonAction(100, 70, Atlas, 90, 24, () => SetAiTurnMode(AiTurnMode.Manual), "IA Manual");
             Subscribe(BuildButton);
             Subscribe(TradeButton);
             Subscribe(DevelopmentCardButton);
             Subscribe(EndTurnButton);
+            Subscribe(AiAutoModeButton);
+            Subscribe(AiManualModeButton);
 
             UpdateActionButtons();
 
@@ -169,9 +177,16 @@ namespace Catan.Source.Scenes
             HasUsedDevelopmentCardThisTurn = false;
         }
 
+        public void SetAiTurnMode(AiTurnMode mode)
+        {
+            AiTurnMode = mode;
+            UpdateAiModeButtons();
+        }
+
         private void OnTradeButtonClicked()
         {
-            if (GetCurrentState() is PlayerTradeButtonCallback callback)
+            if (CanCurrentPlayerUseManualActionButtons() &&
+                GetCurrentState() is PlayerTradeButtonCallback callback)
             {
                 callback.OnPlayerTradeButtonClicked();
             }
@@ -179,7 +194,8 @@ namespace Catan.Source.Scenes
 
         private void OnBuildButtonClicked()
         {
-            if (GetCurrentState() is PlayerBuildButtonCallback callback)
+            if (CanCurrentPlayerUseManualActionButtons() &&
+                GetCurrentState() is PlayerBuildButtonCallback callback)
             {
                 callback.OnPlayerBuildButtonClicked();
             }
@@ -187,7 +203,8 @@ namespace Catan.Source.Scenes
 
         private void OnDevelopmentCardButtonClicked()
         {
-            if (GetCurrentState() is PlayerDevelopmentCardButtonCallback callback)
+            if (CanCurrentPlayerUseManualActionButtons() &&
+                GetCurrentState() is PlayerDevelopmentCardButtonCallback callback)
             {
                 callback.OnPlayerDevelopmentCardButtonClicked();
             }
@@ -204,10 +221,24 @@ namespace Catan.Source.Scenes
         private void UpdateActionButtons()
         {
             GameState currentState = GetCurrentState();
-            TradeButton?.SetEnabled(currentState is PlayerTradeButtonCallback);
-            BuildButton?.SetEnabled(currentState is PlayerBuildButtonCallback);
-            DevelopmentCardButton?.SetEnabled(currentState is PlayerDevelopmentCardButtonCallback);
+            bool canUseManualActionButtons = CanCurrentPlayerUseManualActionButtons();
+            TradeButton?.SetEnabled(canUseManualActionButtons && currentState is PlayerTradeButtonCallback);
+            BuildButton?.SetEnabled(canUseManualActionButtons && currentState is PlayerBuildButtonCallback);
+            DevelopmentCardButton?.SetEnabled(canUseManualActionButtons && currentState is PlayerDevelopmentCardButtonCallback);
             EndTurnButton?.SetEnabled(currentState is PlayerEndTurnButtonCallback);
+            UpdateAiModeButtons();
+        }
+
+        private bool CanCurrentPlayerUseManualActionButtons()
+        {
+            bool isAiPlayerActionsState = GetCurrentState() is PlayerActionsGameState { Player.IsAi: true };
+            return AiTurnInputPolicy.CanUseManualActionButtons(isAiPlayerActionsState);
+        }
+
+        private void UpdateAiModeButtons()
+        {
+            AiAutoModeButton?.SetEnabled(AiTurnMode != AiTurnMode.Auto);
+            AiManualModeButton?.SetEnabled(AiTurnMode != AiTurnMode.Manual);
         }
 
         public void ExitState()

@@ -16,6 +16,8 @@ namespace Catan.Source.Game.AI
         private const double TradeAcceptanceChance = 0.25;
         private const double BuildSettlementWhenPossibleChance = 0.90;
         private const double BuildRoadWhileWaitingForSettlementChance = 0.03;
+        private const double BuyDevelopmentCardChance = 0.35;
+        private const double UseKnightChance = 0.35;
         private readonly Random _random;
 
         public RandomAiStrategy(Random random = null)
@@ -209,6 +211,16 @@ namespace Catan.Source.Game.AI
             return _random.NextDouble() < chance;
         }
 
+        public bool ShouldBuyDevelopmentCard()
+        {
+            return _random.NextDouble() < BuyDevelopmentCardChance;
+        }
+
+        public bool ShouldUseKnight()
+        {
+            return _random.NextDouble() < UseKnightChance;
+        }
+
         public bool ShouldBuildRoadWhileWaitingForSettlement(int missingSettlementResourceCount)
         {
             if (missingSettlementResourceCount <= 1)
@@ -320,6 +332,58 @@ namespace Catan.Source.Game.AI
             }
 
             return WeightedRandomPicker.Pick(candidates, _random);
+        }
+
+        public IReadOnlyList<ResourceId> ChooseYearOfPlentyResources(
+            GamePlayer player,
+            IReadOnlyDictionary<ResourceId, int> settlementCost,
+            IReadOnlyDictionary<ResourceId, int> roadCost,
+            IReadOnlyDictionary<ResourceId, int> cityCost)
+        {
+            List<ResourceId> neededResources = GetPrioritizedMissingResources(
+                player,
+                settlementCost,
+                roadCost,
+                cityCost);
+
+            if (neededResources.Count >= 2)
+            {
+                return neededResources.Take(2).ToList();
+            }
+
+            if (neededResources.Count == 1)
+            {
+                return new List<ResourceId> { neededResources[0], neededResources[0] };
+            }
+
+            return ResourceUtils.ResourceIds
+                .OrderBy(resource => player.Inventory.Resources.GetAmount(resource))
+                .ThenBy(resource => (int)resource)
+                .Take(2)
+                .ToList();
+        }
+
+        public ResourceId ChooseMonopolyResource(
+            GamePlayer player,
+            IReadOnlyDictionary<ResourceId, int> settlementCost,
+            IReadOnlyDictionary<ResourceId, int> roadCost,
+            IReadOnlyDictionary<ResourceId, int> cityCost)
+        {
+            List<ResourceId> neededResources = GetPrioritizedMissingResources(
+                player,
+                settlementCost,
+                roadCost,
+                cityCost);
+
+            if (neededResources.Count > 0)
+            {
+                return neededResources[0];
+            }
+
+            return ResourceUtils.ResourceIds
+                .OrderBy(resource => player.Inventory.Resources.GetAmount(resource))
+                .ThenBy(resource => (int)resource)
+                .First();
         }
 
         public static IEnumerable<AiTradeNeed> GetTradeNeeds(
@@ -592,6 +656,33 @@ namespace Catan.Source.Game.AI
             return candidates.Count == 0
                 ? null
                 : WeightedRandomPicker.Pick(candidates, _random);
+        }
+
+        private static List<ResourceId> GetPrioritizedMissingResources(
+            GamePlayer player,
+            params IReadOnlyDictionary<ResourceId, int>[] costs)
+        {
+            foreach (IReadOnlyDictionary<ResourceId, int> cost in costs)
+            {
+                Dictionary<ResourceId, int> missingResources = GetMissingResources(player, cost);
+                if (missingResources.Count == 0)
+                {
+                    continue;
+                }
+
+                List<ResourceId> resources = new();
+                foreach (KeyValuePair<ResourceId, int> missingResource in missingResources)
+                {
+                    for (int i = 0; i < missingResource.Value; i++)
+                    {
+                        resources.Add(missingResource.Key);
+                    }
+                }
+
+                return resources;
+            }
+
+            return new List<ResourceId>();
         }
 
         private static int GetScore(ScoreManager scoreManager, GamePlayer player)
