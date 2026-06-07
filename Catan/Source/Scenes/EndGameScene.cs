@@ -65,7 +65,7 @@ namespace Catan.Source.Scenes
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.DrawString(_font, "Fim de Jogo", new Vector2(40, 60), Color.White);
-            spriteBatch.DrawString(_font, $"Vencedor: {_winner.PlayerNumber}", new Vector2(40, 100), Color.White);
+            spriteBatch.DrawString(_font, $"Vencedor: {_winner.DisplayName}", new Vector2(40, 100), Color.White);
             DrawButton(_backToMenuButton, "Voltar ao Menu", spriteBatch);
             DrawButton(_exitButton, "Sair", spriteBatch);
 

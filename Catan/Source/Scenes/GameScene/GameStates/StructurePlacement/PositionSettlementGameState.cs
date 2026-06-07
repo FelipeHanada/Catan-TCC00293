@@ -1,10 +1,12 @@
 using Catan.Source.Content;
 using Catan.Source.Game;
 using Catan.Source.Game.Board;
+using Catan.Source.Content;
 using Catan.Source.Game.Player;
 using Catan.Source.Game.Resources;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Catan.Source.Scenes.Game
 {
@@ -46,9 +48,22 @@ namespace Catan.Source.Scenes.Game
             return false;
         }
 
+        public bool TryPlaceBuilding(TileVertex vertex)
+        {
+            if (!CanPlaceBuilding(vertex))
+            {
+                return false;
+            }
+
+            vertex.PlaceBuilding(new Building(Player, BuildingType));
+            OnPlaceBuilding(vertex);
+            SoundManager.Instance.Play(SfxId.ConstrucaoCasa);
+            return true;
+        }
+
         public virtual void OnPlaceBuilding(TileVertex vertex)
         {
-            _gameScene.Log.Add($"Jogador {Player.PlayerNumber} construiu {GetBuildingLogName(BuildingType)}");
+            _gameScene.Log.Add($"{Player.DisplayName} construiu {GetBuildingLogName(BuildingType)}");
             _gameScene.ExitState();
         }
 
@@ -65,6 +80,9 @@ namespace Catan.Source.Scenes.Game
 
     public class SetupPositionSettlementGameState : PositionSettlementGameState
     {
+        private const double AiActionDelaySeconds = 0.35;
+        private double _aiElapsedSeconds;
+        private bool _aiActed;
         public bool Produce { get; } 
 
         public SetupPositionSettlementGameState(
@@ -75,6 +93,39 @@ namespace Catan.Source.Scenes.Game
         ) : base(gameScene, player, buildingType)
         {
             Produce = produce;
+            _aiElapsedSeconds = 0;
+            _aiActed = false;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            if (!Player.IsAi || _aiActed)
+            {
+                return;
+            }
+
+            _aiElapsedSeconds += gameTime.ElapsedGameTime.TotalSeconds;
+            if (_aiElapsedSeconds < AiActionDelaySeconds)
+            {
+                return;
+            }
+
+            _aiActed = true;
+
+            List<TileVertex> validVertices = _gameScene.Board.Graph.Vertices
+                .Where(CanPlaceBuilding)
+                .ToList();
+
+            if (validVertices.Count == 0)
+            {
+                _gameScene.ExitState();
+                return;
+            }
+
+            TileVertex chosenVertex = _gameScene.AiStrategy.ChooseSetupSettlement(_gameScene.Board, validVertices);
+            TryPlaceBuilding(chosenVertex);
         }
 
         public override void OnPlaceBuilding(TileVertex vertex)
@@ -122,14 +173,52 @@ namespace Catan.Source.Scenes.Game
 
     public class BuildPositionSettlementGameState : PositionSettlementGameState
     {
+        private const double AiActionDelaySeconds = 0.35;
+        private double _aiElapsedSeconds;
+        private bool _aiActed;
         public IReadOnlyDictionary<ResourceId, int> BuildingCost { get; private set; }
 
         public BuildPositionSettlementGameState(GameScene gameScene, Player player, BuildingType buildingType, IReadOnlyDictionary<ResourceId, int> buildingCost = null)
             : base(gameScene, player, buildingType)
         {
             BuildingCost = buildingCost ?? new Dictionary<ResourceId, int>();
+            _aiElapsedSeconds = 0;
+            _aiActed = false;
 
             AddChild(new ButtonAction(10, 10, gameScene.Atlas, () => { gameScene.ExitState(); }, "Cancelar"));
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            if (!Player.IsAi || _aiActed)
+            {
+                return;
+            }
+
+            _aiElapsedSeconds += gameTime.ElapsedGameTime.TotalSeconds;
+            if (_aiElapsedSeconds < AiActionDelaySeconds)
+            {
+                return;
+            }
+
+            _aiActed = true;
+
+            List<TileVertex> validVertices = _gameScene.Board.Graph.Vertices
+                .Where(CanPlaceBuilding)
+                .ToList();
+
+            if (validVertices.Count == 0)
+            {
+                _gameScene.ExitState();
+                return;
+            }
+
+            TileVertex chosenVertex = BuildingType == BuildingType.City
+                ? _gameScene.AiStrategy.ChooseCity(_gameScene.Board, validVertices)
+                : _gameScene.AiStrategy.ChooseSettlement(_gameScene.Board, validVertices);
+            TryPlaceBuilding(chosenVertex);
         }
 
         public override bool CanPlaceBuilding(TileVertex tileVertex)

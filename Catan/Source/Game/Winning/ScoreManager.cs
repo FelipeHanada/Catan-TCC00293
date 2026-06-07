@@ -42,12 +42,17 @@ namespace Catan.Source.Game.Player
                 int score = CalculateScore(player, hasLongestRoad == player, hasLargestArmy == player);
                 _playerScores[player] = score;
 
-                if (score >= ScoreToWin)
+                if (HasReachedTargetScore(score, _gameScene.TargetScore))
                 {
                     Game1.ChangeScene(new EndGameScene(player));
                 }
             }
         }
+        public static bool HasReachedTargetScore(int score, int targetScore)
+        {
+            return score >= targetScore;
+        }
+
         private int CalculateScore(Player player, bool hasLongestRoad, bool hasLargestArmy)
         {
             int score = 0;
@@ -132,7 +137,7 @@ namespace Catan.Source.Game.Player
                 {
                     HashSet<TileVertex> visited = [startNode];
                     int pathLength = DFS(startNode, visited);
-                    
+
                     if (pathLength > maxLength)
                     {
                         maxLength = pathLength;

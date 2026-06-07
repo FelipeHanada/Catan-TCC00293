@@ -148,7 +148,7 @@ namespace Catan.Source.Scenes
             if (_confirmButton.Contains(mousePosition))
             {
                 _createdSettings ??= BuildMatchSettings();
-                Game1.ChangeScene(new GameScene());
+                Game1.ChangeScene(new GameScene(_createdSettings));
             }
 
         }

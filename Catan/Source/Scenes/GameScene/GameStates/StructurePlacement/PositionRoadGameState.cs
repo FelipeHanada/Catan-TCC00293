@@ -1,9 +1,12 @@
 using Catan.Source.Game;
+using Catan.Source.Game.AI;
 using Catan.Source.Game.Board;
+using Catan.Source.Content;
 using Catan.Source.Game.Player;
 using Catan.Source.Game.Resources;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Catan.Source.Scenes.Game
 {
@@ -39,20 +42,69 @@ namespace Catan.Source.Scenes.Game
             return false;
         }
 
+        public bool TryPlaceRoad(TileEdge edge)
+        {
+            if (!CanPlaceRoad(edge))
+            {
+                return false;
+            }
+
+            edge.PlaceRoad(Player);
+            OnPlaceRoad(edge);
+            SoundManager.Instance.Play(SfxId.ConstrucaoEstrada);
+            return true;
+        }
+
         public virtual void OnPlaceRoad(TileEdge edge)
         {
-            _gameScene.Log.Add($"Jogador {Player.PlayerNumber} construiu estrada");
+            _gameScene.Log.Add($"{Player.DisplayName} construiu estrada");
             _gameScene.ExitState();
         }
     }
 
     public class SetupPositionRoadGameState : PositionRoadGameState
     {
+        private const double AiActionDelaySeconds = 0.35;
+        private double _aiElapsedSeconds;
+        private bool _aiActed;
         public TileVertex Vertex { get; private set; }
         public SetupPositionRoadGameState(GameScene gameScene, Player player, TileVertex vertex)
             : base(gameScene, player)
         {
             Vertex = vertex;
+            _aiElapsedSeconds = 0;
+            _aiActed = false;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            if (!Player.IsAi || _aiActed)
+            {
+                return;
+            }
+
+            _aiElapsedSeconds += gameTime.ElapsedGameTime.TotalSeconds;
+            if (_aiElapsedSeconds < AiActionDelaySeconds)
+            {
+                return;
+            }
+
+            _aiActed = true;
+
+            List<TileEdge> validEdges = _gameScene.Board.Graph.Edges
+                .Where(CanPlaceRoad)
+                .ToList();
+
+            if (validEdges.Count == 0)
+            {
+                _gameScene.ExitState();
+                return;
+            }
+
+            TileEdge chosenEdge = _gameScene.AiStrategy.ChooseRoad(validEdges);
+            TryPlaceRoad(chosenEdge);
         }
 
         public override bool CanPlaceRoad(TileEdge edge)
@@ -68,14 +120,59 @@ namespace Catan.Source.Scenes.Game
 
     public class BuildPositionRoadGameState : PositionRoadGameState
     {
+        private const double AiActionDelaySeconds = 0.35;
+        private double _aiElapsedSeconds;
+        private bool _aiActed;
         public IReadOnlyDictionary<ResourceId, int> RoadCost { get; private set; }
 
         public BuildPositionRoadGameState(GameScene gameScene, Player player, IReadOnlyDictionary<ResourceId, int> roadCost = null)
             : base(gameScene, player)
         {
             RoadCost = roadCost ?? new Dictionary<ResourceId, int>();
+            _aiElapsedSeconds = 0;
+            _aiActed = false;
 
             AddChild(new ButtonAction(10, 10, gameScene.Atlas, () => { gameScene.ExitState(); }, "Cancelar"));
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            if (!Player.IsAi || _aiActed)
+            {
+                return;
+            }
+
+            _aiElapsedSeconds += gameTime.ElapsedGameTime.TotalSeconds;
+            if (_aiElapsedSeconds < AiActionDelaySeconds)
+            {
+                return;
+            }
+
+            _aiActed = true;
+
+            List<TileEdge> validEdges = _gameScene.Board.Graph.Edges
+                .Where(CanPlaceRoad)
+                .ToList();
+            List<TileEdge> usefulEdges = RandomAiStrategy
+                .GetUsefulRoadCandidates(_gameScene.Board, _gameScene.Board.Graph, validEdges)
+                .ToList();
+
+            if (usefulEdges.Count == 0)
+            {
+                _gameScene.ExitState();
+                return;
+            }
+
+            TileEdge chosenEdge = _gameScene.AiStrategy.ChooseRoad(_gameScene.Board, _gameScene.Board.Graph, Player, usefulEdges);
+            if (chosenEdge == null)
+            {
+                _gameScene.ExitState();
+                return;
+            }
+
+            TryPlaceRoad(chosenEdge);
         }
 
         public override bool CanPlaceRoad(TileEdge edge)

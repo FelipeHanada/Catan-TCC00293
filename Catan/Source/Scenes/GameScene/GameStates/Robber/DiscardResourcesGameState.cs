@@ -28,9 +28,8 @@ namespace Catan.Source.Scenes.Game
                     continue;
                 }
 
-                int amountToDiscard = _sevenRule.GetDiscardAmount(player);
                 // Futuramente, o jogador deve escolher quais cartas descartar.
-                Dictionary<ResourceId, int> discardedResources = player.Inventory.DiscardResources(amountToDiscard);
+                Dictionary<ResourceId, int> discardedResources = _sevenRule.DiscardResourcesToBank(player, _gameScene.Bank);
 
                 #if DEBUG
                 foreach (KeyValuePair<ResourceId, int> discardedResource in discardedResources)

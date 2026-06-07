@@ -33,7 +33,7 @@ namespace Catan.Source.Scenes.Game
                     break;
                 case SevenRuleStep.MoveRobber:
                     _currentStep = SevenRuleStep.StealResource;
-                    _gameScene.AppendState(new MoveRobberGameState(_gameScene));
+                    _gameScene.AppendState(new MoveRobberGameState(_gameScene, Player));
                     break;
                 case SevenRuleStep.StealResource:
                     _currentStep = SevenRuleStep.Done;

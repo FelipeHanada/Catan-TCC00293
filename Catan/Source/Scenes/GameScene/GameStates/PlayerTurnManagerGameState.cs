@@ -19,7 +19,7 @@ namespace Catan.Source.Scenes.Game
         public override void Update(GameTime gameTime)
         {
             Player currentPlayer = Players[CurrentPlayerIndex];
-            _gameScene.Log.Add($"Turno do Jogador {currentPlayer.PlayerNumber}");
+            _gameScene.Log.Add($"Turno de {currentPlayer.DisplayName}");
             _gameScene.AppendState(new PlayerActionsGameState(_gameScene, currentPlayer));
             _gameScene.AppendState(new ResourceProductionGameState(_gameScene, currentPlayer));
             if (++CurrentPlayerIndex >= Players.Count) CurrentPlayerIndex = 0;

@@ -17,7 +17,7 @@ namespace Catan.Source.Scenes.Game
     private readonly Dictionary<ButtonAction, DevelopmentCardType> _cardButtons;
     private readonly DevelopmentCardPreview _preview;
 
-    UISlate BuildUISlate(GameScene gameScene, Player player)
+    UISlate BuildUISlate(GameScene gameScene, Player player, bool isReadOnly)
     {
         Atlas atlas = gameScene.Atlas;
         int posX = 760;
@@ -48,10 +48,10 @@ namespace Catan.Source.Scenes.Game
                 atlas,
                 300,
                 30,
-                isPassive ? () => { } : () => ActivateDevelopmentCard(gameScene, player, type),
+                isPassive || isReadOnly ? () => { } : () => ActivateDevelopmentCard(gameScene, player, type),
                 label);
 
-            button.SetEnabled(!isPassive && DevelopmentCardActivationRules.CanActivate(
+            button.SetEnabled(!isReadOnly && !isPassive && DevelopmentCardActivationRules.CanActivate(
                     type,
                     player.Inventory.DevelopmentCards,
                     gameScene.HasUsedDevelopmentCardThisTurn));
@@ -77,21 +77,21 @@ namespace Catan.Source.Scenes.Game
 
         if (type == DevelopmentCardType.Invention)
         {
-            gameScene.Log.Add($"Jogador {player.PlayerNumber} usou Invention");
+            gameScene.Log.Add($"{player.DisplayName} usou Invention");
             gameScene.AppendState(new InventionSelectionGameState(gameScene, player));
             return;
         }
 
         if (type == DevelopmentCardType.Monopoly)
         {
-            gameScene.Log.Add($"Jogador {player.PlayerNumber} usou Monopoly");
+            gameScene.Log.Add($"{player.DisplayName} usou Monopoly");
             gameScene.AppendState(new MonopolySelectionGameState(gameScene, player));
             return;
         }
 
         if (type == DevelopmentCardType.Knight)
         {
-            gameScene.Log.Add($"Jogador {player.PlayerNumber} usou Knight");
+            gameScene.Log.Add($"{player.DisplayName} usou Knight");
             gameScene.AppendState(new KnightGameState(gameScene, player));
             return;
         }
@@ -113,10 +113,10 @@ namespace Catan.Source.Scenes.Game
     }
 
     public UISlate UISlate { get; private set; }
-    public DevelopmentCardState(GameScene gameScene, Player player) : base(gameScene, player)
+    public DevelopmentCardState(GameScene gameScene, Player player, bool isReadOnly = false) : base(gameScene, player)
     {
         _cardButtons = new Dictionary<ButtonAction, DevelopmentCardType>();
-        UISlate = BuildUISlate(gameScene, player);
+        UISlate = BuildUISlate(gameScene, player, isReadOnly);
         _preview = new DevelopmentCardPreview(613, 390, gameScene.Atlas);
         AddChild(UISlate);
         AddChild(_preview);

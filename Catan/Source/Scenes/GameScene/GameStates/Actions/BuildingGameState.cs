@@ -37,6 +37,9 @@ namespace Catan.Source.Scenes.Game
 
         private ButtonAction _settlementButton, _cityButton, _roadButton, _developmentCardButton;
         private DevelopmentCardPurchaseService _purchaseService;
+        public static IReadOnlyDictionary<ResourceId, int> SettlementCost => _settlementCost;
+        public static IReadOnlyDictionary<ResourceId, int> CityCost => _cityCost;
+        public static IReadOnlyDictionary<ResourceId, int> RoadCost => _roadCost;
 
         public UISlate UISlate { get; private set; }
         public BuildingGameState(GameScene gameScene, Player player) : base(gameScene, player)
@@ -97,7 +100,7 @@ namespace Catan.Source.Scenes.Game
             if (result.Success)
             {
                 Console.WriteLine($"Carta comprada: {result.Card.Type}");
-                _gameScene.Log.Add($"Jogador {Player.PlayerNumber} comprou {GetDevelopmentCardLogName(result.Card.Type)}");
+                _gameScene.Log.Add($"{Player.DisplayName} comprou {GetDevelopmentCardLogName(result.Card.Type)}");
                 _gameScene.ExitState();
                 _gameScene.AppendState(new BuildingGameState(_gameScene, Player));
             }

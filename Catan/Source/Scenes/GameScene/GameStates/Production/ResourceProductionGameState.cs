@@ -27,7 +27,7 @@ namespace Catan.Source.Scenes.Game
 
             if (!_rolled) {
                 _rolled = true;
-                _gameScene.AppendState(new WaitingForDiceRollGameState(_gameScene, _gameScene.DiceRollControl));
+                _gameScene.AppendState(new WaitingForDiceRollGameState(_gameScene, _gameScene.DiceRollControl, Player));
                 return;
             }
 
@@ -64,7 +64,7 @@ namespace Catan.Source.Scenes.Game
                 SoundManager.Instance.Play(sound);
 
                 Player recipient = playersByInventory[delivery.RecipientInventory];
-                _gameScene.Log.Add($"J{recipient.PlayerNumber} ganhou {delivery.Amount} {GetResourceLogName(delivery.Resource)}");
+                _gameScene.Log.Add($"{recipient.DisplayName} ganhou {delivery.Amount} {GetResourceLogName(delivery.Resource)}");
             }
         }
 

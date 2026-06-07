@@ -22,6 +22,7 @@ namespace Catan.Source.Game
             [ResourceId.Ore] = 0,
             [ResourceId.Wheat] = 0,
         };
+        private readonly List<ButtonAction> _selectionButtons = new();
         private SpriteFont _font;
         private Atlas _atlas;
         public ResourceDisplay(float x, float y, Atlas atlas) : base(x, y)
@@ -41,6 +42,8 @@ namespace Catan.Source.Game
                 ButtonAction decrementButton = new ButtonAction(buttonX, this.Y+90, atlas, decrementAction, "-");
                 decrementButton.SetFontScale(0.08f);
 
+                _selectionButtons.Add(incrementButton);
+                _selectionButtons.Add(decrementButton);
                 AddChild(incrementButton);
                 AddChild(decrementButton);
             }
@@ -69,6 +72,27 @@ namespace Catan.Source.Game
             }
 
             return selectedResources;
+        }
+
+        public void SetSelectedResources(IReadOnlyDictionary<ResourceId, int> resources)
+        {
+            Clear();
+
+            foreach (KeyValuePair<ResourceId, int> resource in resources)
+            {
+                if (_resourceCounts.ContainsKey(resource.Key))
+                {
+                    _resourceCounts[resource.Key] = Math.Max(0, resource.Value);
+                }
+            }
+        }
+
+        public void SetSelectionEnabled(bool isEnabled)
+        {
+            foreach (ButtonAction button in _selectionButtons)
+            {
+                button.SetEnabled(isEnabled);
+            }
         }
 
         public void Clear()
