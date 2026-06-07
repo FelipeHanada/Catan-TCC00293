@@ -1,3 +1,4 @@
+using Catan.Source.Content;
 using Catan.Source.Game;
 using Catan.Source.Game.Board;
 using Catan.Source.Game.Player;
@@ -99,6 +100,9 @@ namespace Catan.Source.Scenes.Game
                 }
 
                 _gameScene.Bank.Give(Player.Inventory.Resources, resource, 1);
+
+                SfxId sound = SoundManager.GetResourceProductionSound(resource);
+                SoundManager.Instance.Play(sound);
             }
         }
 
