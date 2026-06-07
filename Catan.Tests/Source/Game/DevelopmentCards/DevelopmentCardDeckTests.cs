@@ -26,7 +26,7 @@ namespace Catan.Tests.Source.Game.DevelopmentCards
             Assert.Equal(14, counts[DevelopmentCardType.Knight]);
             Assert.Equal(5, counts[DevelopmentCardType.VictoryPoint]);
             Assert.Equal(2, counts[DevelopmentCardType.RoadBuilding]);
-            Assert.Equal(2, counts[DevelopmentCardType.YearOfPlenty]);
+            Assert.Equal(2, counts[DevelopmentCardType.Invention]);
             Assert.Equal(2, counts[DevelopmentCardType.Monopoly]);
         }
 
@@ -60,7 +60,7 @@ namespace Catan.Tests.Source.Game.DevelopmentCards
                 [DevelopmentCardType.Knight] = 0,
                 [DevelopmentCardType.VictoryPoint] = 0,
                 [DevelopmentCardType.RoadBuilding] = 0,
-                [DevelopmentCardType.YearOfPlenty] = 0,
+                [DevelopmentCardType.Invention] = 0,
                 [DevelopmentCardType.Monopoly] = 0,
             };
 

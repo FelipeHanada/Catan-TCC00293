@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Catan.Source.Content;
 using Catan.Source.Game;
@@ -35,6 +36,7 @@ namespace Catan.Source.Scenes
         public GameLog Log { get; private set; }
         public bool HasUsedDevelopmentCardThisTurn { get; private set; }
         public Board Board { get; private set; }
+        public HarborHoverPreview HarborHoverPreview { get; private set; }
         public ScoreManager ScoreManager { get; private set; }
 
         public ButtonAction TradeButton { get; private set; }
@@ -81,6 +83,7 @@ namespace Catan.Source.Scenes
             Board = factory.CreateBoard(this);
 
             Background = new BoardBackground(Board.Tiles[0].X, Board.Tiles[0].Y, Atlas);
+            HarborHoverPreview = new HarborHoverPreview(Board, Atlas);
             Subscribe(Background);
             Subscribe(Board);
 
@@ -92,7 +95,7 @@ namespace Catan.Source.Scenes
 
             BuildButton = new ButtonAction(930, 620, Atlas, 75, 30, OnBuildButtonClicked, "Construir");
             TradeButton = new ButtonAction(840, 620, Atlas, 75, 30, OnTradeButtonClicked, "Trocar");
-            DevelopmentCardButton = new ButtonAction(1020, 620, Atlas, 75, 30, OnDevelopmentCardButtonClicked, "Usar");
+            DevelopmentCardButton = new ButtonAction(1020, 620, Atlas, 75, 30, OnDevelopmentCardButtonClicked, "Cartas");
             EndTurnButton = new ButtonAction(880, 660, Atlas, 175, 30, OnEndTurnButtonClicked, "Terminar turno");
             Subscribe(BuildButton);
             Subscribe(TradeButton);
@@ -122,7 +125,15 @@ namespace Catan.Source.Scenes
 
             currentState.Update(gameTime);
             UpdateActionButtons();
+            HarborHoverPreview.Update(gameTime);
         }
+
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            base.Draw(gameTime, spriteBatch);
+            HarborHoverPreview.Draw(gameTime, spriteBatch);
+        }
+
         public GameState GetCurrentState() => _stateStack.Count > 0 ? _stateStack.Peek() : null;
         public Player GetPlayer(int playerNumber)
         {

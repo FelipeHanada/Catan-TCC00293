@@ -109,7 +109,7 @@ namespace Catan.Source.Scenes.Game
             {
                 Catan.Source.Game.Inventory.DevelopmentCardType.Knight => "Knight",
                 Catan.Source.Game.Inventory.DevelopmentCardType.RoadBuilding => "Road building",
-                Catan.Source.Game.Inventory.DevelopmentCardType.YearOfPlenty => "Year of plenty",
+                Catan.Source.Game.Inventory.DevelopmentCardType.Invention => "Invention",
                 Catan.Source.Game.Inventory.DevelopmentCardType.Monopoly => "Monopoly",
                 Catan.Source.Game.Inventory.DevelopmentCardType.VictoryPoint => "Victory point",
                 _ => type.ToString(),

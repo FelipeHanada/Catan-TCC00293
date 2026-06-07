@@ -7,7 +7,7 @@ namespace Catan.Source.Game.Inventory
         Knight,
         VictoryPoint,
         RoadBuilding,
-        YearOfPlenty,
+        Invention,
         Monopoly,
     }
 
