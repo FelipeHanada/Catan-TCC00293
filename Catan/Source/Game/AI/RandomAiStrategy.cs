@@ -334,7 +334,7 @@ namespace Catan.Source.Game.AI
             return WeightedRandomPicker.Pick(candidates, _random);
         }
 
-        public IReadOnlyList<ResourceId> ChooseYearOfPlentyResources(
+        public IReadOnlyList<ResourceId> ChooseInventionResources(
             GamePlayer player,
             IReadOnlyDictionary<ResourceId, int> settlementCost,
             IReadOnlyDictionary<ResourceId, int> roadCost,

@@ -1,23 +1,23 @@
 using System.Collections.Generic;
-using Catan.Source.Game.Bank;
 using Catan.Source.Game.DevelopmentCards;
 using Catan.Source.Game.Inventory;
 using Catan.Source.Game.Player;
 using Catan.Source.Game.Resources;
 using Xunit;
+using BankModel = Catan.Source.Game.Bank.Bank;
 
 namespace Catan.Tests.Source.Game.DevelopmentCards
 {
     public class DevelopmentCardActivationServiceTests
     {
         [Fact]
-        public void UseYearOfPlenty_WithDifferentAvailableResources_TransfersResourcesAndConsumesCard()
+        public void UseInvention_WithDifferentAvailableResources_TransfersResourcesAndConsumesCard()
         {
-            Bank bank = new();
-            Player player = PlayerWithCard(DevelopmentCardType.YearOfPlenty);
+            BankModel bank = new();
+            Player player = PlayerWithCard(DevelopmentCardType.Invention);
             DevelopmentCardActivationService service = new();
 
-            DevelopmentCardActivationResult result = service.UseYearOfPlenty(
+            DevelopmentCardActivationResult result = service.UseInvention(
                 player,
                 bank,
                 hasUsedDevelopmentCardThisTurn: false,
@@ -27,19 +27,19 @@ namespace Catan.Tests.Source.Game.DevelopmentCards
             Assert.True(result.Success, result.Message);
             Assert.Equal(1, player.Inventory.Resources.GetAmount(ResourceId.Wood));
             Assert.Equal(1, player.Inventory.Resources.GetAmount(ResourceId.Ore));
-            Assert.Equal(Bank.DefaultCardsPerResource - 1, bank.GetAmount(ResourceId.Wood));
-            Assert.Equal(Bank.DefaultCardsPerResource - 1, bank.GetAmount(ResourceId.Ore));
-            Assert.Equal(0, player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.YearOfPlenty));
+            Assert.Equal(BankModel.DefaultCardsPerResource - 1, bank.GetAmount(ResourceId.Wood));
+            Assert.Equal(BankModel.DefaultCardsPerResource - 1, bank.GetAmount(ResourceId.Ore));
+            Assert.Equal(0, player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Invention));
         }
 
         [Fact]
-        public void UseYearOfPlenty_WithSameAvailableResource_TransfersTwoResourcesAndConsumesCard()
+        public void UseInvention_WithSameAvailableResource_TransfersTwoResourcesAndConsumesCard()
         {
-            Bank bank = new();
-            Player player = PlayerWithCard(DevelopmentCardType.YearOfPlenty);
+            BankModel bank = new();
+            Player player = PlayerWithCard(DevelopmentCardType.Invention);
             DevelopmentCardActivationService service = new();
 
-            DevelopmentCardActivationResult result = service.UseYearOfPlenty(
+            DevelopmentCardActivationResult result = service.UseInvention(
                 player,
                 bank,
                 hasUsedDevelopmentCardThisTurn: false,
@@ -48,19 +48,19 @@ namespace Catan.Tests.Source.Game.DevelopmentCards
 
             Assert.True(result.Success, result.Message);
             Assert.Equal(2, player.Inventory.Resources.GetAmount(ResourceId.Ore));
-            Assert.Equal(Bank.DefaultCardsPerResource - 2, bank.GetAmount(ResourceId.Ore));
-            Assert.Equal(0, player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.YearOfPlenty));
+            Assert.Equal(BankModel.DefaultCardsPerResource - 2, bank.GetAmount(ResourceId.Ore));
+            Assert.Equal(0, player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Invention));
         }
 
         [Fact]
-        public void UseYearOfPlenty_WithInsufficientBankResources_FailsWithoutChangingState()
+        public void UseInvention_WithInsufficientBankResources_FailsWithoutChangingState()
         {
-            Bank bank = new();
-            bank.Resources.Remove(ResourceId.Ore, Bank.DefaultCardsPerResource);
-            Player player = PlayerWithCard(DevelopmentCardType.YearOfPlenty);
+            BankModel bank = new();
+            bank.Resources.Remove(ResourceId.Ore, BankModel.DefaultCardsPerResource);
+            Player player = PlayerWithCard(DevelopmentCardType.Invention);
             DevelopmentCardActivationService service = new();
 
-            DevelopmentCardActivationResult result = service.UseYearOfPlenty(
+            DevelopmentCardActivationResult result = service.UseInvention(
                 player,
                 bank,
                 hasUsedDevelopmentCardThisTurn: false,
@@ -70,18 +70,18 @@ namespace Catan.Tests.Source.Game.DevelopmentCards
             Assert.False(result.Success);
             Assert.Equal(0, player.Inventory.Resources.GetAmount(ResourceId.Ore));
             Assert.Equal(0, bank.GetAmount(ResourceId.Ore));
-            Assert.Equal(1, player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.YearOfPlenty));
+            Assert.Equal(1, player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Invention));
         }
 
         [Fact]
-        public void UseYearOfPlenty_WithDifferentResourcesAndOneMissing_FailsWithoutChangingState()
+        public void UseInvention_WithDifferentResourcesAndOneMissing_FailsWithoutChangingState()
         {
-            Bank bank = new();
-            bank.Resources.Remove(ResourceId.Ore, Bank.DefaultCardsPerResource);
-            Player player = PlayerWithCard(DevelopmentCardType.YearOfPlenty);
+            BankModel bank = new();
+            bank.Resources.Remove(ResourceId.Ore, BankModel.DefaultCardsPerResource);
+            Player player = PlayerWithCard(DevelopmentCardType.Invention);
             DevelopmentCardActivationService service = new();
 
-            DevelopmentCardActivationResult result = service.UseYearOfPlenty(
+            DevelopmentCardActivationResult result = service.UseInvention(
                 player,
                 bank,
                 hasUsedDevelopmentCardThisTurn: false,
@@ -91,19 +91,19 @@ namespace Catan.Tests.Source.Game.DevelopmentCards
             Assert.False(result.Success);
             Assert.Equal(0, player.Inventory.Resources.GetAmount(ResourceId.Wood));
             Assert.Equal(0, player.Inventory.Resources.GetAmount(ResourceId.Ore));
-            Assert.Equal(Bank.DefaultCardsPerResource, bank.GetAmount(ResourceId.Wood));
+            Assert.Equal(BankModel.DefaultCardsPerResource, bank.GetAmount(ResourceId.Wood));
             Assert.Equal(0, bank.GetAmount(ResourceId.Ore));
-            Assert.Equal(1, player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.YearOfPlenty));
+            Assert.Equal(1, player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Invention));
         }
 
         [Fact]
-        public void UseYearOfPlenty_WithoutPlayableCard_FailsWithoutChangingState()
+        public void UseInvention_WithoutPlayableCard_FailsWithoutChangingState()
         {
-            Bank bank = new();
+            BankModel bank = new();
             Player player = new(0);
             DevelopmentCardActivationService service = new();
 
-            DevelopmentCardActivationResult result = service.UseYearOfPlenty(
+            DevelopmentCardActivationResult result = service.UseInvention(
                 player,
                 bank,
                 hasUsedDevelopmentCardThisTurn: false,
@@ -113,8 +113,8 @@ namespace Catan.Tests.Source.Game.DevelopmentCards
             Assert.False(result.Success);
             Assert.Equal(0, player.Inventory.Resources.GetAmount(ResourceId.Wood));
             Assert.Equal(0, player.Inventory.Resources.GetAmount(ResourceId.Ore));
-            Assert.Equal(Bank.DefaultCardsPerResource, bank.GetAmount(ResourceId.Wood));
-            Assert.Equal(Bank.DefaultCardsPerResource, bank.GetAmount(ResourceId.Ore));
+            Assert.Equal(BankModel.DefaultCardsPerResource, bank.GetAmount(ResourceId.Wood));
+            Assert.Equal(BankModel.DefaultCardsPerResource, bank.GetAmount(ResourceId.Ore));
         }
 
         [Fact]
@@ -203,14 +203,14 @@ namespace Catan.Tests.Source.Game.DevelopmentCards
         }
 
         [Fact]
-        public void UseYearOfPlenty_WhenCardAlreadyUsedThisTurn_FailsWithoutChangingState()
+        public void UseInvention_WhenCardAlreadyUsedThisTurn_FailsWithoutChangingState()
         {
-            Bank bank = new();
-            Player player = PlayerWithCard(DevelopmentCardType.YearOfPlenty);
+            BankModel bank = new();
+            Player player = PlayerWithCard(DevelopmentCardType.Invention);
             player.Inventory.DevelopmentCards.Add(new DevelopmentCard(DevelopmentCardType.Monopoly));
             DevelopmentCardActivationService service = new();
 
-            DevelopmentCardActivationResult result = service.UseYearOfPlenty(
+            DevelopmentCardActivationResult result = service.UseInvention(
                 player,
                 bank,
                 hasUsedDevelopmentCardThisTurn: true,
@@ -220,7 +220,7 @@ namespace Catan.Tests.Source.Game.DevelopmentCards
             Assert.False(result.Success);
             Assert.Equal(0, player.Inventory.Resources.GetAmount(ResourceId.Wood));
             Assert.Equal(0, player.Inventory.Resources.GetAmount(ResourceId.Ore));
-            Assert.Equal(1, player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.YearOfPlenty));
+            Assert.Equal(1, player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Invention));
             Assert.Equal(1, player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Monopoly));
         }
 

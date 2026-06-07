@@ -9,7 +9,7 @@ namespace Catan.Source.Game.DevelopmentCards
         {
             DevelopmentCardType.Knight,
             DevelopmentCardType.RoadBuilding,
-            DevelopmentCardType.YearOfPlenty,
+            DevelopmentCardType.Invention,
             DevelopmentCardType.Monopoly,
         };
 

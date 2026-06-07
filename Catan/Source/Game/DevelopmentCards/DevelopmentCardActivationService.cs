@@ -9,7 +9,7 @@ namespace Catan.Source.Game.DevelopmentCards
 {
     public class DevelopmentCardActivationService
     {
-        public DevelopmentCardActivationResult UseYearOfPlenty(
+        public DevelopmentCardActivationResult UseInvention(
             GamePlayer player,
             GameBank bank,
             bool hasUsedDevelopmentCardThisTurn,
@@ -26,7 +26,7 @@ namespace Catan.Source.Game.DevelopmentCards
                 throw new ArgumentNullException(nameof(bank));
             }
 
-            DevelopmentCardActivationResult validation = CanUseYearOfPlenty(
+            DevelopmentCardActivationResult validation = CanUseInvention(
                 player,
                 bank,
                 hasUsedDevelopmentCardThisTurn,
@@ -38,14 +38,14 @@ namespace Catan.Source.Game.DevelopmentCards
                 return validation;
             }
 
-            player.Inventory.DevelopmentCards.Remove(new DevelopmentCard(DevelopmentCardType.YearOfPlenty));
+            player.Inventory.DevelopmentCards.Remove(new DevelopmentCard(DevelopmentCardType.Invention));
             bank.Give(player.Inventory.Resources, firstResource, 1);
             bank.Give(player.Inventory.Resources, secondResource, 1);
 
             return DevelopmentCardActivationResult.Ok("Invenção executada.");
         }
 
-        public DevelopmentCardActivationResult CanUseYearOfPlenty(
+        public DevelopmentCardActivationResult CanUseInvention(
             GamePlayer player,
             GameBank bank,
             bool hasUsedDevelopmentCardThisTurn,
@@ -67,7 +67,7 @@ namespace Catan.Source.Game.DevelopmentCards
                 return DevelopmentCardActivationResult.Fail("Já usou uma carta de desenvolvimento neste turno.");
             }
 
-            if (player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.YearOfPlenty) <= 0)
+            if (player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Invention) <= 0)
             {
                 return DevelopmentCardActivationResult.Fail("Jogador não possui Invenção jogável.");
             }

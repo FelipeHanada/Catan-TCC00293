@@ -508,14 +508,14 @@ namespace Catan.Tests.Source.Game.AI
         }
 
         [Fact]
-        public void ChooseYearOfPlentyResources_WhenMissingTwoForSettlement_ReturnsNeededResources()
+        public void ChooseInventionResources_WhenMissingTwoForSettlement_ReturnsNeededResources()
         {
             Player player = new(0);
             player.Inventory.Resources.Add(ResourceId.Wood, 1);
             player.Inventory.Resources.Add(ResourceId.Wool, 1);
             RandomAiStrategy strategy = new(new FixedRandom(0));
 
-            IReadOnlyList<ResourceId> resources = strategy.ChooseYearOfPlentyResources(
+            IReadOnlyList<ResourceId> resources = strategy.ChooseInventionResources(
                 player,
                 SettlementCost(),
                 RoadCost(),

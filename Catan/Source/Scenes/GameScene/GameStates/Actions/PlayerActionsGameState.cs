@@ -140,19 +140,19 @@ namespace Catan.Source.Scenes.Game
                 return false;
             }
 
-            return TryExecuteAiYearOfPlenty()
+            return TryExecuteAiInvention()
                 || TryExecuteAiMonopoly()
                 || TryStartAiKnight();
         }
 
-        private bool TryExecuteAiYearOfPlenty()
+        private bool TryExecuteAiInvention()
         {
-            if (Player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.YearOfPlenty) <= 0)
+            if (Player.Inventory.DevelopmentCards.CountPlayableByType(DevelopmentCardType.Invention) <= 0)
             {
                 return false;
             }
 
-            IReadOnlyList<ResourceId> resources = _gameScene.AiStrategy.ChooseYearOfPlentyResources(
+            IReadOnlyList<ResourceId> resources = _gameScene.AiStrategy.ChooseInventionResources(
                 Player,
                 BuildingGameState.SettlementCost,
                 BuildingGameState.RoadCost,
@@ -164,7 +164,7 @@ namespace Catan.Source.Scenes.Game
             }
 
             DevelopmentCardActivationService service = new();
-            DevelopmentCardActivationResult result = service.UseYearOfPlenty(
+            DevelopmentCardActivationResult result = service.UseInvention(
                 Player,
                 _gameScene.Bank,
                 _gameScene.HasUsedDevelopmentCardThisTurn,
@@ -177,7 +177,7 @@ namespace Catan.Source.Scenes.Game
             }
 
             _gameScene.MarkDevelopmentCardUsed();
-            _gameScene.Log.Add($"{Player.DisplayName} usou Year of plenty");
+            _gameScene.Log.Add($"{Player.DisplayName} usou Invention");
             return true;
         }
 
@@ -487,7 +487,7 @@ namespace Catan.Source.Scenes.Game
             {
                 DevelopmentCardType.Knight => "Knight",
                 DevelopmentCardType.RoadBuilding => "Road building",
-                DevelopmentCardType.YearOfPlenty => "Year of plenty",
+                DevelopmentCardType.Invention => "Invention",
                 DevelopmentCardType.Monopoly => "Monopoly",
                 DevelopmentCardType.VictoryPoint => "Victory point",
                 _ => type.ToString(),

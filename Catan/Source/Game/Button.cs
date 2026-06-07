@@ -30,6 +30,7 @@ namespace Catan.Source.Game
         private bool _enabled = true;
         private ICommand _buttonCommand;
         private MouseState _previousMouseState;
+        public bool IsHovered => _hovered;
 
         private int _cornerHeight = Atlas.GetRectangle(AtlasSpriteId.ButtonBotLeft).Height,
                 _cornerWidth = Atlas.GetRectangle(AtlasSpriteId.ButtonBotLeft).Width;
