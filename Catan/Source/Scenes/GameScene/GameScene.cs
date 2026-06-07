@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Catan.Source.Content;
 using Catan.Source.Game;
@@ -8,6 +9,7 @@ using Catan.Source.Game.Board;
 using Catan.Source.Game.DevelopmentCards;
 using Catan.Source.Game.Dice;
 using Catan.Source.Game.Debug;
+using Catan.Source.Game.Logging;
 using Catan.Source.Game.Player;
 using Catan.Source.Scenes.Game;
 using GameBank = Catan.Source.Game.Bank.Bank;
@@ -31,8 +33,10 @@ namespace Catan.Source.Scenes
         public DiceRollControl DiceRollControl { get; private set; }
         public GameBank Bank { get; private set; }
         public DevelopmentCardDeck DevelopmentCardDeck { get; private set; }
+        public GameLog Log { get; private set; }
         public bool HasUsedDevelopmentCardThisTurn { get; private set; }
         public Board Board { get; private set; }
+        public HarborHoverPreview HarborHoverPreview { get; private set; }
         public ScoreManager ScoreManager { get; private set; }
 
         public ButtonAction TradeButton { get; private set; }
@@ -49,6 +53,7 @@ namespace Catan.Source.Scenes
             _stateStack = new();
             Bank = new GameBank();
             DevelopmentCardDeck = new DevelopmentCardDeck();
+            Log = new GameLog();
             _players = [];
             for (int i=0; i<4; i++)
             {
@@ -72,10 +77,13 @@ namespace Catan.Source.Scenes
 
             Atlas = new Atlas(Game1.ContentManager);
 
+            Subscribe(new GameLogPanel(1000, 345, Atlas, Log));
+
             StandardRandomBoardFactory factory = new(Atlas, 192, 64);
             Board = factory.CreateBoard(this);
 
             Background = new BoardBackground(Board.Tiles[0].X, Board.Tiles[0].Y, Atlas);
+            HarborHoverPreview = new HarborHoverPreview(Board, Atlas);
             Subscribe(Background);
             Subscribe(Board);
 
@@ -87,7 +95,7 @@ namespace Catan.Source.Scenes
 
             BuildButton = new ButtonAction(930, 620, Atlas, 75, 30, OnBuildButtonClicked, "Construir");
             TradeButton = new ButtonAction(840, 620, Atlas, 75, 30, OnTradeButtonClicked, "Trocar");
-            DevelopmentCardButton = new ButtonAction(1020, 620, Atlas, 75, 30, OnDevelopmentCardButtonClicked, "Usar");
+            DevelopmentCardButton = new ButtonAction(1020, 620, Atlas, 75, 30, OnDevelopmentCardButtonClicked, "Cartas");
             EndTurnButton = new ButtonAction(880, 660, Atlas, 175, 30, OnEndTurnButtonClicked, "Terminar turno");
             Subscribe(BuildButton);
             Subscribe(TradeButton);
@@ -111,11 +119,17 @@ namespace Catan.Source.Scenes
 
             GameState currentState = GetCurrentState();
 
-            Console.Out.WriteLine(currentState);
-
             currentState.Update(gameTime);
             UpdateActionButtons();
+            HarborHoverPreview.Update(gameTime);
         }
+
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            base.Draw(gameTime, spriteBatch);
+            HarborHoverPreview.Draw(gameTime, spriteBatch);
+        }
+
         public GameState GetCurrentState() => _stateStack.Count > 0 ? _stateStack.Peek() : null;
         public Player GetPlayer(int playerNumber)
         {

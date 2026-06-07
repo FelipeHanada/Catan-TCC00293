@@ -48,7 +48,18 @@ namespace Catan.Source.Scenes.Game
 
         public virtual void OnPlaceBuilding(TileVertex vertex)
         {
+            _gameScene.Log.Add($"Jogador {Player.PlayerNumber} construiu {GetBuildingLogName(BuildingType)}");
             _gameScene.ExitState();
+        }
+
+        private static string GetBuildingLogName(BuildingType buildingType)
+        {
+            return buildingType switch
+            {
+                BuildingType.Settlement => "aldeia",
+                BuildingType.City => "cidade",
+                _ => buildingType.ToString(),
+            };
         }
     }
 

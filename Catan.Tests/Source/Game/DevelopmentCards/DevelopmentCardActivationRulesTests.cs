@@ -64,7 +64,7 @@ namespace Catan.Tests.Source.Game.DevelopmentCards
         [Theory]
         [InlineData(DevelopmentCardType.Knight)]
         [InlineData(DevelopmentCardType.RoadBuilding)]
-        [InlineData(DevelopmentCardType.YearOfPlenty)]
+        [InlineData(DevelopmentCardType.Invention)]
         [InlineData(DevelopmentCardType.Monopoly)]
         public void CanActivate_WithPlayableActivatableCardBeforeUse_ReturnsTrue(DevelopmentCardType type)
         {

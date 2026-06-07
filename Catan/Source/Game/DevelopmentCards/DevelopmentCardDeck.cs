@@ -72,7 +72,7 @@ namespace Catan.Source.Game.DevelopmentCards
             for (int i = 0; i < 14; i++) yield return new DevelopmentCard(DevelopmentCardType.Knight);
             for (int i = 0; i < 5; i++) yield return new DevelopmentCard(DevelopmentCardType.VictoryPoint);
             for (int i = 0; i < 2; i++) yield return new DevelopmentCard(DevelopmentCardType.RoadBuilding);
-            for (int i = 0; i < 2; i++) yield return new DevelopmentCard(DevelopmentCardType.YearOfPlenty);
+            for (int i = 0; i < 2; i++) yield return new DevelopmentCard(DevelopmentCardType.Invention);
             for (int i = 0; i < 2; i++) yield return new DevelopmentCard(DevelopmentCardType.Monopoly);
         }
     }
