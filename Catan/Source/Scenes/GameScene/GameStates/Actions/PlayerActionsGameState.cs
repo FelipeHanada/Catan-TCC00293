@@ -526,7 +526,7 @@ namespace Catan.Source.Scenes.Game
             }
             else
             {
-                _gameScene.AppendState(new DevelopmentCardState(_gameScene, Player));
+                _gameScene.AppendState(new DevelopmentCardState(_gameScene, Player, isReadOnly: Player.IsAi));
             }
         }
 

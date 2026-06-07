@@ -210,7 +210,7 @@ namespace Catan.Source.Scenes
 
         private void OnDevelopmentCardButtonClicked()
         {
-            if (CanCurrentPlayerUseManualActionButtons() &&
+            if (CanCurrentPlayerOpenDevelopmentCards() &&
                 GetCurrentState() is PlayerDevelopmentCardButtonCallback callback)
             {
                 callback.OnPlayerDevelopmentCardButtonClicked();
@@ -231,15 +231,44 @@ namespace Catan.Source.Scenes
             bool canUseManualActionButtons = CanCurrentPlayerUseManualActionButtons();
             TradeButton?.SetEnabled(canUseManualActionButtons && currentState is PlayerTradeButtonCallback);
             BuildButton?.SetEnabled(canUseManualActionButtons && currentState is PlayerBuildButtonCallback);
-            DevelopmentCardButton?.SetEnabled(canUseManualActionButtons && currentState is PlayerDevelopmentCardButtonCallback);
-            EndTurnButton?.SetEnabled(currentState is PlayerEndTurnButtonCallback);
+            DevelopmentCardButton?.SetEnabled(CanCurrentPlayerOpenDevelopmentCards() && currentState is PlayerDevelopmentCardButtonCallback);
+            EndTurnButton?.SetEnabled(CanCurrentPlayerEndTurn() && currentState is PlayerEndTurnButtonCallback);
             UpdateAiModeButtons();
         }
 
         private bool CanCurrentPlayerUseManualActionButtons()
         {
-            bool isAiPlayerActionsState = GetCurrentState() is PlayerActionsGameState { Player.IsAi: true };
-            return AiTurnInputPolicy.CanUseManualActionButtons(isAiPlayerActionsState);
+            return AiTurnInputPolicy.CanUseManualActionButtons(IsAiManualControlBlockedState());
+        }
+
+        private bool CanCurrentPlayerOpenDevelopmentCards()
+        {
+            if (IsAiDevelopmentCardState())
+            {
+                return true;
+            }
+
+            return AiTurnInputPolicy.CanOpenDevelopmentCards(IsAiPlayerActionsState(), AiTurnMode);
+        }
+
+        private bool CanCurrentPlayerEndTurn()
+        {
+            return AiTurnInputPolicy.CanEndTurn(IsAiPlayerActionsState(), AiTurnMode);
+        }
+
+        private bool IsAiManualControlBlockedState()
+        {
+            return IsAiPlayerActionsState() || IsAiDevelopmentCardState();
+        }
+
+        private bool IsAiPlayerActionsState()
+        {
+            return GetCurrentState() is PlayerActionsGameState { Player.IsAi: true };
+        }
+
+        private bool IsAiDevelopmentCardState()
+        {
+            return GetCurrentState() is DevelopmentCardState { Player.IsAi: true };
         }
 
         private void UpdateAiModeButtons()

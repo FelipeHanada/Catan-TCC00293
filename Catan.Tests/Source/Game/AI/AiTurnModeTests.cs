@@ -28,5 +28,29 @@ namespace Catan.Tests.Source.Game.AI
         {
             Assert.True(AiTurnInputPolicy.CanUseManualActionButtons(isAiPlayerActionsState: false));
         }
+
+        [Fact]
+        public void CanEndTurn_ReturnsFalseForAiPlayerActionsStateInAutoMode()
+        {
+            Assert.False(AiTurnInputPolicy.CanEndTurn(isAiPlayerActionsState: true, AiTurnMode.Auto));
+        }
+
+        [Fact]
+        public void CanEndTurn_ReturnsTrueForAiPlayerActionsStateInManualMode()
+        {
+            Assert.True(AiTurnInputPolicy.CanEndTurn(isAiPlayerActionsState: true, AiTurnMode.Manual));
+        }
+
+        [Fact]
+        public void CanOpenDevelopmentCards_ReturnsTrueForAiPlayerActionsStateInManualMode()
+        {
+            Assert.True(AiTurnInputPolicy.CanOpenDevelopmentCards(isAiPlayerActionsState: true, AiTurnMode.Manual));
+        }
+
+        [Fact]
+        public void CanOpenDevelopmentCards_ReturnsFalseForAiPlayerActionsStateInAutoMode()
+        {
+            Assert.False(AiTurnInputPolicy.CanOpenDevelopmentCards(isAiPlayerActionsState: true, AiTurnMode.Auto));
+        }
     }
 }

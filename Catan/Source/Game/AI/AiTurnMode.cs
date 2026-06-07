@@ -20,5 +20,15 @@ namespace Catan.Source.Game.AI
         {
             return !isAiPlayerActionsState;
         }
+
+        public static bool CanEndTurn(bool isAiPlayerActionsState, AiTurnMode mode)
+        {
+            return !isAiPlayerActionsState || mode == AiTurnMode.Manual;
+        }
+
+        public static bool CanOpenDevelopmentCards(bool isAiPlayerActionsState, AiTurnMode mode)
+        {
+            return !isAiPlayerActionsState || mode == AiTurnMode.Manual;
+        }
     }
 }
