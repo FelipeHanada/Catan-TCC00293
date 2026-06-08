@@ -104,10 +104,8 @@ namespace Catan.Source.Scenes
         {
             base.LoadContent();
 
-            #if DEBUG
             //Subscribe(new SoundBoardDebug());
             Subscribe(new BankDebugPanel(Bank));
-            #endif
 
             Atlas = new Atlas(Game1.ContentManager);
 
