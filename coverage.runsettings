@@ -5,6 +5,7 @@
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
           <ExcludeByAttribute>ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
+          <!-- Source/Game/AI is intentionally included in coverage. -->
           <ExcludeByFile>
             **/Program.cs,
             **/Game1.cs,
@@ -32,6 +33,56 @@
             **/Source/Game/Resources/ResourceBankPlaceholder.cs,
             **/Source/Game/Winning/ScoreManager.cs
           </ExcludeByFile>
+        </Configuration>
+      </DataCollector>
+      <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0" assemblyQualifiedName="Microsoft.VisualStudio.Coverage.DynamicCoverageDataCollector, Microsoft.VisualStudio.TraceCollector, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Configuration>
+          <Format>coverage</Format>
+          <IncludeTestAssembly>False</IncludeTestAssembly>
+          <CodeCoverage>
+            <ModulePaths>
+              <Include>
+                <ModulePath>.*[\\/]Catan\.dll$</ModulePath>
+              </Include>
+              <Exclude>
+                <ModulePath>.*[\\/]Catan\.Tests\.dll$</ModulePath>
+              </Exclude>
+            </ModulePaths>
+            <Attributes>
+              <Exclude>
+                <Attribute>^System\.Diagnostics\.CodeAnalysis\.ExcludeFromCodeCoverageAttribute$</Attribute>
+              </Exclude>
+            </Attributes>
+            <Sources>
+              <Exclude>
+                <Source>.*[\\/]Program\.cs$</Source>
+                <Source>.*[\\/]Game1\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Scenes[\\/]MainMenuScene\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Scenes[\\/]ConfigScene\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Scenes[\\/]EndGameScene\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Scenes[\\/]Scene\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Scenes[\\/]GameScene[\\/]GameScene\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Scenes[\\/]GameScene[\\/]GameState\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Scenes[\\/]GameScene[\\/]GameStates[\\/].*\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Content[\\/].*\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Game[\\/]Button\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Game[\\/]UISlate\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Game[\\/]ResourceDisplay\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Game[\\/]GameDebug[\\/].*\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Game[\\/]Player[\\/]PlayerHud\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Game[\\/]Player[\\/]PlayerManager\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Game[\\/]Logging[\\/]GameLogPanel\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Game[\\/]Board[\\/]Tile\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Game[\\/]Board[\\/]TileVertex\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Game[\\/]Board[\\/]TileEdge\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Game[\\/]Board[\\/]HarborHoverPreview\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Game[\\/]Board[\\/]RobberMarker\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Game[\\/]Dice[\\/]DiceRollControl\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Game[\\/]Resources[\\/]ResourceBankPlaceholder\.cs$</Source>
+                <Source>.*[\\/]Source[\\/]Game[\\/]Winning[\\/]ScoreManager\.cs$</Source>
+              </Exclude>
+            </Sources>
+          </CodeCoverage>
         </Configuration>
       </DataCollector>
     </DataCollectors>
